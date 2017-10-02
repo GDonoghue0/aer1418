@@ -1,0 +1,41 @@
+\documentclass[openany,preprint,11pt]{book}
+
+\usepackage{amsthm,amsmath,amssymb,amsfonts,amscd,amsbsy}
+\usepackage[ruled,noline,linesnumbered]{algorithm2e}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[tight]{subfigure}
+\usepackage{titlesec}
+
+\DeclareGraphicsExtensions{.jpg,.png,.pdf}
+\DeclareGraphicsRule{*}{mps}{*}{}
+\graphicspath{
+%
+}
+
+\include{commands}
+
+\renewcommand{\chaptername}{Lecture}
+\newcommand{\disclaimer}{\copyright2018 Masayuki Yano.  Prepared for AER1418 Variational Methods for PDEs taught at University of Toronto.}
+
+%\titleformat{\chapter}[display]
+%            {\huge\bfseries}{Lecture \thechapter}{0.5ex}
+%            {} % before code
+%            {\disclaimer} % after code
+  
+\theoremstyle{definition}
+\newtheorem{example}{Example}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+
+\begin{document}
+\include{cover}
+\clearpage
+%\include{acknowledgment}
+\tableofcontents
+
+\include{intro}
+\end{document}
+
