@@ -189,3 +189,43 @@ or, more concisely,
 \end{equation*}
 The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.
 
+\section{An error estimate: optimality and polynomial approximation}
+We now assess how well our FE solution $u_h \in \calV_h$ to~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:intro_var} (or equivalently~\eqref{eq:intro_min} or \eqref{eq:intro_strong}).  To this end, we need to first define a norm with which we measure the ``closeness'' of the approximation. We in particular introduce the \emph{energy norm} associated with the model problem,
+\begin{equation*}
+  \enorm{v} \equiv \sqrt{a(v,v)}  = \left( \int_{\Omega} \left( \dd{v}{x} \right)^2 dx \right)^{1/2} \quad \forall v \in \calV.
+\end{equation*}
+Because $\enorm{ \cdot }$ is the induced norm associated with an inner product $a(\cdot,\cdot)$ over $\calV$, it is indeed a proper norm that satisfies i) scalability, ii) triangle inequality, and iii) positivity.  
+
+We next state a key ingredient of the FE error estimate: \emph{Galerkin orthogonality}: since $\ell(v) = a(u,v)$, $\forall v \in \calV$, the FE variational statement~\eqref{eq:intro_var_fe} implies
+\begin{equation*}
+  \ell(v) - a(u_h,v) = a(u,v) - a(u_h,v) = a(u-u_h,v) \quad \forall v \in V_h;
+\end{equation*}
+the relationship is called Galerkin orthogonality because it states that the error $u - u_h$ is orthogonal to the space $\calV_h$ in the inner product $a(\cdot,\cdot)$. We now observe that, for any $w \in \calV_h$,
+\begin{align*}
+  \enorm{u-u_h}^2
+  &=
+  a(u-u_h, u-u_h) + \underbrace{a(u-u_h,u_h - w)}_{= 0 \text{ by Galerkin orthogonality}}
+  =
+  a(u-u_h, u - w)
+  \leq \underbrace{ \enorm{u - u_h} \enorm{u - w} }_{\text{Cauchy-Schwarz}}.
+\end{align*}
+It follows that
+\begin{equation}
+  \enorm{u - u_h} \leq \enorm{u - w} \quad \forall w \in \calV_h,
+  \label{eq:intro_fe_opt}
+\end{equation}
+or, equivalently,
+\begin{equation*}
+  \enorm{u-u_h} = \inf_{w \in \calV_h} \enorm{u - w}.
+\end{equation*}
+We observe that the FE approximation $u_h \in \calV_h$ is \emph{optimal} in the energy norm in the sense that it is the closest approximation to the solution $u \in \calV$ out of all elements in $\calV_h$.  In other words, even if we knew the solution $u$, we could not have found a better solution in $\calV_h$ than $u_h$.
+
+As the optimality statement~\eqref{eq:intro_fe_opt} holds for any $w \in \calV_h$, we can set $w = \calI_h u$, the polynomial interpolant associated with our Lagrnage polynomial nodes.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
+\begin{align*}
+  \enorm{v - \calI_h v} &\leq \frac{1}{8} h^2 \max_{x \in \Omega} |v''(x)| \\
+  \enorm{\dd{v}{x} - \dd{(\calI_h u)}{x}} &\leq h \max_{x \in \Omega} |v''(x)| .
+\end{align*}
+(We will later derive the bounds in a more formal setting.) We hence arrive at the following FE error bound in terms of the discretization parameter $h$:
+\begin{equation*}
+  \enorm{u - u_h} \leq \enorm{u - \calI_h u} \leq h \max_{x \in \Omega}  | u''(x) |.
+\end{equation*}
