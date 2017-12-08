@@ -1,18 +1,25 @@
-\chapter{Introduction to variational formulation and finite element methods}
+\chapter{Introduction: Poisson equation in one dimension}
 
 \disclaimer
 
 \section{Motivation}
-In this lecture, we provide a very brief overview of a variational formulation and the associated finite element approximation using a concrete example: one-dimensional Poisson equation. The goal is to illustrate the main idea; we hence defer some of the technical discussions to later lectures.
+In this lecture, we provide a brief overview of a variational formulation and the associated finite element approximation using a concrete example: one-dimensional Poisson equation. The goal is to illustrate the main ideas without complexities associated with higher dimensions and more general equations; we also defer some of the technical discussions to later lectures.
 
-\section{Model problem: strong formulation}
+\section{Model problem: strong form}
 \label{sec:intro_strong}
-We consider a taut string subjected to a distributed transverse load.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation: find $u$ such that
+We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:intro_string}.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: find $u \in C^2(\overline \Omega)$ such that
 \begin{align}
-  - \dd{^2u}{x^2} &= f \quad \text{in } \Omega \equiv (0,1) \label{eq:intro_strong} \\
-  u(x=0) = u(x=1) &= 0 \notag , 
+  - \dd{^2u}{x^2} &= f \quad \text{in } \Omega  \label{eq:intro_strong} \\
+  u(x=0) &= 0 \notag , \\
+  u(x=1) &= 0 \notag ,
 \end{align}
-for $f$ a continuous function.  We may integrate the ODE twice to readily confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
+where $f \in C^0(\overline \Omega)$ is associated with the transverse load.  We may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{poisson_string}
+  \caption{Taut-string problem modeled by the Poisson equation. \label{fig:intro_string}}
+\end{figure}
 
 %% One concrete application of the model equation is an elastic bar with fixed ends subjected to distributed force.  The bar is then modeled as
 %% \begin{align*}
@@ -22,7 +29,7 @@ for $f$ a continuous function.  We may integrate the ODE twice to readily confir
 %% \end{align*}
 %% here $u$ is the displacement, $\sigma$ is the internal force (i.e. area weighted stress), $E$ is the Young's modulus, $A$ is the cross sectional area, and $f$ is the distributed external force. We recognize that the problem fits in the model equation~\eqref{eq:intro_strong}.
 
-\section{Minimization formulation}
+\section{Minimization form}
 We now consider a \emph{minimization form} of the model problem~\eqref{eq:intro_strong}.  To this end, we first introduce a linear space
 \begin{equation}
   \calV \equiv \{ v \ | \
@@ -39,19 +46,19 @@ We then define a functional $J: \calV \to \RR$ given by
 \end{equation}
 Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
 \begin{equation}
-  u = \arginf_{w \in \calV} J(w).
+  u = \argmin_{w \in \calV} J(w).
   \label{eq:intro_min}
 \end{equation}
-For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:intro_strong}, the functional $J$ represents the total energy in the system; our minimization statement is hence a statement of energy minimization at equilibrium. 
+For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:intro_strong}, the functional $J$ represents the total energy in the system; $\int_\Omega (\pp{w}{x})^2 dx$ is the internal energy and $\int_\Omega f w dx$ is the external work.  Our minimization statement is hence a statement of energy minimization at the equilibrium. 
 
-We can readily show that the solution to the strong form~\eqref{eq:intro_strong} solves the minimization problem~\eqref{eq:intro_min}.  To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:intro_strong} and $v$ is an arbitrary function in $\calV$.  We then note that the functional $J(w) = J(u+v)$ can be decomposed into three terms:
+We can readily show that the solution to the strong form~\eqref{eq:intro_strong} solves the minimization problem~\eqref{eq:intro_min}.  To see this, we first observe that if $u \in C^2(\overline \Omega)$ then $u \in \calV$.  We then let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:intro_strong} and $v$ is an arbitrary function in $\calV$.  We then note that $J(w) = J(u+v)$ can be decomposed into three terms:
 \begin{align*}
   J(u+v) &= \frac{1}{2} \int_{\Omega} \left( \dd{(u+v)}{x} \right)^2 dx - \int_\Omega f(u+v) dx \\
   &= \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{u}{x} \right)^2 dx - \int_\Omega f u dx }_{J(u)}
   + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx }_{J'(u;v) \text{ --- first variation}}
   + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0}.
 \end{align*}
-Here, the first variation $J'(u;v)$ should be interpreted as the first variation of $J$ at $u$ in the direction $v$.  We integrate by parts $J'(u;v)$ to obtain
+Here, $J'(u;v)$ denotes the first variation of $J$ at $u$ in the direction $v$.  We integrate by parts $J'(u;v)$ to obtain
 \begin{align*}
   J'(u;v) &= \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx
   =
@@ -63,9 +70,9 @@ in other words, if $u$ is the solution to the strong form~\eqref{eq:intro_strong
   J(u + v) = J(u) + \frac{1}{2} \int_\Omega \left( \dd{v}{x} \right)^2 dx
   > J(u)  \quad \forall v \neq 0.
 \end{align*}
-It follows that the solution $u$ to the strong form~\eqref{eq:intro_strong} is also the solution to the minimization form~\eqref{eq:intro_min}.
+The solution $u$ to the strong form~\eqref{eq:intro_strong} is the minimizer of the functional~\eqref{eq:intro_J} and hence the solution to the minimization form~\eqref{eq:intro_min}.
 
-While the solution to the strong form~\eqref{eq:intro_strong} is also the solution to the minimization form~\eqref{eq:intro_min}, the converse is not true in general.  In fact, the minimization form admits a larger classes of loads $f$ and hence solutions.
+While the solution to the strong form~\eqref{eq:intro_strong} is also the solution to the minimization form~\eqref{eq:intro_min}, the converse is not true in general.  In fact, the minimization form admits more general loads $f$ and associated solutions than the strong form.
 
 \section{Variational form}
 We now consider a \emph{variational form} of the model problem~\eqref{eq:intro_strong}. As in the minimization form, we work with the function space~$\calV$ defined in~\eqref{eq:intro_V}. We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
@@ -78,20 +85,21 @@ and a \emph{linear form} $\ell: \calV \to \RR$,
   \ell(v) \equiv \int_{\Omega} v f dx \quad \forall v \in \calV.
   \label{eq:intro_ell}
 \end{equation}
+The form $\ell: \calV \to \RR$ is called a \emph{linear form} because it is linear in the argument in the sense that
+\begin{equation*}
+  \ell(\alpha w + \beta v) = \alpha \ell(w) + \beta \ell(v) \quad \forall w,v \in \calV, \ \forall \alpha, \beta \in \RR.
+\end{equation*}
+The form $a: \calV \times \calV \to \RR$ is called a \emph{bilinear form} because 
+\begin{align*}
+  a(w, \tilde v) & \text{ is a linear form in $w$ for a fixed $\tilde v$, and} \\
+  a(\tilde w, v) & \text{ is a linear form in $v$ for a fixed $\tilde w$}.
+\end{align*}
 Our \emph{variational problem} is as follows: find $u \in \calV$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:intro_var}
 \end{equation}
-The form $\ell: \calV \to \RR$ is said to be \emph{linear form} because it is linear in the argument in the sense that
-\begin{equation*}
-  \ell(\alpha w + \beta v) = \alpha \ell(w) + \beta \ell(v) \quad \forall w,v \in \calV, \ \forall \alpha, \beta \in \RR.
-\end{equation*}
-The form $a: \calV \times \calV \to \RR$ is said to be \emph{bilinear form} because 
-\begin{align*}
-  a(w, \tilde v) & \text{ is a linear form in $w$ for a fixed $\tilde v$, and} \\
-  a(\tilde w, v) & \text{ is a linear form in $v$ for a fixed $\tilde w$}.
-\end{align*}
+This variational form of the problem is also called the \emph{weak form}. The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
 
 We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:intro_var} if and only if it is the solution to the minimization problem~\eqref{eq:intro_min}.  Suppose that $u \in \calV$ is the solution to the variational problem~\eqref{eq:intro_var}.  Then, for $w = u + v$ for any $v \in \calV$, we obtain
 \begin{align*}
@@ -106,37 +114,44 @@ Conversely, suppose $u \in \calV$ is the solution to the minimization problem~\e
   - \int_{\Omega} f v dx
   = a(u,v) - \ell(v) = 0 \quad \forall v \in \calV,
 \end{equation*}
-which in fact is the equivalent condition to our variational statement~\eqref{eq:intro_var}. Hence we conclude that $u \in \calV$ is the solution to~\eqref{eq:intro_var} if and only if it is the solution to~\eqref{eq:intro_min}.  We will soon see that we can derive a finite element approximation from either~\eqref{eq:intro_var} or \eqref{eq:intro_min}.
+which the exact condition of our variational problem~\eqref{eq:intro_var}. Hence we conclude that $u \in \calV$ is the solution to~\eqref{eq:intro_var} if and only if it is the solution to~\eqref{eq:intro_min}.  We will soon see that we can derive a finite element approximation from either~\eqref{eq:intro_var} or \eqref{eq:intro_min}.
 
 \section{Finite element (FE) approximation}
-In order to construct a finite element (FE) approximation, we must choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first \emph{discretize} (or \emph{tessellate}) the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
+In order to construct a finite element (FE) approximation, we must choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first \emph{tessellate} (or \emph{triangulate}) the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
 \begin{equation*}
   0 \equiv x_0 < x_1 < \cdots < x_N < x_{N+1} \equiv 1
 \end{equation*}
 and segments
 \begin{equation*}
-  I_i \equiv (x_{i-1}, x_i) \quad i = 1,\dots,N+1.
+  K_i \equiv (x_{i-1}, x_i) \quad i = 1,\dots,N+1.
 \end{equation*}
-We denote the length of each segment by $h_i \equiv x_i - x_{i-1}$, $i = 1,\dots,N+1$.  We denote \emph{tessellation} of the domain $\Omega$ by
+We denote the \emph{tessellation} of the domain $\Omega$, which comprises collection of segments, by
 \begin{equation}
-  \calT_h \equiv \{ I_i \}_{i=1}^{N+1};
+  \calT_h \equiv \{ K_i \}_{i=1}^{N+1}.
   \label{eq:intro_Th}
 \end{equation}
-a tessellation $\calT_h$ is parametrized by a characteristic length $h \equiv \max_{i=\{ 1,\dots,N+1\}} h_i$.
+We denote the length of each segment by $h_i \equiv x_i - x_{i-1}$, $i = 1,\dots,N+1$; a tessellation $\calT_h$ is characterized by the maximum segment length $h \equiv \max_{i=\{ 1,\dots,N+1\}} h_i$.
 
-We now introduce a space of piecewise linear functions associated with our tessellation $\calT_h$ and belong to $\calV$:
+We now introduce a space of piecewise linear functions associated with our tessellation $\calT_h$ and that belong to $\calV$:
 \begin{equation}
-  \calV_h \equiv \{ v \in \calV \ | \ v|_{I_i} \in \PP^1(I_i), \ i = 1,\dots,N+1\}.
+  \calV_h \equiv \{ v \in \calV \ | \ v|_{K_i} \in \PP^1(K_i), \ i = 1,\dots,N+1\}.
   \label{eq:intro_Vh}
 \end{equation}
-We make a few observations.  First, we require $v \in \calV$; we recall that this that i) $v$ must be continuous, ii) $\dd{v}{x}$ must be piecewise continuous and bounded, and iii) $v$ must vanish at the boundaries.  Second, we require $v|_{I_i} \in \PP^1(I_i)$, $i = 1,\dots,N+1$; in words, $v$ restricted to each segment $I_i$ is a linear polynomial.  Hence, any function in $\calV_h \subset \calV$ is piecewise linear and vanish at the boundaries.
+We make a few observations.  First, we require $v$ is in $\calV$ defined in \eqref{eq:intro_V}: (i) $v$ must be continuous, (ii) $\dd{v}{x}$ must be piecewise continuous and bounded, and (iii) $v$ must vanish at the boundaries.  Second, we require $v$ restricted to segment $K_i$ to be in $\PP^1(K_i)$; here, $\PP^1(K_i)$ denotes the space of linear polynomials over $K_i$.  Hence, any function in $\calV_h \subset \calV$ is continuous, piecewise linear, and vanishes at the boundaries. An example of a function in $\calV_h$ is shown in Figure~\ref{fig:poisson_fe_space}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{poisson_fe_space}
+  \caption{Linear finite element space for $N = 4$.}
+  \label{fig:poisson_fe_space}
+\end{figure}
 
 We can now state our FE approximation problem in either the minimization form or the variational form.  The FE minimization form is as follows: find $u_h \in \calV_h$ such that
 \begin{equation}
-  u_h = \arginf_{v \in \calV_h} J(v),
+  u_h = \argmin_{v \in \calV_h} J(v),
   \label{eq:intro_min_fe}
 \end{equation}
-where $J: \calV \to \RR$ is the energy functional~\eqref{eq:intro_J}. (Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$.) Similarly, the FE variational form is as follows: find $u_h \in \calV_h$ such that
+where $J: \calV \to \RR$ is the energy functional~\eqref{eq:intro_J}. In words, we seek the minimizer in the subspace $\calV_h$ of $\calV$.  Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$. Similarly, the FE variational form is as follows: find $u_h \in \calV_h$ such that
 \begin{equation}
   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h,
   \label{eq:intro_var_fe}
@@ -147,22 +162,38 @@ where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are biilnear for
 \section{Finite element approximation: implementation}
 We now wish to implement~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}).  To this end, we introduce a \emph{basis} for $\calV_h$ defined in~\eqref{eq:intro_Vh}.  A convenient basis for $\calV_h$ is a \emph{Lagrange basis} $\{\phi_i\}_{i=1}^N$ such that 
 \begin{equation*}
-  \phi_i(x_j) = \begin{cases}
+  \phi_i(x_j) = \delta_{ij} \equiv  \begin{cases}
     1 \quad j = i \\
     0 \quad j\neq i
   \end{cases},
-  \quad j = 0,\dots,N+1,
+  \quad j = 0,\dots,N+1;
 \end{equation*}
-where the interpolation points $\{ x_j \}_{j=0}^{N+1}$ are associated with the tessellation $\calT_h$. We can readily show that $\{ \phi_i \}_{i=1}^N$ is indeed a basis for $\calV_h$: i.e., $\calV_h = \text{span}\{ \phi_i \}_{i=1}^N$ and $\{\phi_i\}_{i=1}^N$ is linearly independent. We note that given the basis function, we can represent \emph{any} function $v \in \calV_h$ as
+in words, $\phi_i$ is a continuous piecewise linear function that is takes the value of 1 at the interpolation point $x_i$ and the value of 0 at all other interpolation points.  The basis functions are shown in Figure~\ref{fig:poisson_1d_basis}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{poisson_1d_basis}
+  \caption{Basis functions for a linear finite element space for $N = 4$.}
+  \label{fig:poisson_1d_basis}
+\end{figure}
+
+We can show that $\{ \phi_i \}_{i=1}^N$ is indeed a basis for $\calV_h$: the set (i) is linearly independent and (ii) spans $\calV_h$. To show the set is linearly independent, we must show that $\sum_{i=1}^n c_i \phi_i(x) = 0$ implies $c_i = 0$, $i = 1,\dots,N$; the statement holds because, for $\sum_{i=1}^n c_i \phi_i(x) = 0$, we must have $\sum_{i=1}^n c_i \phi_i(x_j) = \sum_{i=1}^n c_i \delta_{ij} = c_j = 0$, $j = 1,\dots,N$. To show the set spans $\calV_h$, we observe that any $v \in \calV_h$ can be expressed as
 \begin{equation*}
-  v(x) = \sum_{i=1}^N \hat v_i \phi_i(x), \quad x \in \Omega,
+  v = \sum_{i=1}^N \hat v_i \phi_i
 \end{equation*}
-for some coefficients $\hat v \in \RR^N$.
+for $\hat v_i \equiv v(x_i)$. (The coefficients are also unique because the set is linearly independent.)  We hence conclude that $\{\phi_i\}_{i=1}^N$ is a basis for $\calV_h$. 
+
+%% We can readily show that $\{ \phi_i \}_{i=1}^N$ is indeed a basis for $\calV_h$: i.e., $\calV_h = \text{span}\{ \phi_i \}_{i=1}^N$ and $\{\phi_i\}_{i=1}^N$ is linearly independent. We note that for \emph{any} function $v \in \calV_h$, there exists a \emph{unique} coefficients $\hat v \in \RR^N$ such that 
+%% \begin{equation*}
+%%   v(x) = \sum_{i=1}^N \hat v_i \phi_i(x), \quad x \in \Omega.
+%% \end{equation*}
+%% In particular, the choice $\hat v_i = v(x_i)$ yields the desired equality.
 
 We now restate the FE variational problem~\eqref{eq:intro_var_fe} using the basis and associated coefficients.  Specifically, we represent $u_h \in \calV_h$ and $v \in \calV_h$ as 
-\begin{equation*}
-  u_h \equiv \sum_{j=1}^N \hat u_{h,j} \phi_j \quad \text{and} \quad v \equiv \sum_{i=1}^N \hat v_i \phi_i
-\end{equation*}
+\begin{align}
+  u_h &\equiv \sum_{j=1}^N \hat u_{h,j} \phi_j \label{eq:intro_uh_rep} \\
+   v &\equiv \sum_{i=1}^N \hat v_i \phi_i \notag
+\end{align}
 for some $\hat u_h \in \RR^N$ and $\hat v \in \RR^N$, and consider the following equivalent problem: find $\hat u_h \in \RR^N$ such that
 \begin{equation}
   a(\sum_{j=1}^N \hat u_{h,j} \phi_j, \sum_{i=1}^N \hat v_i \phi_i) - \ell(\sum_{i=1}^N \hat v_i \phi_i)
@@ -171,12 +202,12 @@ for some $\hat u_h \in \RR^N$ and $\hat v \in \RR^N$, and consider the following
   \sum_{i=1}^N \hat v_i \ell(\phi_i) = 0 \quad \forall \hat v \in \RR^N.
   \label{eq:intro_fe_disc_step_1}
 \end{equation}
-Here, we have appealed to the bilinearity and linearity of $a$ and $\ell$, respectively. We then note that in~\eqref{eq:intro_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement hold for $\hat v \in \{e_i \}_{i=1}^N$ for $\{e_i\}_{i=1}^N$ the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:intro_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
+Here, we have appealed to the bilinearity and linearity of $a(\cdot,\cdot)$ and $\ell(\cdot)$, respectively. We then note that in~\eqref{eq:intro_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement hold for $\hat v \in \{e_i \}_{i=1}^N$ for $\{e_i\}_{i=1}^N$ the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:intro_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
 \begin{equation}
   \sum_{j=1}^N a(\phi_j,\phi_i) \hat u_{h,j} = \ell(\phi_i) \quad  \forall i = 1,\dots,N.
   \label{eq:intro_sys}
 \end{equation}
-We can also rewrite the linear system in matrix-vector form:
+We can also rewrite the linear system in the matrix form:
 \begin{equation*}
   \underbrace{ \bmat{ccc}
   a(\phi_1,\phi_1) & \cdots & a(\phi_N,\phi_1) \\
@@ -192,9 +223,9 @@ or, more concisely,
 \begin{equation*}
   A_h \hat u_h = f_h.
 \end{equation*}
-The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.
+The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.% The linear system is in fact \emph{symmetric positive definite} (SPD) and hence has a unique solution.
 
-\section{Solution of $A_h \hat u_h = f_h$}
+%\section{Solution of $A_h \hat u_h = f_h$}
 
 We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We decompose the matrix into four parts: main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
 \begin{equation*}
@@ -219,27 +250,27 @@ The subdiagonal entries are given by
 \end{equation*}
 All other entries are zero because $\phi_i$ and $\phi_j$ do not overlap for $|i -j| > 1$.
 
-We now note the simple case of equispaced nodes so that $h_i = h$, $\forall i = 1,\dots,N$.  The associated stiffness matrix is
+We now consider the simple case of equispaced nodes so that $h_i = h$, $\forall i = 1,\dots,N$.  The associated stiffness matrix is
 \begin{equation*}
   A_h = \frac{1}{h} \bmat{ccccc} 2 & -1 \\ -1 & 2 & -1 \\ & \ddots & \ddots & \ddots \\ & &-1 & 2 & -1 \\ &&& -1 & 2 \emat.
 \end{equation*}
-We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}.  Moreover, this matrix is symmetric positive definite:
+We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}.  Moreover, this matrix is symmetric positive definite.  The symmetry is obvious from inspection; the positive definiteness follows from 
 \begin{align*}
-  v^T A_h v
+  \hat v^T A_h \hat v
   &=
   \frac{1}{h} \left(
-  2\sum_{i=1}^N v_i^2 - 2\sum_{i=1}^{N-1} v_iv_{i+1} 
+  2\sum_{i=1}^N \hat v_i^2 - 2\sum_{i=1}^{N-1} \hat v_i\hat v_{i+1} 
   \right)
   =
   \frac{1}{h} \left(
-  v_1^2 + v_{N}^2 + \sum_{i=1}^{N-1} (v_i - v_{i+1})^2 
+  \hat v_1^2 + \hat v_{N}^2 + \sum_{i=1}^{N-1} (\hat v_i - \hat v_{i+1})^2 
   \right)
-  > 0 \quad \forall v \neq 0.
+  > 0 \quad \forall \hat v \neq 0.
 \end{align*}
-Hence the solution exists and is unique.  The solution of the tridiagonal system $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm in $\calO(N)$ floating point operations.
+Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}) is given by the representation~\eqref{eq:intro_uh_rep}.
 
 \section{An error estimate: optimality and polynomial approximation}
-We now assess how well our FE solution $u_h \in \calV_h$ to~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:intro_var} (or equivalently~\eqref{eq:intro_min} or \eqref{eq:intro_strong}).  To this end, we need to first define a norm with which we measure the ``closeness'' of the approximation. We in particular introduce the \emph{energy norm} associated with the model problem,
+We now assess how accurately our finite element solution $u_h \in \calV_h$ to~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:intro_var} (or equivalently~\eqref{eq:intro_min}).  To this end, we need to first define a norm with which we measure the ``closeness'' of the approximation. We in particular introduce the \emph{energy norm} associated with the model problem,
 \begin{equation*}
   \enorm{v} \equiv \sqrt{a(v,v)}  = \left( \int_{\Omega} \left( \dd{v}{x} \right)^2 dx \right)^{1/2} \quad \forall v \in \calV.
 \end{equation*}
@@ -249,27 +280,29 @@ We next state a key ingredient of the FE error estimate: \emph{Galerkin orthogon
 \begin{equation*}
   \ell(v) - a(u_h,v) = a(u,v) - a(u_h,v) = a(u-u_h,v) \quad \forall v \in V_h;
 \end{equation*}
-the relationship is called Galerkin orthogonality because it states that the error $u - u_h$ is orthogonal to the space $\calV_h$ in the inner product $a(\cdot,\cdot)$. We now observe that, for any $w \in \calV_h$,
+the relationship is called Galerkin orthogonality because it states that the error $u - u_h$ is orthogonal to the space $\calV_h$ in the inner product $a(\cdot,\cdot)$. We now observe that, for any $w_h \in \calV_h$,
 \begin{align*}
   \enorm{u-u_h}^2
   &=
-  a(u-u_h, u-u_h) + \underbrace{a(u-u_h,u_h - w)}_{= 0 \text{ by Galerkin orthogonality}}
-  =
-  a(u-u_h, u - w)
-  \leq \underbrace{ \enorm{u - u_h} \enorm{u - w} }_{\text{Cauchy-Schwarz}}.
+  a(u-u_h, u-w_h) + a(u-u_h,w_h - u_h)
+  \\
+  &=
+  a(u-u_h, u - w_h) & \text{(Galerkin orthogonality)}
+  \\
+  &\leq  \enorm{u - u_h} \enorm{u - w_h}. & \text{(Cauchy-Schwarz inequality)}.
 \end{align*}
 It follows that
 \begin{equation}
-  \enorm{u - u_h} \leq \enorm{u - w} \quad \forall w \in \calV_h,
+  \enorm{u - u_h} \leq \enorm{u - w_h} \quad \forall w_h \in \calV_h,
   \label{eq:intro_fe_opt}
 \end{equation}
 or, equivalently,
 \begin{equation*}
-  \enorm{u-u_h} = \inf_{w \in \calV_h} \enorm{u - w}.
+  \enorm{u-u_h} = \inf_{w_h \in \calV_h} \enorm{u - w_h}.
 \end{equation*}
 We observe that the FE approximation $u_h \in \calV_h$ is \emph{optimal} in the energy norm in the sense that it is the closest approximation to the solution $u \in \calV$ out of all elements in $\calV_h$.  In other words, even if we knew the solution $u$, we could not have found a better solution in $\calV_h$ than $u_h$.
 
-As the optimality statement~\eqref{eq:intro_fe_opt} holds for any $w \in \calV_h$, we can set $w = \calI_h u$, the polynomial interpolant associated with our Lagrnage polynomial nodes.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
+As the optimality statement~\eqref{eq:intro_fe_opt} holds for any $w \in \calV_h$, we can set $w_h = \calI_h u = \sum_{i=1}^N u(x_i) \phi_i$, the polynomial interpolant associated with our Lagrange basis functions.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
 \begin{align*}
   \enorm{v - \calI_h v} &\leq \frac{1}{8} h^2 \max_{x \in \Omega} |v''(x)| \\
   \enorm{\dd{v}{x} - \dd{(\calI_h u)}{x}} &\leq h \max_{x \in \Omega} |v''(x)| .
@@ -278,3 +311,24 @@ As the optimality statement~\eqref{eq:intro_fe_opt} holds for any $w \in \calV_h
 \begin{equation*}
   \enorm{u - u_h} \leq \enorm{u - \calI_h u} \leq h \max_{x \in \Omega}  | u''(x) |.
 \end{equation*}
+In words, the energy-norm error of our finite element solution $u_h \in \calV_h$  depends on  (i)the maximum second derivative over the domain and (ii) the tessellation parameter $h$.
+
+To demonstrate the convergence of the finite element approximation, we consider the Poisson problem~\eqref{eq:intro_strong} for $f = 1$. The exact solution is $u(x) = x(1-x)/2$. Figure~\eqref{fig:poisson_1d_conv} shows that the energy norm of the error $\enorm{u - u_h}$ converges at the rate of $h^1$ as predicted by theory.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{poisson_1d_conv}
+  \caption{Convergence of the finite element approximation for $-\Delta u = 1$.}
+  \label{fig:poisson_1d_conv}
+\end{figure}
+
+\section{Summary}
+In this lecture, we considered the variational formulation and the associated finite element approximation of one-dimensional Poisson equation to introduce main ideas without complexities associated with higher dimensions and more general equations.  We summarize key points of the lecture:
+\begin{enumerate}
+\item A one-dimensional Poisson problem can be written in the strong form, minimization form, or variational (or weak) form. 
+\item The solution to the strong form is also the solution to the minimization and variational form, but the converse is not true in general.  The minimization and variational forms admit more general loads $f$ and the associated solutions.
+\item A piecewise linear finite element approximation space $\calV_h$ is a subspace of $\calV$ that is associated with a tessellation of $\Omega \subset \RR^1$ into segments.
+\item The finite element solution is the solution of the minimization or variational problem in the finite element subspace $\calV_h \subset \calV$.
+\item Given a basis for $\calV_h$, the finite element solution can be computed in a systematic manner by assembling the associated stiffness matrix and the load vector and by solving the linear system.
+\item For the Poisson equation, the finite element approximation $u_h$ is optimal in energy norm; even \emph{if} we knew the exact solution $u \in \calV$, we could not have found a better solution in $\calV_h$ than $u_h$.
+\item The error in the linear finite element approximation of the Poisson equation converges as $h^1$ in energy norm, where $h$ is the mesh spacing.
+\end{enumerate}
