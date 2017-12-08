@@ -3,33 +3,36 @@
 \disclaimer
 
 \section{Motivation}
+In this lecture, we provide a very brief overview of a variational formulation and the associated finite element approximation using a concrete example: one-dimensional Poisson equation. The goal is to illustrate the main idea; we hence defer some of the technical discussions to later lectures.
 
 \section{Model problem: strong formulation}
-We consider a one-dimensional boundary value problem: find $u$ such that
+\label{sec:intro_strong}
+We consider a taut string subjected to a distributed transverse load.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation: find $u$ such that
 \begin{align}
   - \dd{^2u}{x^2} &= f \quad \text{in } \Omega \equiv (0,1) \label{eq:intro_strong} \\
-  u(x=0) = u(x=1) &= 0 , 
+  u(x=0) = u(x=1) &= 0 \notag , 
 \end{align}
-for $f$ a continuous function.  We may integrate the ODE twice to readily confirm the existence of a unique solution.  We will refer to this particular form of the problem as the \emph{strong form}.
+for $f$ a continuous function.  We may integrate the ODE twice to readily confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
 
-One concrete application of the model equation is an elastic bar with fixed ends subjected to distributed force.  The bar is then modeled as
-\begin{align*}
-  \sigma &= EA \dd{u}{x} \quad &\text{(Hooke's law)} \\
-  \dd{\sigma}{x} &= f \quad &\text{(force equilibrium)} \\
-  u(x=0) = u(x=1) &=0 \quad &\text{(fixed ends)};
-\end{align*}
-here $u$ is the displacement, $\sigma$ is the internal force (i.e. area weighted stress), $E$ is the Young's modulus, $A$ is the cross sectional area, and $f$ is the distributed external force. We recognize that the problem fits in the model equation~\eqref{eq:intro_strong}.
+%% One concrete application of the model equation is an elastic bar with fixed ends subjected to distributed force.  The bar is then modeled as
+%% \begin{align*}
+%%   \sigma &= EA \dd{u}{x} \quad &\text{(Hooke's law)} \\
+%%   \dd{\sigma}{x} &= f \quad &\text{(force equilibrium)} \\
+%%   u(x=0) = u(x=1) &=0 \quad &\text{(fixed ends)};
+%% \end{align*}
+%% here $u$ is the displacement, $\sigma$ is the internal force (i.e. area weighted stress), $E$ is the Young's modulus, $A$ is the cross sectional area, and $f$ is the distributed external force. We recognize that the problem fits in the model equation~\eqref{eq:intro_strong}.
 
 \section{Minimization formulation}
 We now consider a \emph{minimization form} of the model problem~\eqref{eq:intro_strong}.  To this end, we first introduce a linear space
-\begin{align}
+\begin{equation}
   \calV \equiv \{ v \ | \
-  & v \text{ is continuous on $\Omega$, } \\
-  & \dd{v}{x} \text{ is piecewise continuous and bounded on $\Omega$, and } \\
-  & v(x=0) = v(x=1) = 0 \}.
+   v \text{ is continuous, } 
+   \int_\Omega \left(\dd{v}{x}\right)^2 dx \text{ is bounded, and } % \text{ is piecewise continuous and bounded on $\Omega$, and } \\
+   v(x=0) = v(x=1) = 0 \}.
   \label{eq:intro_V}
-\end{align}
-We then define a functional $J: \calV \to \RR$,
+\end{equation}
+The first two conditions are related to the smoothness of the solution sought, and the last condition imposes the boundary condition.
+We then define a functional $J: \calV \to \RR$ given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} \int_\Omega \left( \dd{w}{x} \right)^2 dx - \int_\Omega f w dx \quad \forall w \in \calV.
   \label{eq:intro_J}
@@ -39,7 +42,7 @@ Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
   u = \arginf_{w \in \calV} J(w).
   \label{eq:intro_min}
 \end{equation}
-For a physical system with intrinsic energy, such as the elastic bar problem, the functional $J$ represents the total energy in the system; our minimization statement is hence a statement of energy minimization at equilibrium. 
+For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:intro_strong}, the functional $J$ represents the total energy in the system; our minimization statement is hence a statement of energy minimization at equilibrium. 
 
 We can readily show that the solution to the strong form~\eqref{eq:intro_strong} solves the minimization problem~\eqref{eq:intro_min}.  To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:intro_strong} and $v$ is an arbitrary function in $\calV$.  We then note that the functional $J(w) = J(u+v)$ can be decomposed into three terms:
 \begin{align*}
@@ -48,7 +51,7 @@ We can readily show that the solution to the strong form~\eqref{eq:intro_strong}
   + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx }_{J'(u;v) \text{ --- first variation}}
   + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0}.
 \end{align*}
-Here, the first variation $J'(u;v)$ should be interpreted as the first variation of $J$ about $u$ in the direction of $v$.  We integrate by parts $J'(u;v)$ to obtain
+Here, the first variation $J'(u;v)$ should be interpreted as the first variation of $J$ at $u$ in the direction $v$.  We integrate by parts $J'(u;v)$ to obtain
 \begin{align*}
   J'(u;v) &= \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx
   =
@@ -57,14 +60,15 @@ Here, the first variation $J'(u;v)$ should be interpreted as the first variation
 \end{align*}
 in other words, if $u$ is the solution to the strong form~\eqref{eq:intro_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It thus follows
 \begin{align*}
-  J(u + v) = J(u) + \frac{1}{2} \left( \dd{v}{x} \right)^2 dx
-  > J(u)  \quad \text{for all $v \neq 0$}.
+  J(u + v) = J(u) + \frac{1}{2} \int_\Omega \left( \dd{v}{x} \right)^2 dx
+  > J(u)  \quad \forall v \neq 0.
 \end{align*}
 It follows that the solution $u$ to the strong form~\eqref{eq:intro_strong} is also the solution to the minimization form~\eqref{eq:intro_min}.
 
+While the solution to the strong form~\eqref{eq:intro_strong} is also the solution to the minimization form~\eqref{eq:intro_min}, the converse is not true in general.  In fact, the minimization form admits a larger classes of loads $f$ and hence solutions.
+
 \section{Variational form}
-We now consider a \emph{variational form} of the model problem~\eqref{eq:intro_strong}. As in the minimization form, we work with the function space~$\calV$ defined in~\eqref{eq:intro_V}. Our \emph{variational problem} is as follows: find $u \in \calV$ such that
-We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
+We now consider a \emph{variational form} of the model problem~\eqref{eq:intro_strong}. As in the minimization form, we work with the function space~$\calV$ defined in~\eqref{eq:intro_V}. We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
 \begin{equation}
   a(w,v) \equiv \int_{\Omega} \dd{v}{x} \dd{w}{x} dx \quad \forall w, v \in \calV,
   \label{eq:intro_a}
@@ -139,6 +143,7 @@ where $J: \calV \to \RR$ is the energy functional~\eqref{eq:intro_J}. (Note that
 \end{equation}
 where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are biilnear form~\eqref{eq:intro_a} and linear form~\eqref{eq:intro_ell}, respectively.  As before, $u_h \in \calV_h$ is the solution to the FE minimization problem~\eqref{eq:intro_min_fe} if and only if it is the solution to the FE variational problem~\eqref{eq:intro_var_fe}. We will henceforth refer to $u_h$ as the \emph{finite element solution}.
 
+
 \section{Finite element approximation: implementation}
 We now wish to implement~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}).  To this end, we introduce a \emph{basis} for $\calV_h$ defined in~\eqref{eq:intro_Vh}.  A convenient basis for $\calV_h$ is a \emph{Lagrange basis} $\{\phi_i\}_{i=1}^N$ such that 
 \begin{equation*}
@@ -188,6 +193,50 @@ or, more concisely,
   A_h \hat u_h = f_h.
 \end{equation*}
 The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.
+
+\section{Solution of $A_h \hat u_h = f_h$}
+
+We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We decompose the matrix into four parts: main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
+\begin{equation*}
+  a(\phi_i,\phi_i) = \int_{x_{i-1}}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_i}{x} dx
+  = \int_{x_{i-1}}^{x_{i}} \left( \frac{1}{h_i} \right)^2 dx +
+  \int_{x_{i}}^{x_{i+1}} \left( - \frac{1}{h_{i+1}} \right)^2 dx
+  = \frac{1}{h_i} + \frac{1}{h_{i+1}}, \quad i = 1,\dots,N.
+\end{equation*}
+The superdiagonal entries are given by
+\begin{equation*}
+  a(\phi_i,\phi_{i+1}) =
+  \int_{x_i}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_{i+1}}{x} dx
+  = \int_{x_i}^{x_{i+1}} \left( - \frac{1}{h_i} \right) \left( \frac{1}{h_i} \right) dx
+  = - \frac{1}{h_i}, \quad i = 1,\dots,N-1.
+\end{equation*}
+The subdiagonal entries are given by
+\begin{equation*}
+  a(\phi_{i+1},\phi_i) =
+  \int_{x_i}^{x_{i+1}} \dd{\phi_{i+1}}{x} \dd{\phi_i}{x} dx
+  = \int_{x_i}^{x_{i+1}}  \left( \frac{1}{h_i} \right) \left( - \frac{1}{h_i} \right) dx
+  = - \frac{1}{h_i}, \quad i = 1,\dots,N-1.
+\end{equation*}
+All other entries are zero because $\phi_i$ and $\phi_j$ do not overlap for $|i -j| > 1$.
+
+We now note the simple case of equispaced nodes so that $h_i = h$, $\forall i = 1,\dots,N$.  The associated stiffness matrix is
+\begin{equation*}
+  A_h = \frac{1}{h} \bmat{ccccc} 2 & -1 \\ -1 & 2 & -1 \\ & \ddots & \ddots & \ddots \\ & &-1 & 2 & -1 \\ &&& -1 & 2 \emat.
+\end{equation*}
+We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}.  Moreover, this matrix is symmetric positive definite:
+\begin{align*}
+  v^T A_h v
+  &=
+  \frac{1}{h} \left(
+  2\sum_{i=1}^N v_i^2 - 2\sum_{i=1}^{N-1} v_iv_{i+1} 
+  \right)
+  =
+  \frac{1}{h} \left(
+  v_1^2 + v_{N}^2 + \sum_{i=1}^{N-1} (v_i - v_{i+1})^2 
+  \right)
+  > 0 \quad \forall v \neq 0.
+\end{align*}
+Hence the solution exists and is unique.  The solution of the tridiagonal system $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm in $\calO(N)$ floating point operations.
 
 \section{An error estimate: optimality and polynomial approximation}
 We now assess how well our FE solution $u_h \in \calV_h$ to~\eqref{eq:intro_var_fe} (or equivalently~\eqref{eq:intro_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:intro_var} (or equivalently~\eqref{eq:intro_min} or \eqref{eq:intro_strong}).  To this end, we need to first define a norm with which we measure the ``closeness'' of the approximation. We in particular introduce the \emph{energy norm} associated with the model problem,

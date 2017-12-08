@@ -27,8 +27,13 @@
 %            {\disclaimer} % after code
   
 \theoremstyle{definition}
-\newtheorem{example}{Example}[chapter]
 \newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
 
 \begin{document}
 \include{cover}
@@ -36,6 +41,12 @@
 %\include{acknowledgment}
 \tableofcontents
 
-\include{intro}
+\include{poisson1d}
+\include{poisson2d}
+\include{fe}
+\include{assembly}
+\include{abstract}
+\include{dg_ode}
+\include{dg}
 \end{document}
 

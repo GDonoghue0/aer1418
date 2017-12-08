@@ -1,0 +1,194 @@
+\chapter{Abstract formulation and analysis}
+
+\disclaimer
+
+\section{Motivation}
+In the previous lecture, we introduced a variational formulation and the associated finite element method (FEM) for a concrete one-dimensional model equation.  However, the true strength of the variational formulation and FEM lies in the abstraction, both in the context of formulation and analysis.  In this lecture we introduce an abstract framework to the FEM.
+
+
+
+\section{Well-posedness of the weak form}
+
+\begin{definition}[dual norm and continuity]
+  The dual norm of a linear functional $\ell \in \calV'$ is defined as
+  \begin{equation*}
+    \| \ell \|_{\calV'} \equiv \sup_{v \in \calV} \frac{|\ell(v)|}{\| v \|_\calV}.
+  \end{equation*}
+  A linear function is said to be \emph{continuous} if $\| \ell \|_{\calV'} \leq \infty$.
+\end{definition}
+
+\begin{definition}[continuity]
+  \label{def:th_continuity}
+  A bilinear form $a: \calV \times \calV \to \RR$ is said to be continuous on $\calV$ (or $\calV$-continuous) if $\exists \gamma < \infty$ such that 
+  \begin{equation*}
+    a(w,v) \leq \gamma \| w \|_\calV \| v \|_\calV \quad \forall w,v \in \calV,
+  \end{equation*}
+\end{definition}
+
+\begin{definition}[coercivity]
+  \label{def:th_coercivity}
+  A biilnear form $a: \calV \times \calV \to \RR$ is said to be coercive on $\calV$ (or $\calV$-coercive) if $\exists \alpha > 0$ such that 
+  \begin{equation*}
+    a(v,v) \geq \alpha \| v \|_\calV^2 \quad \forall v \in \calV.
+  \end{equation*}
+\end{definition}
+
+\begin{theorem}[Lax-Milgram]
+  Given a Hilbert space $\calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV$, there exists a unique $u \in \calV$ such that
+  \begin{equation*}
+    a(u,v) = \ell(v) \quad \forall v \in \calV.
+  \end{equation*}
+  \begin{proof}
+    The proof is beyond the scope of this course.  We refer to Brenner and Scott.
+  \end{proof}
+\end{theorem}
+
+\section{Coercivity of variational problems}
+
+\begin{proposition}
+  \label{prop:th_poincare_gen}
+  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball, and suppose $\Gamma_D \subset \partial \Omega$ is closed and $\Gamma_D \neq \empty$.  Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C$ that depends only on $\Omega$ and $\Gamma_D$ such that
+  \begin{equation*}
+    \| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+  \end{equation*}
+\end{proposition}
+The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
+\begin{proposition}[Poincar\'e's inequality]
+  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball. Let $\calV \equiv H^1_0(\Omega)$. Then, there exists a constant $C$ that depends on only $\Omega$ such that
+  \begin{equation*}
+    \| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+  \end{equation*}
+\end{proposition}
+
+
+\section{Finite element error: energy norm}
+In this section and the following sections, we analyze the error in the finite element solution in various norms. By way of preliminaries, we define conditions that are referenced throughout our analysis:
+\begin{assumption}[Assumptions on forms]
+  We make the following assumptions:
+\begin{enumerate}
+  \item $\calV \subset H^1(\Omega)$
+  \item $a(\cdot,\cdot)$ is a bilinear form on $\calV$ (but not necessarily symmetric)
+  \item $a(\cdot,\cdot)$ is $\calV$-continuous with the continuity constant $\gamma$
+  \item $a(\cdot,\cdot)$ is $\calV$-coercive with the coercivity constant $\alpha$
+  \item $\ell(\cdot)$ is a linear form on $\calV$
+  \item $\ell(\cdot)$ is continuous on $\calV$
+\end{enumerate}
+\end{assumption}
+
+
+we define the exact variational problem: find $u \in \calV$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:th_pde}
+\end{equation}
+We also define the finite element approximation problem: find $u_h \in \calV_h$ such that
+\begin{equation}
+  a(u_h,v) = \ell(v) \quad \forall v \in \calV_h. \label{eq:th_fe}
+\end{equation}
+We first analyze the error $e \equiv u - u_h$ in the \emph{energy norm}. 
+\begin{definition}[energy norm]
+  Given a symmetric, coercive, and continuous bilinear form $a: \calV \times \calV \to \RR$, the energy norm $\enorm{\cdot} : \calV \to \RR_{\geq 0}$ is defined by
+  \begin{equation*}
+    \enorm{v} \equiv \sqrt{a(v,v)} \quad \forall v \in \calV.
+  \end{equation*}
+\end{definition}
+The energy norm is equivalent to $\| \cdot \|_{H^1(\Omega)}$ in the sense there exists $c > 0$ and $C < \infty$ such that
+\begin{equation*}
+  c \| v \|_{H^1(\Omega)} \leq \enorm{v} \leq C \| v \|_{H^1(\Omega)} \quad \forall v \in \calV;
+\end{equation*}
+we in fact recognize that we may set $c$ and $C$ equal to the coercivity constant $\alpha$ and the continuity constant $\gamma$, respectively.
+
+\begin{lemma}[Galerkin orthogonality]
+  Let $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively.  Then, the error $u - u_h \in \calV$ satisfies 
+  \begin{equation*}
+    a(u - u_h, v) = 0 \quad \forall v \in \calV_h.
+  \end{equation*}
+  \begin{proof}
+    Condition~\eqref{eq:th_pde} implies $a(u,v) = \ell(v)$, $\forall v \in \calV_h \subset \calV$.  The subtraction of \eqref{eq:th_fe} from the relationship yields
+    \begin{equation*}
+      a(u - u_h, v) = a(u,v) - a(u_h,v) = \ell(v) - \ell(v) = 0 \quad \forall v \in \calV_h,
+    \end{equation*}
+    which is the desired relationship.
+  \end{proof}
+\end{lemma}
+
+The following theorem states that the finite element solution is optimal in the energy norm.
+\begin{theorem}[energy-norm error optimality]
+  Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, and continuous bilinear form, $\enorm{\cdot}$ be the associated energy norm, and $u \in \calV$ be $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, the finite element solution is optimal in the energy norm in the sense that
+  \begin{equation*}
+   \enorm{ u - u_h } = \inf_{w_h \in \calV_h} \enorm{ u - w_h }.
+  \end{equation*}
+  \begin{proof}
+    Let $w_h$ be an arbitrary element in $\calV_h$ and express it as $w_h = u_h + v_h$ for $v_h \in \calV_h$.  Then,
+\begin{align*}
+  \enorm{u - w_h}^2 &= \enorm{u - u_h - v_h}^2
+  = a(u - u_h - v_h, u - u_h - v_h) \\
+  &= a(u - u_h, u - u_h) - 2 \underbrace{ a(u - u_h, v_h) }_{= 0 \text{ by Galerkin orthogonality}} + \underbrace{ a(v_h,v_h) }_{> 0 \text{ for $v_h \neq 0$ by coercivity}}
+  \\
+  &> \enorm{u - u_h}^2 \quad \forall v_h \neq 0 \quad \text{ or, equivalently, $\forall w_h \neq u_h$}.
+\end{align*}
+  \end{proof}
+\end{theorem}
+In words, the optimality of the finite element error in the energy norm implies the following: even \emph{if} we knew the exact solution $u \in \calV$ to~\eqref{eq:th_pde}, we could not find a $w_h \in \calV_h$ that is more accurate than $u_h \in \calV_h$. This optimality result is a direct consequence of Galerkin orthogonality, which states that the error $u - u_h \in \calV$ is orthogonal to the space $\calV_h$ in the inner product associated with the bilinear form $a$.
+
+\section{Finite element error: $H^1$ norm}
+
+\begin{lemma}[Cea's]
+  Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, and continuous bilinear form, and $u \in \calV$ be $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, the error $u - u_h$ satisfies
+  \begin{equation*}
+    \| u - u_h \|_\calV \leq \frac{\gamma}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV,
+  \end{equation*}
+  for the coercivity constant $\alpha$ and continuity constant $\gamma$ defined in Definitions~\ref{def:th_coercivity} and \ref{def:th_continuity}, respectively.
+  \begin{proof}
+    We first observe
+    \begin{align*}
+      \alpha \| u - u_h \|^2_\calV
+      &\leq a(u - u_h, u - u_h) & \text{(coercivity)} \\
+      &= a(u - u_h, u - w_h) + a(u - u_h, w_h - u_h) &\text{(bilinearity)} \\
+      &= a(u - u_h, u - w_h) &\text{(Galerkin orthogonality)} \\
+      &\leq \gamma \| u - u_h \|_\calV \| u - w_h \|_\calV &\text{(continuity)}.
+    \end{align*}
+    The division by $\| u - u_h \|_\calV$ yields the desired result.
+  \end{proof}
+\end{lemma}
+
+
+\section{Finite element error: $L^2$ norm}
+
+\begin{lemma}[elliptic regularity estimate]
+  Let $a: \calV \times \calV \to \RR$ be a continuous, coercive bilinear form and $u$ be the solution to 
+\end{lemma}
+
+\begin{theorem}[$L^2$ error bound]
+  
+\begin{align*}
+  \| u - u_h \|_{L^2(\Omega)} \leq C h \| u-u_h \|_\calV
+\end{align*}
+
+\begin{proof}
+  The proof by so-called \emph{Aubin-Nitsche trick}. we first pose a dual problem: find $\psi \in \calV$ such that
+\begin{equation*}
+  a(w,\psi) = (w,e)_{L^2(\Omega)} \quad \forall w \in \calV
+\end{equation*}
+for $e \equiv u - u_h$. We then observe that
+\begin{equation*}
+  \| e \|_{L^2(\Omega)}^2 = a(e, \psi)
+  = a(e, \psi - \Pi_{H^1(\Omega)} \psi)
+  \leq C \| e \|_\calV \| \psi - \calI_h \psi \|_\calV
+\end{equation*}
+We note that, since $u \in H^1(\Omega)$ and $u_h \in H^1(\Omega)$,  $e \equiv u - u_h \in \calV \subset H^1(\Omega) \subset L^2(\Omega)$; by the elliptic regularity estimate, $\| \psi \|_{H^2(\Omega)} \leq C \| e \|_{L^2(\Omega)}$. It hence follows that
+\begin{align*}
+  \| \psi - \calI_h \psi \|_\calV
+  &=\| \psi - \calI_h \psi \|_{H^1(\Omega)} & \text{(definition of $\calV$ norm)} \\
+  &\leq C h \| \psi \|_{H^2(\Omega)} & \text{(interpolation error bound)}\\
+  &\leq C' h  \| e \|_{L^2(\Omega)} & \text{(elliptic regularity estimate)}
+\end{align*}
+\end{proof}
+\end{theorem}
+
+\begin{corollary}
+  \begin{equation*}
+    \| u - u_h \|_{L^2(\Omega)} \leq C h^{s+1} \| u \|_{H^{s+1}(\Omega)}
+  \end{equation*}
+\end{corollary}
+
+\section{Finite element error: functional output}

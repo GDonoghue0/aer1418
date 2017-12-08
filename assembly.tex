@@ -1,0 +1,103 @@
+\chapter{Finite element assembly}
+
+\disclaimer
+
+\section{Quadrature: one dimension}
+The evaluation of the element stiffness matrix and load vector requires the evaluation of integrals on the reference element.  For instance, the evaluation of the load vector requires the evaluation of
+\begin{align*}
+  f_i = \int_\kappa f(\xi) \phi_i(\xi) |J(\xi)| d\xi
+\end{align*}
+In practice, these integrals are approximated using \emph{numerical quadrature}.
+
+The standard form of the one-dimensional integration problem is given as follows: given an integrand $f:[-1,1] \to \RR$, find the integral
+\begin{equation*}
+  I = \int_{-1}^1 f(\xi) d\xi.
+\end{equation*}
+Our \emph{quadrature rule} approximates the integral using a function evaluated at a finite set of points:
+\begin{equation*}
+  I \approx Q \equiv \sum_{i=1}^{n} w_i f(\xi^i).
+\end{equation*}
+Here, $\xi_1, \dots, \xi_n$ are the quadrature points and $w_1, \dots, w_n$ are the quadrature weights.  The cost and accuracy of a given quadrature rule is determined by the choice of the quadrature points and weights.
+
+Arguably the most popular and most efficient family of one-dimensional quadrature rules is the \emph{Gauss quadrature}.  (Gauss quadrature is sometimes also called \emph{Legendre-Gauss quadrature}.)  The points and weights for the $n$-point Gauss quadrature rule are selected such that the quadrature is yields the exact result for any polynomials of degree up to and including $2n-1$.  For instance, the 2-point Gauss quadrature rule is
+\begin{equation*}
+  Q_{\rm Gauss(2)} = w_1 f(\xi^1) + w_2 f(\xi^2) = 1 \cdot f(-1/\sqrt{3})  + 1 \cdot f(1 / \sqrt{3})
+\end{equation*}
+and the quadrature rule yields the exact result for any integrands of the form $f(x) = a_0 + a_1 x + a_2 x^2 + a_3 x^3$.
+
+Note that the number of points in a Gauss quadrature rule and the degree of polynomial it integrates exactly are closely related: a cubic polynomial has four degrees of freedom (or coefficients) and hence we need the two-point Gauss quadrature rule which has four parameters $\xi^1$, $\xi^2$, $w_1$, and $w_2$ for exact integration. To integrate a polynomial of degree $2n-1$, which has $2n$ degrees of freedom, we need the $n$-point Gauss quadrature rule.  In fact, we can generate Gauss quadrature rules in a systematic manner; however, we skip the procedure for brevity.  We instead provide the first six Gauss quadrature rules in Table~\ref{tb:imp_gauss}.
+\begin{table}
+  \centering
+  \begin{tabular}{ccc}
+    $m$ & $x_i$ & $w_i$ \\
+    \hline
+    1 & $\phantom{\pm}0.0000000000000000$ & 2.0000000000000000 \\
+    \hline
+    2 &  $\pm 0.5773502691896257$ & 1.0000000000000000 \\
+    \hline
+    3 & $\phantom{\pm}0.0000000000000000$ & 0.8888888888888888 \\
+    & $\pm0.7745966692414834$ & 0.5555555555555556 \\
+    \hline
+    4 & $\pm 0.3399810435848563$ & 0.6521451548625461 \\
+    & $\pm 0.8611363115940526$ & 0.3478548451374538 \\
+    \hline
+    5 & $\phantom{\pm}0.0000000000000000$ & 0.5688888888888889 \\
+    & $\pm 0.5384693101056831$ & 0.4786286704993665 \\
+    & $\pm 0.9061798459386640$ & 0.2369268850561891 \\
+    \hline
+    6 & $\pm 0.6612093864662645$ & 0.3607615730481386 \\
+      & $\pm 0.2386191860831969$ & 0.4679139345726910 \\
+      & $\pm 0.9324695142031521$ & 0.1713244923791704 
+  \end{tabular}
+  \caption{Gauss quadrature rules for $m = 1$ to $6$ points.}
+  \label{tb:imp_gauss}
+\end{table}
+
+The error in the $n$-point Gauss quadrature is bounded from above by
+\begin{equation*}
+  | \int_{-1}^{1} f(x) dx - Q_{\text{Gauss}(m)} |
+  \leq
+  \frac{(m!)^4}{(2m+1)((2m)!)^3} \max_{x \in [-1,1]} |f^{(2m)}(x)|.
+\end{equation*}
+We make a few key observations:
+\begin{enumerate}
+\item The quadrature error depends on the $2n$-th derivative of the underlying function. In particular, the integration is exact for polynomials of degree up to and including $2n-1$.
+\item The error decreases exponentially with $n$. 
+\end{enumerate}
+
+\section{Quadrature: higher dimensions}
+In abstraction, quadrature rules in higher dimensions work exactly as the one-dimensional quadrature. Namely, given a set of quadrature points $\{\xi^i\}_{i=1}^{n_q}$ and weights $\{w_i\}_{i=1}^{n_q}$, we approximate the integral over a reference element $\kappa \in \RR^d$ as
+\begin{equation*}
+  I \equiv \int_{\kappa} f(\xi) d\xi \approx Q \equiv \sum_{i=1}^{n_q} w_i f(\xi^i).
+\end{equation*}
+
+For the reference triangle and tetrahedron, efficient quadrature rule can be found in handbook on quadrature.  (In fact, the identification of the ``optimal'' quadrature rule for triangles and tetrahedrons is an area of active research.)
+
+For the reference quadrilateral and hexahedron, efficient (and in some sense optimal) quadrature rules can be found by taking a tensor product of the one-dimensional Gauss quadrature.  For instance, given a $n^{1d}_{q}$-point one-dimensional Gauss quadrature rule $(\xi_{1d,i},w^{1d}_i)_{i=1}^{n^{1d}_q}$, we can approximate the integral over the reference quadrilateral $\kappa \equiv [-1,1] \times [-1,1]$ according to
+\begin{equation*}
+  I
+  = \equiv \int_{\xi_2 = -1}^1 \int_{\xi_1 = -1}^1 f(\xi_1,\xi_2) d\xi_1 d\xi_2
+  \approx Q \equiv \sum_{i = 1}^{n^{1d}_q}  \sum_{j=1}^{n^{1d}_q} w^{1d}_i w^{1d}_j f(\xi^{1d,j},\xi^{1d,i});
+\end{equation*}
+we recognize that our two-dimensional quadrature rule that comprises $(n^{1d}_q)^2$ points 
+\begin{equation*}
+  \{(\xi^{1d,1},\xi^{1d,1}), (\xi^{1d,2},\xi^{1d,1}), \dots, (\xi^{1d,n^{1d}_q},\xi^{1d,1}), (\xi^{1d,1},\xi^{1d,n^{1d}_q}), \dots, (\xi^{1d,n^{1d}_q}, \xi^{1d,n^{1d}_q}) \}
+\end{equation*}
+and the associated quadrature weights
+\begin{equation*}
+  \{ w^{1d,1}w^{1d,1}, w^{1d,2}w^{1d,1}, \dots, w^{1d,n^{1d}_q}w^{1d,1}, w^{1d,1}w^{1d,2}, \dots, w^{1d,n^{1d}_q}w^{1d,n^{1d}_q} \}.
+\end{equation*}
+
+\section{Evaluation of elemental stiffness matrices and load vectors}
+We now consider a computationally efficient approach to construct elemental stiffness matrices and load vectors.  The focus here is to rely on matrix and vector operations, which are suitable for matrix-based programming language (e.g. Matlab) but also required to achieve high computational performance on modern computers using a system-specific linear algebra library (e.g. BLAS).
+
+
+
+$\Phi^i \in n_q \times n_s$
+
+\begin{equation*}
+  W \equiv \text{diag}(w_1 |J(x_1)|, \dots, w_{n_q} |J(x_q)|)
+\end{equation*}
+\begin{align*}
+  K_\kappa = \sum_{i=1}^d (\Phi^i)^T W \Phi^i 
+\end{align*}

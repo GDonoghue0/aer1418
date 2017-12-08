@@ -1,0 +1,326 @@
+\chapter{Finite elements and polynomial approximation}
+
+\disclaimer
+
+\section{Linear Lagrange finite element on lines}
+\label{sec:fe_lin_line}
+We first introduce arguably the simplest form of finite element: linear Lagrange elements on (one-dimensional) line. In one dimension, any linear function can be expressed as a linear combination of a monomial basis
+\begin{equation*}
+  \{ 1, x \};
+\end{equation*}
+by construction, $\text{span}\{1,x\} = \PP^1(\kappa)$. Our goal is to find the \emph{Lagrange shape functions}
+\begin{equation*}
+  \{ \phi_1, \phi_2 \}
+\end{equation*}
+that forms a basis (i.e., $\text{span}\{ \phi_1, \phi_2 \} = \PP^1(\kappa)$) and satisfies the interpolation condition
+\begin{equation}
+  \phi_i(x^j) = \delta_{ij};  \label{eq:fe_interp}
+ % \equiv
+ % \begin{cases}
+ %   1, \quad i = j \\
+ %   0, \quad i \neq j
+ % \end{cases} 
+\end{equation}
+here $\delta_{ij}$ is the \emph{Kronecker delta} such that $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.  To find the basis, we first express the shape functions in terms of the monomial basis:
+\begin{equation}
+  \phi_i(x) = a^i_1 + a^i_2 x \quad i = 1, 2.
+  \label{eq:fe_lin_line_rep}
+\end{equation}
+We now apply the interpolation condition~\eqref{eq:fe_interp} to find the coefficients.  For instance, $\phi_1$ must satisfy
+\begin{equation*}
+  \bmat{cc}
+  1 & x^1 \\
+  1 & x^2 \\
+  \emat
+  \bmat{c}
+  a_1^1 \\ a_2^1 
+  \emat
+  =
+  \bmat{c}
+  1 \\ 0 
+  \emat
+\end{equation*}
+We can also pose a single matrix equation for the monomial coefficients of all three shape functions: 
+\begin{equation*}
+  \bmat{cc}
+  1 & x^1 \\
+  1 & x^2 \\
+  \emat
+  \bmat{cc}
+  a_1^1 & a_1^2 \\
+  a_2^1 & a_2^2 \\
+  \emat
+  =
+  \bmat{cc}
+  1 & 0 \\
+  0 & 1 \\
+  \emat.
+\end{equation*}
+We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not colinear, which is equivalent to the condition that the triangle have a finite area.
+
+Once we find the coefficients of the shape functions, we can evaluate the value of the functions at any point in the triangle by evaluating~\eqref{eq:fe_lin_line_rep}. We can also differentiate~\eqref{eq:fe_lin_line_rep} to obtain the gradient of the shape functions:
+\begin{align*}
+  \pp{\phi_i}{x}(x) = a_2^i
+\end{align*}
+The derivatives are constant over the element because the shape functions are linear.
+
+\section{Linear Lagrange finite element on triangles}
+\label{sec:fe_lin_tri}
+We introduce arguably the simplest form of finite element in two dimensions: linear Lagrange basis on traingles.  In two dimensions, any linear function can be expressed as a linear combination of a monomial basis
+\begin{equation*}
+  \{ 1, x_1, x_2\};
+\end{equation*}
+by construction, $\text{span}\{1,x_1,x_2\} = \PP^1(\kappa)$. Our goal is to find the \emph{Lagrange shape functions}
+\begin{equation*}
+  \{ \phi_1, \phi_2, \phi_3 \}
+\end{equation*}
+that forms a basis (i.e., $\text{span}\{ \phi_1, \phi_2, \phi_3 \} = \PP^1(\kappa)$) and satisfies the interpolation condition
+\begin{equation}
+  \phi_i(x^j) = \delta_{ij};  \label{eq:fe_interp_tri}
+ % \equiv
+ % \begin{cases}
+ %   1, \quad i = j \\
+ %   0, \quad i \neq j
+ % \end{cases} 
+\end{equation}
+here $\delta_{ij}$ is the \emph{Kronecker delta} such that $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.  To find the basis, we first express the shape functions in terms of the monomial basis:
+\begin{equation}
+  \phi_i(x) = a^i_1 + a^i_2 x_1 + a_3^i x_2 \quad i = 1, 2, 3.
+  \label{eq:fe_lin_tri_rep}
+\end{equation}
+We now apply the interpolation condition~\eqref{eq:fe_interp_tri} to find the coefficients.  For instance, $\phi_1$ must satisfy
+\begin{equation*}
+  \bmat{ccc}
+  1 & x_1^1 & x_2^1 \\
+  1 & x_1^2 & x_2^2 \\
+  1 & x_1^3 & x_2^3 \\
+  \emat
+  \bmat{ccc}
+  a_1^1 \\ a_2^1 \\ a_3^1
+  \emat
+  =
+  \bmat{ccc}
+  1 \\ 0 \\ 0.
+  \emat
+\end{equation*}
+We can also pose a single matrix equation for the monomial coefficients of all three shape functions: 
+\begin{equation*}
+  \bmat{ccc}
+  1 & x_1^1 & x_2^1 \\
+  1 & x_1^2 & x_2^2 \\
+  1 & x_1^3 & x_2^3 \\
+  \emat
+  \bmat{ccc}
+  a_1^1 & a_1^2 & a_1^3 \\
+  a_2^1 & a_2^2 & a_2^3 \\
+  a_3^1 & a_3^2 & a_3^3 \\
+  \emat
+  =
+  \bmat{ccc}
+  1 & 0 & 0 \\
+  0 & 1 & 0 \\
+  0 & 0 & 1
+  \emat.
+\end{equation*}
+We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not colinear, which is equivalent to the condition that the triangle have a finite area.
+
+Once we find the coefficients of the shape functions, we can evaluate the value of the functions at any point in the triangle by evaluating~\eqref{eq:fe_lin_tri_rep}. We can also differentiate~\eqref{eq:fe_lin_tri_rep} to obtain the gradient of the shape functions:
+\begin{align*}
+  \pp{\phi_i}{x_1}(x) = a_2^i
+  \quad \text{and} \quad
+  \pp{\phi_i}{x_2}(x) = a_3^i, \quad i = 1,2,3.
+\end{align*}
+The derivatives are constant over the element because the shape functions are linear.
+
+\section{Bilinear Lagrange basis on quadrilaterals}
+We now consider arguably the simplest basis function on a quadrilaterial: bilinear Lagrange basis.  In two dimensions, any bilinear function can be expressed as a linear combination of monomial basis $\{ 1, x_1, x_2, x_1 x_2 \}$, which, unlike the triangular case, includes the cross term. Our interpolation points are the four vertices of the quadrilateral $\{ x^1, x^2, x^3, x^4 \}$.  Our shape functions are given by 
+\begin{equation}
+  \phi_i(x) = a_1^i + a_2^i x_1 + a_3^i x_2 + a_4^i x_1 x_2, \quad i = 1,\dots,4,
+  \label{eq:fe_lin_quad_rep}
+\end{equation}
+where the coefficients satisfy
+\begin{equation*}
+  \bmat{cccc}
+  1 & x_1^1 & x_2^1 & x_1^1 x_2^1 \\
+  1 & x_1^2 & x_2^2 & x_1^2 x_2^2 \\
+  1 & x_1^3 & x_2^3 & x_1^3 x_2^3 \\
+  1 & x_1^4 & x_2^4 & x_1^4 x_2^4 \\
+  \emat
+  \bmat{cccc}
+  a_1^1 & a_1^2 & a_1^3 & a_1^4 \\
+  a_2^1 & a_2^2 & a_2^3 & a_2^4 \\
+  a_3^1 & a_3^2 & a_3^3 & a_3^4 \\
+  a_4^1 & a_4^2 & a_4^3 & a_4^4 \\
+  \emat
+  =
+  \bmat{cccc}
+  1 & 0 & 0 & 0 \\
+  0 & 1 & 0 & 0 \\
+  0 & 0 & 1 & 0 \\
+  0 & 0 & 0 & 1
+  \emat.
+\end{equation*}
+Once we find the coefficients, we can evaluate the value of the shape function at any point in the quadrilateral by evaluating~\eqref{eq:fe_lin_quad_rep}. We can also differentiate~\eqref{eq:fe_lin_quad_rep} to obtain gradient of the shape functions:
+\begin{equation*}
+  \pp{\phi_i}{x_1}(x) = a_2^i + a_4^ix_2
+  \quad \text{and} \quad
+  \pp{\phi_i}{x_2}(x) = a_3^i + a_4^ix_1, \quad i = 1,\dots,4.
+\end{equation*}
+Unlike the linear shape functions for triangles, the gradient of the \emph{bi}linear shape functions for quadrilateral depends on the evaluation point.
+
+\section{A general procedure to generate Lagrange basis}
+Formally, a finite element is defined by a triplet $(K,\calP,\Sigma)$ where
+\begin{itemize}
+\item[(i)] $K$ defines the domain
+\item[(ii)] $\calP$ defines the (finite-dimensional) linear space of functions over $K$
+\item[(iii)] $\Sigma$ defines the degrees of freedom such that a function $v \in \calP$ is uniquely determined.
+\end{itemize}
+For instance, for the linear Lagrange element in Section~\ref{sec:fe_lin_tri} chooses (i) the triangle as the domain $K$, (ii) space of linear functions $\PP^1(K)$ as the function space $\calP$, and (iii) the values of the function at the vertices of the triangle as the degree of freedom $\Sigma$. 
+
+In general, a Lagrange basis is uniquely determined by (i) the degree of polyno
+
+\section{Isoparametric mapping}
+We have so far focused on the generation of shape functions on reference elements.  We now wish to map these shape functions to the physical element that constitutes the mesh.  To this end, we introduce the procedure based on \emph{isoparametric mapping}.
+
+The isoparametric mapping is a mapping from the reference element to the physical element such that (i) the mapping is polynomial and (ii) the Lagrange interpolation points of the reference element are mapped to the respective Lagrange interpolation points of the physical element. For instance, for a linear triangle, the mapping is linear and vertices of the reference triangle are mapped to the respective vertices of the physical triangle.  For a quadratic triangle, the mapping is quadratic and vertices and mid-edge nodes of the reference triangle are mapped to the respective vertices and mid-edge nodes. Algebraically, the isoparametric mapping that maps $\xi \in \hat \kappa$ to $x \in \kappa$ can be written as
+\begin{equation}
+  x_i(\xi) = \sum_{j=1}^{n_s} x^j_i \hat \phi_i(\xi), \quad i = 1,\dots,d,
+  \label{eq:fe_iso_map}
+\end{equation}
+where $x_i^j$ is the $i$-th coordinate of the $j$-th interpolation point, and $\hat \phi_i$ is the Lagrange shape function on the reference element associated with the $i$-th interpolation node.
+
+We can differentiate~\eqref{eq:fe_iso_map} to evaluate the \emph{Jacobian} of the isoparametric mapping; the $(i,j)$ entry of the Jacobian $J \equiv \pp{x}{\xi_j} \in \RR^{d \times d}$, is given by
+\begin{equation*}
+  J_{ij} = \pp{x_i}{\xi_j} = \sum_{j=1}^{n_s} x^j_i \pp{\hat \phi_i}{\xi_j} .
+\end{equation*}
+
+\begin{equation*}
+  dx = \text{det}(J) d\xi
+\end{equation*}
+
+\begin{equation*}
+  \pp{\xi}{x} = \left( \pp{x}{\xi} \right)^{-1}
+\end{equation*}
+
+\begin{equation*}
+  \phi(x) = \hat \phi (\xi)
+\end{equation*}
+
+\begin{equation*}
+  \pp{\phi}{x_i}(x) = \left. \pp{\hat \phi}{\xi_j} \right|_\xi  \left. \pp{\xi_j}{x_i} \right|_\xi
+\end{equation*}
+
+
+\section{Interpolation error: linear element in one dimension}
+\label{sec:fe_interp_1d}
+In this section, we analyze the error associated with the piecewise linear interpolation of functions in one dimension. By way of preliminary, we first provide the definition of \emph{interpolant}.
+\begin{definition}[interpolant]
+Given $w \in \calV$, an interpolant $\calI_h w$ is an element of $\calV_h$ that satisfies the interpolation condition
+\begin{equation*}
+  (\calI_h w)(x_i) = w(x_i) \quad i = 1,\dots, N,
+\end{equation*}
+where $\{x_i \}_{i=1}^N$ is the set of interpolation points.
+\end{definition}
+
+We now focus on the piecewise linear space in one dimension.  To this end, given $\Omega \subset \RR$, we introduce an approximation space
+\begin{equation*}
+  \calV_h = \{ v \in \calV \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \}.
+\end{equation*}
+
+\begin{lemma}[One-dimensional linear interpolation error bound for $K$]
+  Let $K \equiv [a,b]$ be the domain of length $h \equiv b - a$, $w \in C^2(K)$ be a function we wish to interpolate, and $\calI_h w \in \PP^1(K)$ be the linear interpolant based on the interpolation points $\{a,b\}$. Then, the interpolation error satisfies
+  \begin{align}
+    \| w - \calI_h w \|_{L^2(K)} &\leq \frac{1}{2} h^{5/2} \| w'' \|_{L^\infty(K)} \label{eq:fe_interp_lin_l2_elem} \\
+    | w - \calI_h w |_{H^1(K)} &\leq h^{3/2} \| w '' \|_{L^\infty(K)}. \label{eq:fe_interp_lin_h1_elem}
+  \end{align}
+  \begin{proof}
+    We first introduce an auxiliary function
+    \begin{equation*}
+      g(s) \equiv (w - \calI_hw)(s) - \left(
+      \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
+      \right)(s - a)(s-b).
+    \end{equation*}
+  We note that $g(x) = g(a) = g(b) = 0$ by construction. Hence $g$ has at least three roots in $K \equiv[a,b]$.  By Rolle's theorem, $g'$ has at least two roots in $K$.  Invoking Rolle's theorem one more time, we conclude that $g''$ has at least one root in $K$; let $\xi \in K$ be one of the roots of $g''$: i.e., $g''(\xi) = 0$.  We now compute the second derivative of $g$:
+  \begin{equation*}
+    g''(s) = w''(s) - \left(
+      \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
+      \right) \cdot 2;
+  \end{equation*}
+  note that $(\calI_h w)'' = 0$ since $\calI_h w$ is a linear function.  We now evaluate the expression at $\xi$ to obtain
+  \begin{equation*}
+    0 = w''(\xi) - \left(
+      \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
+      \right) \cdot 2, \quad \forall x \in K
+  \end{equation*}
+  or, equivalently,
+  \begin{equation*}
+    (w - \calI_h w)(x) = \frac{1}{2} w''(\xi) (x - a)(x - b).
+  \end{equation*}
+  The $L^2$ error bound follows from
+  \begin{align*}
+    \| w - \calI_h w \|^2_{L^2(K)}
+    &= \int_K (w - \calI_h w)^2 dx
+    = \frac{1}{4} \int_K w''(\xi)^2 (x-a)^2 (x-b)^2 dx
+    \\
+    &\leq\frac{1}{4} \| w'' \|_{L^\infty(K)}^2 \int_K (x-a)^2(x-b)^2 dx
+    \leq \frac{1}{4} h^5 \| w'' \|_{L^\infty(K)}^2,
+  \end{align*}
+  where the inequality follows from $|x-a| < h$ and $|x-b| < h$.  To obtain the $H^1$ error bound, we first note
+  \begin{equation*}
+    (w - \calI_hw)'(x) = \frac{1}{2} w''(\xi) ((x-a) + (x-b));
+  \end{equation*}
+  it thus follows
+  \begin{align*}
+    | w - \calI_h w |^2_{H^1(K)}
+    &= \int_K ((w - \calI_h w)')^2 dx
+    = \int_K w''(\xi)^2 \frac{1}{4} ((x-a) + (x-b))^2 dx
+    \\
+    &\leq \| w'' \|_{L^\infty(K)}^2 \int_K \frac{1}{4} ((x-a) + (x-b))^2 dx
+    \leq h^3\| w'' \|_{L^2(K)}^2,
+  \end{align*}
+  where the inequality again follows from $|x - a| < h$ and $|x - b| < h$.
+    \end{proof}
+\end{lemma}
+
+\begin{proposition}[One-dimensional linear interpolation error bound for $\Omega$]
+  Let $\Omega \subset \RR^1$ be the domain, $\calT_h$ be a uniform triangulation over $\Omega$ of characteristic length $h$, $w \in \oplus_{K \in \calT_h}  C^2(K)$ be a function we wish to interpolate, and $\calI_h w \in \calV_h$ be the linear interpolant associated with $\calV_h \equiv \{ v \in C^0(\Omega) \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \}$. Then, the interpolation error satisfies
+  \begin{align}
+    \| w - \calI_h w \|_{L^2(\Omega)} &\leq \frac{1}{2} h^2 \| w'' \|_{L^\infty(\Omega)} \label{eq:fe_interp_lin_l2} \\
+    | w - \calI_h w |_{H^1(\Omega)} &\leq h \| w'' \|_{L^\infty(\Omega)} \label{eq:fe_interp_lin_h1}
+  \end{align}
+  \begin{proof}
+    The $L^2$ error bound follows from the application of~\eqref{eq:fe_interp_lin_l2_elem} to each element:
+    \begin{equation*}
+      \| w - \calI_h w \|^2_{L^2(\Omega)}
+      =
+      \sum_{K \in \calT_h} \| w - \calI_h w \|^2_{L^2(K)}
+      \leq
+      \frac{1}{h} \frac{1}{4} h^5 \| w'' \|_{L^\infty(\Omega)}^2
+      = \frac{1}{4} h^4 \| w'' \|_{L^\infty(\Omega)}^2.
+    \end{equation*}
+    The $H^1$ error bound similarly follows from the application of~\eqref{eq:fe_interp_lin_h1_elem} to each element:
+        \begin{equation*}
+      \| w - \calI_h w \|^2_{L^2(\Omega)}
+      =
+      \sum_{K \in \calT_h} \| w - \calI_h w \|^2_{L^2(K)}
+      \leq
+      \frac{1}{h} h^3 \| w'' \|_{L^\infty(\Omega)}^2
+      = h^2 \| w'' \|_{L^\infty(\Omega)}^2.
+    \end{equation*}
+  \end{proof}
+\end{proposition}
+The proposition shows that the $L^2$ interpolation error (i) depends on the maximum value of the second derivative $\| w '' \|_{L^\infty(\Omega)}$ and (ii) decreases as $h^2$.  The $H^1$ interpolation error similarly depends on $\| w'' \|_{L^\infty(\Omega)}$ but decreases as $h^1$. 
+
+\section{Interpolation error: general polynomial interpolant}
+The interpolation error bound obtained in Section~\ref{sec:fe_interp_1d} can be generalized to (i) higher dimensions, (ii) higher degree polynomials, and (iii) $H^k(\Omega)$ norm for $k \geq 0$.  However, the associated proof, which builds on the Bramble-Hilbert lemma, is beyond the scope of this lecture.  We here simply state the result.
+\begin{proposition}
+Let $w \in H^s(\Omega)$ be a function we wish to interpolate, $\calT_h$ be a tessellation of a characteristic diameter $h$, $\calI_h w \in \calV_h$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. Then, the $L^2(\Omega)$ interpolation error satisfies
+\begin{align*}
+  \| w - \calI_h w \|_{L^2(\Omega)} \leq C h^{r+1} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C$ independent of $h$. Similarly, for $k \geq 0$, the $H^k(\Omega)$ interpolation error satisfies 
+\begin{align*}
+  \| w - \calI_h w \|_{H^k(\Omega)} \leq C h^{r+1-k} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C$ independent of $h$.
+\end{proposition}
