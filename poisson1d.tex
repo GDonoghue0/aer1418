@@ -7,13 +7,13 @@ In this lecture, we provide a brief overview of a variational formulation and th
 
 \section{Model problem: strong form}
 \label{sec:intro_strong}
-We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:intro_string}.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: find $u \in C^2(\overline \Omega)$ such that
+We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:intro_string}.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: find $u$ such that
 \begin{align}
   - \dd{^2u}{x^2} &= f \quad \text{in } \Omega  \label{eq:intro_strong} \\
   u(x=0) &= 0 \notag , \\
   u(x=1) &= 0 \notag ,
 \end{align}
-where $f \in C^0(\overline \Omega)$ is associated with the transverse load.  We may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
+where $f$ is associated with the transverse load.  We may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
 
 \begin{figure}
   \centering
@@ -51,7 +51,7 @@ Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
 \end{equation}
 For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:intro_strong}, the functional $J$ represents the total energy in the system; $\int_\Omega (\pp{w}{x})^2 dx$ is the internal energy and $\int_\Omega f w dx$ is the external work.  Our minimization statement is hence a statement of energy minimization at the equilibrium. 
 
-We can readily show that the solution to the strong form~\eqref{eq:intro_strong} solves the minimization problem~\eqref{eq:intro_min}.  To see this, we first observe that if $u \in C^2(\overline \Omega)$ then $u \in \calV$.  We then let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:intro_strong} and $v$ is an arbitrary function in $\calV$.  We then note that $J(w) = J(u+v)$ can be decomposed into three terms:
+We can readily show that the solution to the strong form~\eqref{eq:intro_strong} solves the minimization problem~\eqref{eq:intro_min}.  To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:intro_strong} and $v$ is an arbitrary function in $\calV$.  We then note that $J(w) = J(u+v)$ can be decomposed into three terms:
 \begin{align*}
   J(u+v) &= \frac{1}{2} \int_{\Omega} \left( \dd{(u+v)}{x} \right)^2 dx - \int_\Omega f(u+v) dx \\
   &= \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{u}{x} \right)^2 dx - \int_\Omega f u dx }_{J(u)}

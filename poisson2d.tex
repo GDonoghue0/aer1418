@@ -1,0 +1,458 @@
+\chapter{Multi-dimensional Poisson problems}
+
+\disclaimer
+
+\section{Motivation}
+In the previous lecture, we focused on the development of the finite element method for the one-dimensional Poisson equation with homogeneous Dirichlet boundary conditions. In this lecture, we generalize the formulation to (i) problems in $\RR^d$, $d > 1$, and (ii) more general boundary conditions.  
+
+\section{Hilbert and Banach spaces}
+The solution to the PDEs are most naturally sought in a Hilbert space. By way of preliminaries, we recall the definition of a \emph{linear space}, \emph{norm}, and \emph{inner product}.
+\begin{definition}[linear space]
+  $\calV$ is a linear space if the following conditions hold:
+  \begin{enumerate}
+  \item if $w,v \in \calV$, then $w + v \in \calV$
+  \item if $w \in \calV$ and $\alpha \in \RR$, then $\alpha w \in \calV$
+  \end{enumerate}
+\end{definition}
+\begin{corollary}
+  If $\calV$ is a linear space and $v_1,\dots,v_n \in \calV$, then $\sum_{i=1}^n \alpha_i v_i \in \calV$ for any $\alpha_1, \dots, \alpha_n \in \RR$.
+\end{corollary}
+\begin{definition}[norm]
+  Given a linear space $\calV$, a norm is a function $\| \cdot \| : \calV \to \RR$ that satisfies the following three conditions: for all $w,v \in \calV$ and $\alpha \in \RR$, 
+  \begin{enumerate}
+  \item absolute scalability: $\| \alpha v \| = |\alpha| \| v \|$
+  \item positive definiteness: $ \| v \| \geq 0$,  and $\| v \| = 0 \Leftrightarrow v = 0$
+  \item triangle inequality: $  \| w + v \| \leq \| w \| + \| v \| $
+  \end{enumerate}
+\end{definition}
+\begin{definition}[inner product]
+  Given a linear space $\calV$, an inner product is a function $(\cdot,\cdot): \calV \times \calV \to \RR$ that satisfies the following three conditions: for all $w,v,z \in \calV$ and $\alpha,\beta \in \RR$,
+\begin{enumerate}
+\item symmetry: $(w,v) = (v,w)$
+\item linearity in first argument: $ (\alpha w + \beta v, z) = \alpha (w,z) + \beta (v,z)$
+\item positive definiteness: $ (v,v) \geq 0$, and $(v,v) = 0 \Leftrightarrow v = 0 $
+\end{enumerate}
+Note: the combination of the first and second conditions implies that the inner product is also linear in the second argument.
+\end{definition}
+\begin{definition}[induced norm]
+  Given a linear space $\calV$ and an inner product $(\cdot,\cdot): \calV \times \calV \to \RR$, the induced norm $\| \cdot \|$ is given by
+  \begin{equation*}
+    \| v \| \equiv \sqrt{(v,v)} \quad \forall v \in \calV.
+  \end{equation*}
+\end{definition}
+\begin{remark}[induced norm]
+  The induced norm is a norm.
+  \begin{proof}
+     The absolute scalability follows from linearity:
+     \begin{equation*}
+       \| \alpha v \|^2 = (\alpha v, \alpha v) = \alpha^2 (v,v) = |\alpha|^2 \| v \|^2.
+     \end{equation*}
+     The positive definiteness of the induced norm is a direct consequence of the positive definiteness of the inner product.  The triangle inequality is proved using the Cauchy-Schwarz inequality in Proposition~\ref{prop:abs_cauchy_schwarz}:
+     \begin{equation*}
+       \| w + v \|^2
+       = (w + v, w+ v)
+       = \| w \|^2 + 2(w,v) + \| v \|^2
+       \leq \| w \|^2 + 2 \| w \| \| v \| + \| v \|^2
+       =  (\| w \| + \| v \|)^2
+     \end{equation*}
+     and hence $\| w + v \| \leq \| w \| + \| v \|$.
+  \end{proof}
+\end{remark}
+\begin{proposition}[Cauchy-Schwarz inequality]
+  \label{prop:abs_cauchy_schwarz}
+  Given a linear space $\calV$ and an inner product $(\cdot, \cdot): \calV \times \calV \to \RR$, the associated induced norm $\| \cdot \|$ satisfies
+  \begin{equation*}
+    (w,v) \leq \| w \| \| v \| \quad \forall w ,v \in \calV.
+  \end{equation*}
+  \begin{proof}
+    For $\|v\|=0$, the proof is trivial.  For $\| v \| \neq 0$, we observe
+    \begin{equation*}
+      0 \leq \left\| w - \frac{(w,v)}{\| v \|^2} v \right\|^2
+      = \| w \|^2 - 2 \frac{(w,v)^2}{\| v \|^2} + \frac{(w,v)^2}{\| v \|^2}
+      = \| w \|^2 - \frac{(w,v)^2}{\| v \|^2};
+    \end{equation*}
+    the multiplication by $\| v \|^2$ yields $(w,v)^2 \leq \| w \|^2 \| v \|^2$ or, equivalently, $(w,v) \leq \| w \| \| v \|$.
+  \end{proof}
+\end{proposition}
+
+We now define a \emph{Hilbert space} and a \emph{Banach space}.
+\begin{definition}[Hilbert space]
+  A Hilbert space $\calV$ is a complete linear space endowed with an inner product $(\cdot,\cdot): \calV \times \calV \to \RR$ and the associated induced norm $\| \cdot \|: \calV \to \RR$ 
+\end{definition}
+\begin{definition}[Banach space]
+  A Banach space $\calV$ is a complete linear space endowed with a norm $\| \cdot \|: \calV \to \RR$.
+\end{definition}
+We recall that a space $\calV$ is said to be \emph{complete} if any Cauchy sequence with respect to the norm $\| \cdot \|: \calV \to \RR$ converges to an element of $\calV$.  We recall that a sequence $v_1$, $v_2$, $v_3$, $\dots$ is said to be a Cauchy sequence if for any $\delta > 0$ there exists a number $N$ such that $\| v_i - v_j \| \leq \delta$, $\forall i,j  > N$.  Moreover, the sequence $v_i$ is said to converge to $v$ if $\| v - v_i \| \to 0$ as $i \to \infty$. The readers unfamiliar with the concept of completeness may think of a Hilbert space and a Banach space simply as an inner product space and a normed space. However, completeness is an important property of the Hilbert and Banach spaces, which makes the spaces suitable for the weak formulation of PDEs.
+
+\section{Sobolev spaces}
+We now introduce Hilbert spaces that are most commonly used in the weak formulation of PDEs.  The first is the space of square integrable functions on $\Omega$ (in Lebesgue sense).
+\begin{definition}[$L^2(\Omega)$ space]
+  The Lebesgue space $L^2(\Omega)$ is endowed with an inner product
+  \begin{equation*}
+    (w,v)_{L^2(\Omega)} \equiv \int_\Omega w v dx
+  \end{equation*}
+  and the associated induced norm $\| w \|_{L^2(\Omega)} \equiv \sqrt{(w,w)_{L^2(\Omega)}}$; the space consists of functions
+  \begin{equation*}
+    L^2(\Omega) \equiv \{ w \ | \ \| w \|_{L^2(\Omega)} < \infty \}.
+  \end{equation*}
+\end{definition}
+We now recall the multi-index notation for derivatives and define Sobolev spaces of differentiable functions.
+\begin{definition}[multi-dimensional derivative]
+  Let $\alpha \equiv (\alpha_1, \dots, \alpha_d)$ be a $d$-dimensional multi-index of non-negative integers, and define its absolute value by $|\alpha| \equiv \alpha_1 + \cdots + \alpha_d$. The partial derivative operator $D^\alpha$ is given by 
+  \begin{equation*}
+    D^\alpha (\cdot)  \equiv \pp{^k (\cdot)}{x_1^{\alpha_1}  \cdots \partial x_d^{\alpha_d}}.
+  \end{equation*}
+\end{definition}
+\begin{definition}[$H^k(\Omega)$ space]
+  For a non-negative integer $k$, the Sobolev space $H^k(\Omega)$ is endowed with an inner product
+  \begin{equation*}
+    (w,v)_{H^k(\Omega)} \equiv \sum_{|\alpha| \leq k} (D^\alpha w, D^\alpha v)_{L^2(\Omega)}
+  \end{equation*}
+  and the associated induced norm $\| w \|_{H^k(\Omega)} \equiv \sqrt{(w,w)_{H^k(\Omega)}}$; the space consists of functions
+  \begin{equation*}
+    H^k(\Omega) \equiv \{ w \ | \ \| w \|_{H^k(\Omega)} < \infty \}.
+  \end{equation*}
+\end{definition}
+For instance, the Sobolev space $H^1(\Omega)$ is endowed with the inner product
+\begin{equation*}
+  (w,v)_{H^1(\Omega)} \equiv \int_\Omega ( \nabla v \cdot \nabla w + v w ) dx.
+\end{equation*}
+The Lebesgue space $L^2(\Omega)$ is the Sobolev space $H^{k=0}(\Omega)$. Note that $H^1(\Omega) \subset L^2(\Omega)$ by construction; the $H^1(\Omega)$ space only contains functions whose value \emph{and} first-derivative are square integrable, whereas the $L^2(\Omega)$ space contains functions whose first-derivative may not be square integrable.
+
+Another related space that is frequently encountered in the weak formulation of PDEs is the $H^1_0(\Omega)$ space.
+\begin{definition}[$H^1_0(\Omega)$ space] The $H^1_0(\Omega)$ is endowed with the $H^1(\Omega)$ inner product $(w,v)_{H^1(\Omega)} \equiv \int_\Omega (\nabla v \cdot \nabla w + v w) dx$ and consists of functions
+\begin{equation*}
+  H^1_0(\Omega) \equiv \{ w \in H^1(\Omega) \ | \ w|_{\partial \Omega} = 0 \},
+\end{equation*}
+where $\partial \Omega$ denotes the boundary of $\Omega$.
+\end{definition}
+The space consists of a subset of $H^1(\Omega)$ functions that vanish on the boundary.  Note that $H^1_0(\Omega)$ for $\Omega \equiv (0,1) \subset \RR^1$ is precisely the space we used in the previous lecture for the minimization and variational formulation of one-dimensional Poisson equation with the homogeneous Dirichlet boundary condition.  By construction $H^1_0(\Omega) \subset H^1(\Omega)$ since the $H^1(\Omega)$ space contains functions that do not vanish on the boundary.
+
+We also introduce $H^k(\Omega)$ \emph{semi-norm}:
+\begin{definition}[$H^k(\Omega)$ semi-norm]
+  The $H^k(\Omega)$ semi-norm is denoted by $| \cdot |_{H^k(\Omega)}$ and is given by
+  \begin{equation*}
+    | v |_{H^k(\Omega)} \equiv \| D^\alpha v \|_{L^2(\Omega)} \quad \forall v \in H^k(\Omega).
+  \end{equation*}  
+\end{definition}
+\begin{remark}
+  The $H^k(\Omega)$ semi-norm is not a norm on $H^k(\Omega)$.  Specifically, a semi-norm in general does not satisfy the positive definiteness condition.  As an example, take $k = 1$ and observe that $| v |^2_{H^1(\Omega)} \equiv \int_{\Omega} \nabla v \cdot \nabla v dx$ is equal to zero for any constant function $v$ (since $\nabla v = 0$).
+\end{remark}
+
+While we most frequently encounter the Hilbert spaces $L^2(\Omega)$ and $H^k(\Omega)$ in weak formulations of PDEs, we also introduce more general Banach spaces $L^p(\Omega)$ and $W^{k,p}(\Omega)$ for completeness.
+\begin{definition}[$L^p(\Omega)$ space]
+  The Banach space $L^p(\Omega)$ is endowed with a norm
+  \begin{equation*}
+    \| w \|_{L^p(\Omega)} \equiv \left(\int_\Omega |w|^p dx\right)^{1/p}
+  \end{equation*}
+  in the case $1 \geq p < \infty$ and
+  \begin{equation*}
+    \| w \|_{L^\infty(\Omega)} \equiv \esssup_{x \in \Omega} | w(x) | 
+  \end{equation*}
+  in the case $p = \infty$.   In either case, the $L^p(\Omega)$ space consists of functions
+  \begin{equation*}
+    L^p(\Omega) \equiv \{ w \ | \ \| w \|_{L^p(\Omega)} < \infty \}.
+  \end{equation*}
+\end{definition}
+\begin{definition}[$W^k_p$ space]
+  The Sobolev space $W^k_p$ is endowed with a norm
+  \begin{equation*}
+    \| w \|_{W^k_p(\Omega)} \equiv \left( \sum_{|\alpha|\leq k} \| D^\alpha w \|^p_{L^p(\Omega)} \right)^{1/p}
+  \end{equation*}
+  in the case $1 \geq p < \infty$ and
+  \begin{equation*}
+    \| w \|_{W^k_\infty(\Omega)} \equiv \max_{|\alpha| \leq k} \| D^\alpha w \|_{L^\infty(\Omega)}
+  \end{equation*}
+  in the case $p = \infty$. In either case, the $W^k_p(\Omega)$ space consists of functions
+  \begin{equation*}
+    W^k_p(\Omega) = \{ w \ | \| w \|_{W^k_p(\Omega)} < \infty \}.
+  \end{equation*}
+\end{definition}
+We note that the $H^k(\Omega)$ space is a special case of $W^k_p(\Omega)$ space for $p = 2$.
+
+
+
+\section{$d$-dimensional Poisson problem: homogeneous Dirichlet}
+We consider a Poisson equation in $\RR^d$, $d \geq 1$.  To this end, we first introduce a $d$-dimensional Lipschitz domain $\Omega \subset \RR^d$. The strong form of the Poisson equation with homogeneous Dirichlet boundary conditions is as follows: find $u$ such that
+\begin{align}
+  - \Delta u &= f \quad \text{in } \Omega \label{eq:gen_poisson_nd_strong} \\
+  u &= 0 \quad \text{on } \partial \Omega \notag.
+\end{align}
+ Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.
+
+Both the minimization formulation and the variational formulation requires an appropriate choice of the space in which the solution is sought.  For homogeneous Dirichlet boundary condition, the approximate Sobolev space is
+\begin{equation*}
+  \calV \equiv H^1_0(\Omega).
+\end{equation*}
+We recall that $H^1_0(\Omega) \equiv \{ w \in H^1(\Omega) \ | \ w|_{\partial \Omega} = 0 \}$; i.e., the space consists of functions (i) whose value and first derivative are square integrable and (ii) that vanish on the boundary.  Note that any function $w \in H^1_0(\Omega)$ satisfy the boundary condition $u|_{\partial \Omega} = 0$ by construction.
+
+To obtain a minimization form of~\eqref{eq:gen_poisson_nd_strong}, we introduce a functional $J: \calV \to \RR$ given by
+\begin{equation*}
+  J(w) \equiv \frac{1}{2} \int_\Omega \nabla w \cdot \nabla w dx - \int_\Omega f s dx \quad \forall w \in \calV.
+\end{equation*}
+Our minimization problem is as follows: find $u \in \calV$ such that
+\begin{equation}
+  u = \argmin_{w \in \calV} J(w). \label{eq:gen_poisson_nd_min}
+\end{equation}
+For a physical system with intrinsic energy, our minimization statement is a statement of energy minimization at the equilibrium. Using exactly the same procedure as the one-dimensional case, we can show that the solution to the strong form~\eqref{eq:gen_poisson_nd_strong} satisfies the minimization form~\eqref{eq:gen_poisson_nd_min}.  We however recall that the converse is not true in general; the minimization form admits more general loads $f$ and hence solutions.
+
+We then consider a variational (or weak) form.  To this end, we introduce a bilinear form $a: \calV \times \calV \to \RR$,
+\begin{equation*}
+  a(w,v) \equiv \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV,
+\end{equation*}
+and a linear form $\ell: \calV \to \RR$,
+\begin{equation*}
+  \ell(v) \equiv \int_\Omega v f dx \quad \forall v \in \calV.
+\end{equation*}
+Our variational problem is as follows: find $u \in \calV$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:gen_poisson_nd_weak}
+\end{equation}
+Again, using the same procedure as the one-dimensional case, we can show that $u \in \calV$ is the solution to the variational form~\eqref{eq:gen_poisson_nd_weak} if and only if it is the solution to the minimization form~\eqref{eq:gen_poisson_nd_min}.
+
+
+
+
+\section{Mixed problems: essential and natural boundary conditions}
+\label{sec:gen_mixed}
+We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \supset \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
+\begin{align}
+  -\Delta u &= f \quad \text{in } \Omega \notag \\
+  u &= 0 \quad \text{on } \Gamma_D \label{eq:gen_mixed_bc_strong} \\
+  \pp{u}{n} &= g \quad \text{on } \Gamma_N. \notag
+\end{align}
+
+To obtain a minimization form of~\eqref{eq:gen_mixed_bc_strong}, we redefine relative to the homogeneous Dirichlet boundary condition case (i) the function space and (ii) the energy functional.  The function space suitable for the mixed boundary condition is
+\begin{equation}
+  \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
+  \label{eq:gen_mixed_bc_space}
+\end{equation}
+Note that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; functions in $H^1_0(\Omega)$ must vanish everywhere on $\partial \Omega$, functions in $\calV$ must vanish only on $\Gamma_D \subset \partial \Omega$, and functions in $H^1(\Omega)$ has no conditions on their boundary values. We now introduce a functional $J: \calV \to \RR$ given by
+\begin{equation}
+  J(w) \equiv \frac{1}{2} \int_\Omega \nabla w \cdot \nabla w dx - \int_\Omega f w dx - \int_{\Gamma_N} g w ds \quad \forall w \in \calV;
+  \label{eq:gen_mixed_bc_min_func}
+\end{equation}
+note the addition of the term on $\Gamma_N$.
+Our minimization problem is as follows: find $u \in \calV$ such that
+\begin{equation}
+  u = \argmin_{w \in \calV} J(w). \label{eq:gen_mixed_bc_min}
+\end{equation}
+
+We can readily show that the solution to the strong form~\eqref{eq:gen_mixed_bc_strong} satisfies the minimization condition~\eqref{eq:gen_mixed_bc_min}. To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:gen_mixed_bc_strong} and $v$ is an arbitrary function in $\calV$. We  then observe
+\begin{align*}
+  J(u + v)
+  &=
+  \frac{1}{2} \int_\Omega \nabla (u + v) \cdot \nabla (u+v) dx - \int_\Omega f (u+v) dx - \int_{\Gamma_N} g (u + v) ds
+  \\
+  &= \underbrace{ \frac{1}{2} \int_\Omega \nabla u \cdot \nabla u dx - \int_\Omega fu dx - \int_{\Gamma_N} g u ds }_{J(u)}
+  \\
+  &\quad + \underbrace{\int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v - \int_{\Gamma_N} g v ds}_{J'(u;v) \text{ --- first variation}}
+  + \underbrace{  \frac{1}{2} \int_{\Omega} \nabla v \cdot \nabla v dx }_{> 0 \text{ for } v \neq 0}.
+\end{align*}
+We integrate by parts the first term of $J'(u;v)$ to obtain
+\begin{align*}
+  J'(u;v) &= \int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v dx - \int_{\Gamma_N} g v ds
+  \\
+  &= - \int_\Omega v (\underbrace{ \Delta u + f }_{= 0 \text{ as } -\Delta u = f \text{ in } \Omega}) dx + \int_{\Gamma_D} \underbrace{ v \pp{u}{n} }_{=0 \text{ as } v \in \calV}ds + \int_{\Gamma_N}  v (\underbrace{ \pp{u}{n} - g }_{= 0 \text{ as } \pp{u}{n} = g \text{ on } \Gamma_N}) ds = 0;
+\end{align*}
+if $u$ is the solution to the strong form~\eqref{eq:gen_mixed_bc_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It follows
+\begin{equation*}
+  J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
+\end{equation*}
+and hence the solution $u$ to strong form~\eqref{eq:gen_mixed_bc_strong} is the minimizer of the energy functional~\eqref{eq:gen_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:gen_mixed_bc_min}.
+
+In the minimization formulation of the mixed boundary condition, the Dirichlet and Neumann conditions are treated differently.  On one hand, we explicitly impose the Dirichlet boundary condition $u = 0$ on $\Gamma_D$ through the choice of the space $\calV$ in~\eqref{eq:gen_mixed_bc_space}. On the other hand, the Neumann boundary condition $\pp{u}{n} = g$ on $\Gamma_N$ is implicitly contained in the minimization statement~\eqref{eq:gen_mixed_bc_min}.  A boundary condition that is explicitly imposed by the choice of the function space is called a \emph{essential boundary condition}; a boundary condition that is implicitly imposed by the minimization statement is called a \emph{natural boundary condition}.  In the above treatment of the Poisson equation with a mixed boundary condition, the Dirichlet condition is an essential boundary condition, and the Neumann condition is a natural boundary condition.
+
+We can similarly consider a variational form of~\eqref{eq:gen_mixed_bc_strong}. We again work with the space $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$. We then introduce a bilinear form $a: \calV \times \calV \to \RR$ given by
+\begin{equation*}
+  a(w,v) \equiv \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV,
+\end{equation*}
+and a linear form $\ell: \calV \to \RR$ given by
+\begin{equation*}
+  \ell(v) \equiv \int_\Omega v f dx + \int_{\Gamma_N} v g ds \quad \forall v \in \calV.
+\end{equation*}
+Our variational problem is as follows: find $u \in \calV$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:gen_mixed_bc_weak}
+\end{equation}
+We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:gen_mixed_bc_weak} if and only if it is the solution to the minimization problem~\eqref{eq:gen_mixed_bc_min}.
+
+\section{Inhomogeneous Dirichlet boundary condition}
+We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition.  The strong form is as follows: find $u$ such that
+\begin{align}
+  -\Delta u &= f \quad \text{in } \Omega \label{eq:gen_inhomo_bc_strong} \\
+  u &= u_B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
+\end{align}
+for some boundary function $u_B$ and source term $f$. While we focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:gen_mixed} to treat mixed problems with inhomogeneous Dirichlet boundary conditions.
+To obtain a minimization form of~\eqref{eq:gen_inhomo_bc_strong}, we introduce a space
+\begin{equation*}
+  \calV_D \equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}.
+\end{equation*}
+Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. In any event, we introduce a functional $J: \calV_D \to \RR$ given by
+\begin{equation}
+  J(w) \equiv \frac{1}{2} \int_{\Omega} \nabla w \cdot \nabla w dx - \int_\Omega f w dx
+  \label{eq:gen_inhomo_bc_min_func}
+\end{equation}
+and introduce a minimization problem: find $u \in \calV_D$ such that
+\begin{equation}
+  u = \argmin_{w \in \calV_D} J(w).
+  \label{eq:gen_inhomo_bc_min}
+\end{equation}
+We note that the inhomogeneous Dirichlet boundary condition $u = u_B$ on $\Gamma_D$ is an essential boundary condition.
+
+We now show that the solution to~\eqref{eq:gen_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:gen_inhomo_bc_min}.  To this end, we first introduce a space
+\begin{equation*}
+  \calV \equiv H^1_0(\Omega). %\{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = 0 \}.
+\end{equation*}
+We then set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:gen_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
+\begin{align*}
+  J(u + v)
+  &=
+  \frac{1}{2} \int_\Omega \nabla (u + v) \cdot \nabla (u+v) dx - \int_\Omega f (u+v) dx 
+  \\
+  &= \underbrace{ \frac{1}{2} \int_\Omega \nabla u \cdot \nabla u dx - \int_\Omega fu dx }_{J(u)}
+  + \underbrace{\int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v }_{J'(u;v) \text{ --- first variation}}
+  + \underbrace{  \frac{1}{2} \int_{\Omega} \nabla v \cdot \nabla v dx }_{> 0 \text{ for } v \neq 0}.
+\end{align*}
+We integrate by parts the first term of $J'(u;v)$ to obtain
+\begin{equation*}
+  J'(u;v) = \int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v
+  = - \int_\Omega v (\underbrace{ \Delta u + f }_{= 0 \text{ as } -\Delta u = f \text{ in } \Omega}) dx + \int_{\Gamma_D \equiv \partial \Omega} \underbrace{ v \pp{u}{n} }_{=0 \text{ as } v \in \calV}ds  = 0;
+\end{equation*}
+the second term vanishes because $v \in \calV \equiv H^1_0(\Omega)$ (and not $\calV_D$). It follows
+\begin{equation*}
+  J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
+\end{equation*}
+and hence the solution $u$ to strong form~\eqref{eq:gen_mixed_bc_strong} is the minimizer of the functional~\eqref{eq:gen_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:gen_mixed_bc_min}.
+
+The associated variational problem is as follows: find $u \in \calV_D$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV \equiv H^1_0(\Omega).
+  \label{eq:gen_inhomo_bc_var}
+\end{equation}
+The solution is sought in the space $\calV_D$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
+
+In practice, it is more convenient to reformulate the problem as follows.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV \equiv H^1_0(\Omega)$, and rearrange the variational form~\eqref{eq:gen_inhomo_bc_var} as
+\begin{equation*}
+  a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
+  a(\tilde u,v) = \ell(v) - a(u_D,v).
+\end{equation*}
+We note that $\ell(\cdot) - a(u_D,\cdot)$ is indeed a linear form on $\calV$. We hence consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
+\begin{equation*}
+  a(\tilde u,v) = \ell(v) - a(u_D,v) \quad \forall v \in \calV.
+\end{equation*}
+Once we find $\tilde u$, we then set $u = u_D + \tilde u$.
+
+\section{Weighted residual method: from strong to weak formulation}
+We have so far considered the strong, minimization, or variational form as given and analyzed the consistency among different forms.  In practice, the PDEs are often provided in the strong form. As such, it is also useful to identify a systematic procedure to transform a boundary value problem provided in a strong form to a weak form; we here outline the \emph{weighted-residual procedure} for the task.
+
+
+%% We have so far so far taken the minimization or variational formulation as given, and checked that the solution to the strong form satisfies the minimization or variational problems. In practice, the PDEs are often provided in the strong form.  As such, we might wish to identify an approximate variational formulation associated with a given strong form.  The \emph{weighted-residual method} is one approach for the task.
+
+To demonstrate the idea, we consider a mixed problem with (inhomogeneous) Dirichlet, Neumann, and Robin boundary conditions.
+To this end, we partition the Lipschitz domain $\Omega \subset \RR^d$ into the Dirichlet boundary $\Gamma_D$, the Neuamnn boundary $\Gamma_N$, and the Robin boundary $\Gamma_R$ such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N \cup \overline{\Gamma}_R$; we assume $\Gamma_D \cup \Gamma_R \neq \emptyset$. We then consider a problem of the following form: find $u$ such that
+\begin{align*}
+  - \Delta u &= f \quad \text{in } \Omega
+  \\
+  u &= u_B \quad \text{on } \Gamma_D \\
+  \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
+  \pp{u}{n}+ k u &= q \quad \text{on } \Gamma_R,
+\end{align*}
+where $f$ is the source term,  $n$ is the outward-point normal on $\partial \Omega$, $u_B$ is the Dirichlet boundary function, $g$ is the Neumann source term, $k$ is the Robin coefficient, and $q$ is the Robin source term.
+
+To obtain a variational form of the problem, we first multiply the strong form of the PDE with a test function $v$, integrated the $v$-weighted expression, and integrate by parts the Laplacian operator:
+\begin{align*}
+  \int_{\Omega} v (-\Delta u - f) dx
+  =
+  \int_{\Omega} (\nabla v \cdot \nabla u - v f) dx
+  - \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{\text{(D)}}
+  - \underbrace{\int_{\Gamma_N} v \pp{u}{n} ds}_{\text{(N)}}
+  - \underbrace{\int_{\Gamma_R} v \pp{u}{n} ds}_{\text{(R)}}
+\end{align*}
+We now impose the three boundary conditions. The (inhomogeneous) Dirichlet boundary condition on $\Gamma_D$ is enforced strongly through the choice of the trial and test spaces.  Namely, we choose for our trial and test spaces
+\begin{align*}
+  \calV_D &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B \} \\
+  \calV &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \};
+\end{align*}
+note that the choice will result in the elimination of the boundary term (D) since $v|_{\Gamma_D} = 0$ for $v \in \calV$. The Neumann boundary condition $\pp{u}{n} = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
+\begin{equation*}
+  \int_\Omega (\nabla v \cdot \nabla u - v f) dx
+  - \int_{\Gamma_N} v g ds - \int_{\Gamma_R} v (-ku + q) ds = 0
+  \quad \forall v \in \calV.
+\end{equation*}
+Some reorganization of the terms yield the following weak statement: find $u \in \calV_D$ such that
+\begin{equation*}
+  a(u,v) = \ell(v) \quad \forall v \in \calV,
+\end{equation*}
+where
+\begin{align*}
+  a(w,v) &\equiv \int_\Omega \nabla v \cdot \nabla w dx + \int_{\Gamma_R} k vw ds \quad \forall w, v \in \calV \\
+  \ell(v) &\equiv \int_\Omega fv dx + \int_{\Gamma_N} gv ds + \int_{\Gamma_R} qv ds.
+  \quad \forall v \in \calV.
+\end{align*}
+We have hence identified a variational form of the problem starting from the strong form.
+
+We note that it is also possible to perform the procedure in reverse: we start from the variational form and then identify the associated strong form. Specifically, we start with the variational form, and invoke the integration by parts to identify the PDE and boundary conditions: for all $v \in \calV$,
+\begin{align*}
+  0 &=
+  a(u,v) - \ell(v)
+  =
+  \int_\Omega \nabla v \cdot \nabla u dx + \int_{\Gamma_R} k vu ds
+  - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
+  \\
+  &= \int_\Omega v (-\Delta u) dx + \int_{\partial \Omega} v \pp{u}{n} ds
+  + \int_{\Gamma_R} k vu ds
+  - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
+  \\
+  &=
+  \int_\Omega v(-\Delta u - f) dx
+  + \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{=0 \text{ since $v \in \calV$}}
+  + \int_{\Gamma_N} v (\pp{u}{n} - g) ds
+  + \int_{\Gamma_R} v (\pp{u}{n} + ku - q) ds.
+\end{align*}
+In order for the statement to hold for \emph{all} $v \in \calV$, we need each of the integrals to vanish.  The condition requires that
+\begin{align*}
+  -\Delta u &= f \quad \text{in } \Omega \\
+  \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
+  \pp{u}{n} + ku &= q \quad \text{on } \Gamma_R.
+\end{align*}
+We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N$, and (iii) the Robin boundary condition on $\Gamma_R$.  Finally, because $u \in \calV_D \equiv \{ u \in H^1(\Omega) \ | \ u|_{\Gamma_D} = u_B \}$, we have
+\begin{equation*}
+  u|_{\Gamma_D} = u_B \quad \text{on } \Gamma_D,
+\end{equation*}
+which is the Dirichlet boundary condition on $\Gamma_D$.
+
+\section{Finite element approximation}
+We now wish to obtain a finite element approximation of the variational form~\eqref{eq:gen_poisson_nd_weak} or, equivalently, the minimization form~\eqref{eq:gen_poisson_nd_min}. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $N_e$ non-overlapping elements $\kappa_1, \dots, \kappa_{N_e}$:
+\begin{equation*}
+  \calT_h \equiv \{ \kappa_i \}_{i=1}^{N_e}.
+\end{equation*}
+A tessellation $\calT_h$ is characterized by a maximum diameter of the elements that comprise the set: $h \equiv \max_{i} \text{dia}(\kappa_i)$.
+
+We now introduce a space of piecewise linear functions associated with 
+\begin{equation*}
+  \calV_h \equiv \{ v \in \calV \ | v |_{\kappa_i} \in \PP^1(\kappa_i), \ i = 1,\dots, N_e \}.
+\end{equation*}
+
+\begin{equation*}
+  \calV_h = \text{span} \{ \phi_i \}_{i=1}^N.
+\end{equation*}
+
+\begin{equation*}
+  a_{\kappa}(w,v) \equiv a(w|_{\kappa},v|_{\kappa_i})
+  = \int_\kappa \nabla v \cdot \nabla w dx \quad \kappa \in \calT_h
+  \\
+  \ell_\kappa(w,v) \equiv \ell(v|_{\kappa_i})
+  = \int_\kappa v f dx \quad \kappa \in \calT_h.
+\end{equation*}
+
+
+$A_h \in \RR^{N \times N}$ and $f_h \in \RR^{N}$ such that
+\begin{align*}
+  A_{h,ij} &= a(\phi_j,\phi_i) \quad i,j = 1,\dots,N, \\
+  F_{h,i} &= \ell(\phi_i) \quad i = 1,\dots,N.
+\end{align*}
+
+
+
+We first introduce a strong 
