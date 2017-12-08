@@ -326,7 +326,7 @@ In this lecture, we considered the variational formulation and the associated fi
 \begin{enumerate}
 \item A one-dimensional Poisson problem can be written in the strong form, minimization form, or variational (or weak) form. 
 \item The solution to the strong form is also the solution to the minimization and variational form, but the converse is not true in general.  The minimization and variational forms admit more general loads $f$ and the associated solutions.
-\item A piecewise linear finite element approximation space $\calV_h$ is a subspace of $\calV$ that is associated with a tessellation of $\Omega \subset \RR^1$ into segments.
+\item A finite element approximation space $\calV_h$ is a subspace of $\calV$.  In one dimension, we may choose $\calV_h$ as the space of piecewise linear polynomials associated with a tessellation of $\Omega \subset \RR^1$ into segments.
 \item The finite element solution is the solution of the minimization or variational problem in the finite element subspace $\calV_h \subset \calV$.
 \item Given a basis for $\calV_h$, the finite element solution can be computed in a systematic manner by assembling the associated stiffness matrix and the load vector and by solving the linear system.
 \item For the Poisson equation, the finite element approximation $u_h$ is optimal in energy norm; even \emph{if} we knew the exact solution $u \in \calV$, we could not have found a better solution in $\calV_h$ than $u_h$.
