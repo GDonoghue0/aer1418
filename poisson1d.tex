@@ -99,7 +99,7 @@ Our \emph{variational problem} is as follows: find $u \in \calV$ such that
   a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:intro_var}
 \end{equation}
-This variational form of the problem is also called the \emph{weak form}. The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
+This variational form of the problem is also called the \emph{weak form}.  The space $\calV$ to which the solution $u$ belongs is called the \emph{trial space}; the space $\calV$ to which the test function $v$ belongs is called the \emph{test space}.  A variational form which uses the same function space for the trial and test spaces is called the \emph{Galerkin formulation}.  The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
 
 We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:intro_var} if and only if it is the solution to the minimization problem~\eqref{eq:intro_min}.  Suppose that $u \in \calV$ is the solution to the variational problem~\eqref{eq:intro_var}.  Then, for $w = u + v$ for any $v \in \calV$, we obtain
 \begin{align*}

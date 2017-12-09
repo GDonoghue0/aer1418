@@ -168,11 +168,15 @@ While we most frequently encounter the Hilbert spaces $L^2(\Omega)$ and $H^k(\Om
     W^k_p(\Omega) = \{ w \ | \| w \|_{W^k_p(\Omega)} < \infty \}.
   \end{equation*}
 \end{definition}
-We note that the $H^k(\Omega)$ space is a special case of $W^k_p(\Omega)$ space for $p = 2$.
+\begin{remark}
+  The $H^k(\Omega)$ space is a special case of $W^k_p(\Omega)$ space for $p = 2$.
+\end{remark}
+
+It may be difficult to appreciate the formalism provided in this section at this point.  But, we introduce these spaces upfront such that we can state our weak formulation in a proper functional setting.  We will later see that this formalism allows us to provide various theoretical results on the weak formulation and the associated finite element approximation, which is the strength of the finite element method.
 
 
 
-\section{$d$-dimensional Poisson problem: homogeneous Dirichlet}
+\section{$d$-dimensional Poisson problem: homogeneous Dirichlet BC}
 We consider a Poisson equation in $\RR^d$, $d \geq 1$.  To this end, we first introduce a $d$-dimensional Lipschitz domain $\Omega \subset \RR^d$. The strong form of the Poisson equation with homogeneous Dirichlet boundary conditions is as follows: find $u$ such that
 \begin{align}
   - \Delta u &= f \quad \text{in } \Omega \label{eq:gen_poisson_nd_strong} \\
@@ -284,11 +288,12 @@ We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition
   u &= u_B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
 \end{align}
 for some boundary function $u_B$ and source term $f$. While we focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:gen_mixed} to treat mixed problems with inhomogeneous Dirichlet boundary conditions.
-To obtain a minimization form of~\eqref{eq:gen_inhomo_bc_strong}, we introduce a space
-\begin{equation*}
-  \calV_D \equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}.
-\end{equation*}
-Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. In any event, we introduce a functional $J: \calV_D \to \RR$ given by
+To obtain a minimization form of~\eqref{eq:gen_inhomo_bc_strong}, we introduce a spaces
+\begin{align*}
+  \calV_D &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
+  \calV &\equiv H^1_0(\Omega).
+\end{align*}
+Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. Rather, $\calV_D$ is an \emph{affine space}: given an arbitrary fixed element $u_D \in \calV_D$, we have $\calV_D = u_D + \calV = \{ u_D + v \ | \ v \in \calV \}$. In any event, we introduce a functional $J: \calV_D \to \RR$ given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} \int_{\Omega} \nabla w \cdot \nabla w dx - \int_\Omega f w dx
   \label{eq:gen_inhomo_bc_min_func}
@@ -300,11 +305,7 @@ and introduce a minimization problem: find $u \in \calV_D$ such that
 \end{equation}
 We note that the inhomogeneous Dirichlet boundary condition $u = u_B$ on $\Gamma_D$ is an essential boundary condition.
 
-We now show that the solution to~\eqref{eq:gen_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:gen_inhomo_bc_min}.  To this end, we first introduce a space
-\begin{equation*}
-  \calV \equiv H^1_0(\Omega). %\{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = 0 \}.
-\end{equation*}
-We then set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:gen_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
+We now show that the solution to~\eqref{eq:gen_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:gen_inhomo_bc_min}. We first set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:gen_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
 \begin{align*}
   J(u + v)
   &=
@@ -319,7 +320,7 @@ We integrate by parts the first term of $J'(u;v)$ to obtain
   J'(u;v) = \int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v
   = - \int_\Omega v (\underbrace{ \Delta u + f }_{= 0 \text{ as } -\Delta u = f \text{ in } \Omega}) dx + \int_{\Gamma_D \equiv \partial \Omega} \underbrace{ v \pp{u}{n} }_{=0 \text{ as } v \in \calV}ds  = 0;
 \end{equation*}
-the second term vanishes because $v \in \calV \equiv H^1_0(\Omega)$ (and not $\calV_D$). It follows
+the second term vanishes because $v \in \calV$ (and not $\calV_D$). It follows
 \begin{equation*}
   J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
 \end{equation*}
@@ -327,21 +328,22 @@ and hence the solution $u$ to strong form~\eqref{eq:gen_mixed_bc_strong} is the 
 
 The associated variational problem is as follows: find $u \in \calV_D$ such that
 \begin{equation}
-  a(u,v) = \ell(v) \quad \forall v \in \calV \equiv H^1_0(\Omega).
+  a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:gen_inhomo_bc_var}
 \end{equation}
-The solution is sought in the space $\calV_D$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
+The trial space $\calV_D$ is an affine space of functions that satisfy the inhomogeneous Dirichlet boundary condition; the test space $\calV$ is a linear space of functions that vanish on the Dirichlet boundary.
+%The solution is sought in the space $\calV_D$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
 
-In practice, it is more convenient to reformulate the problem as follows.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV \equiv H^1_0(\Omega)$, and rearrange the variational form~\eqref{eq:gen_inhomo_bc_var} as
+In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:gen_inhomo_bc_var} as
 \begin{equation*}
   a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
   a(\tilde u,v) = \ell(v) - a(u_D,v).
 \end{equation*}
-We note that $\ell(\cdot) - a(u_D,\cdot)$ is indeed a linear form on $\calV$. We hence consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
+We note that $\ell(\cdot) - a(u_D,\cdot)$ is another linear form on $\calV$. We hence consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
 \begin{equation*}
   a(\tilde u,v) = \ell(v) - a(u_D,v) \quad \forall v \in \calV.
 \end{equation*}
-Once we find $\tilde u$, we then set $u = u_D + \tilde u$.
+Once we find $\tilde u$, we then set $u = u_D + \tilde u$, which is in $\calV_D$.
 
 \section{Weighted residual method: from strong to weak formulation}
 We have so far considered the strong, minimization, or variational form as given and analyzed the consistency among different forms.  In practice, the PDEs are often provided in the strong form. As such, it is also useful to identify a systematic procedure to transform a boundary value problem provided in a strong form to a weak form; we here outline the \emph{weighted-residual procedure} for the task.
@@ -422,37 +424,50 @@ We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N
 \end{equation*}
 which is the Dirichlet boundary condition on $\Gamma_D$.
 
-\section{Finite element approximation}
-We now wish to obtain a finite element approximation of the variational form~\eqref{eq:gen_poisson_nd_weak} or, equivalently, the minimization form~\eqref{eq:gen_poisson_nd_min}. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $N_e$ non-overlapping elements $\kappa_1, \dots, \kappa_{N_e}$:
-\begin{equation*}
-  \calT_h \equiv \{ \kappa_i \}_{i=1}^{N_e}.
-\end{equation*}
-A tessellation $\calT_h$ is characterized by a maximum diameter of the elements that comprise the set: $h \equiv \max_{i} \text{dia}(\kappa_i)$.
-
-We now introduce a space of piecewise linear functions associated with 
-\begin{equation*}
-  \calV_h \equiv \{ v \in \calV \ | v |_{\kappa_i} \in \PP^1(\kappa_i), \ i = 1,\dots, N_e \}.
-\end{equation*}
-
-\begin{equation*}
-  \calV_h = \text{span} \{ \phi_i \}_{i=1}^N.
-\end{equation*}
-
-\begin{equation*}
-  a_{\kappa}(w,v) \equiv a(w|_{\kappa},v|_{\kappa_i})
-  = \int_\kappa \nabla v \cdot \nabla w dx \quad \kappa \in \calT_h
-  \\
-  \ell_\kappa(w,v) \equiv \ell(v|_{\kappa_i})
-  = \int_\kappa v f dx \quad \kappa \in \calT_h.
-\end{equation*}
+\section{Summary}
+We summarize key points of this lecture:
+\begin{enumerate}
+\item Hilbert space is a complete inner-product space; Banach space is a complete normed space.
+\item The Lebesgue space $L^2(\Omega)$ consists of functions that are square integrable (in the Lebesgue sense).
+\item The Sobolev space $H^k(\Omega)$ consists of functions whose (weak) derivatives of up to and including order $k$ is square integrable (in the Lebesgue sense).
+\item $d$-dimensional Poisson equation can be cast in the strong, minimization, or variational (or weak) form.
+\item Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
+\item Inhomogeneous Dirichlet boundary conditions are imposed strongly by an affine (and not linear) trial space.
+\item Weighted residual method can be used to derive a variational form from a strong form and vice versa. 
+\end{enumerate}
 
 
-$A_h \in \RR^{N \times N}$ and $f_h \in \RR^{N}$ such that
-\begin{align*}
-  A_{h,ij} &= a(\phi_j,\phi_i) \quad i,j = 1,\dots,N, \\
-  F_{h,i} &= \ell(\phi_i) \quad i = 1,\dots,N.
-\end{align*}
+%% \section{Finite element approximation}
+%% We now wish to obtain a finite element approximation of the variational form~\eqref{eq:gen_poisson_nd_weak} or, equivalently, the minimization form~\eqref{eq:gen_poisson_nd_min}. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $N_e$ non-overlapping elements $\kappa_1, \dots, \kappa_{N_e}$:
+%% \begin{equation*}
+%%   \calT_h \equiv \{ \kappa_i \}_{i=1}^{N_e}.
+%% \end{equation*}
+%% A tessellation $\calT_h$ is characterized by a maximum diameter of the elements that comprise the set: $h \equiv \max_{i} \text{dia}(\kappa_i)$.
+
+%% We now introduce a space of piecewise linear functions associated with 
+%% \begin{equation*}
+%%   \calV_h \equiv \{ v \in \calV \ | v |_{\kappa_i} \in \PP^1(\kappa_i), \ i = 1,\dots, N_e \}.
+%% \end{equation*}
+
+%% \begin{equation*}
+%%   \calV_h = \text{span} \{ \phi_i \}_{i=1}^N.
+%% \end{equation*}
+
+%% \begin{equation*}
+%%   a_{\kappa}(w,v) \equiv a(w|_{\kappa},v|_{\kappa_i})
+%%   = \int_\kappa \nabla v \cdot \nabla w dx \quad \kappa \in \calT_h
+%%   \\
+%%   \ell_\kappa(w,v) \equiv \ell(v|_{\kappa_i})
+%%   = \int_\kappa v f dx \quad \kappa \in \calT_h.
+%% \end{equation*}
+
+
+%% $A_h \in \RR^{N \times N}$ and $f_h \in \RR^{N}$ such that
+%% \begin{align*}
+%%   A_{h,ij} &= a(\phi_j,\phi_i) \quad i,j = 1,\dots,N, \\
+%%   F_{h,i} &= \ell(\phi_i) \quad i = 1,\dots,N.
+%% \end{align*}
 
 
 
-We first introduce a strong 
+%% We first introduce a strong 
