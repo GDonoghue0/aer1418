@@ -47,7 +47,7 @@ Note: the combination of the first and second conditions implies that the inner 
      \begin{equation*}
        \| \alpha v \|^2 = (\alpha v, \alpha v) = \alpha^2 (v,v) = |\alpha|^2 \| v \|^2.
      \end{equation*}
-     The positive definiteness of the induced norm is a direct consequence of the positive definiteness of the inner product.  The triangle inequality is proved using the Cauchy-Schwarz inequality in Proposition~\ref{prop:abs_cauchy_schwarz}:
+     The positive definiteness of the induced norm is a direct consequence of the positive definiteness of the inner product.  The triangle inequality is proved using the Cauchy-Schwarz inequality in Proposition~\ref{prop:posnd_cauchy_schwarz}:
      \begin{equation*}
        \| w + v \|^2
        = (w + v, w+ v)
@@ -59,7 +59,7 @@ Note: the combination of the first and second conditions implies that the inner 
   \end{proof}
 \end{remark}
 \begin{proposition}[Cauchy-Schwarz inequality]
-  \label{prop:abs_cauchy_schwarz}
+  \label{prop:posnd_cauchy_schwarz}
   Given a linear space $\calV$ and an inner product $(\cdot, \cdot): \calV \times \calV \to \RR$, the associated induced norm $\| \cdot \|$ satisfies
   \begin{equation*}
     (w,v) \leq \| w \| \| v \| \quad \forall w ,v \in \calV.
@@ -179,7 +179,7 @@ It may be difficult to appreciate the formalism provided in this section at this
 \section{$d$-dimensional Poisson problem: homogeneous Dirichlet BC}
 We consider a Poisson equation in $\RR^d$, $d \geq 1$.  To this end, we first introduce a $d$-dimensional Lipschitz domain $\Omega \subset \RR^d$. The strong form of the Poisson equation with homogeneous Dirichlet boundary conditions is as follows: find $u$ such that
 \begin{align}
-  - \Delta u &= f \quad \text{in } \Omega \label{eq:gen_poisson_nd_strong} \\
+  - \Delta u &= f \quad \text{in } \Omega \label{eq:posnd_strong} \\
   u &= 0 \quad \text{on } \partial \Omega \notag.
 \end{align}
  Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.
@@ -190,15 +190,15 @@ Both the minimization formulation and the variational formulation requires an ap
 \end{equation*}
 We recall that $H^1_0(\Omega) \equiv \{ w \in H^1(\Omega) \ | \ w|_{\partial \Omega} = 0 \}$; i.e., the space consists of functions (i) whose value and first derivative are square integrable and (ii) that vanish on the boundary.  Note that any function $w \in H^1_0(\Omega)$ satisfy the boundary condition $u|_{\partial \Omega} = 0$ by construction.
 
-To obtain a minimization form of~\eqref{eq:gen_poisson_nd_strong}, we introduce a functional $J: \calV \to \RR$ given by
+To obtain a minimization form of~\eqref{eq:posnd_strong}, we introduce a functional $J: \calV \to \RR$ given by
 \begin{equation*}
   J(w) \equiv \frac{1}{2} \int_\Omega \nabla w \cdot \nabla w dx - \int_\Omega f s dx \quad \forall w \in \calV.
 \end{equation*}
 Our minimization problem is as follows: find $u \in \calV$ such that
 \begin{equation}
-  u = \argmin_{w \in \calV} J(w). \label{eq:gen_poisson_nd_min}
+  u = \argmin_{w \in \calV} J(w). \label{eq:posnd_min}
 \end{equation}
-For a physical system with intrinsic energy, our minimization statement is a statement of energy minimization at the equilibrium. Using exactly the same procedure as the one-dimensional case, we can show that the solution to the strong form~\eqref{eq:gen_poisson_nd_strong} satisfies the minimization form~\eqref{eq:gen_poisson_nd_min}.  We however recall that the converse is not true in general; the minimization form admits more general loads $f$ and hence solutions.
+For a physical system with intrinsic energy, our minimization statement is a statement of energy minimization at the equilibrium. Using exactly the same procedure as the one-dimensional case, we can show that the solution to the strong form~\eqref{eq:posnd_strong} satisfies the minimization form~\eqref{eq:posnd_min}.  We however recall that the converse is not true in general; the minimization form admits more general loads $f$ and hence solutions.
 
 We then consider a variational (or weak) form.  To this end, we introduce a bilinear form $a: \calV \times \calV \to \RR$,
 \begin{equation*}
@@ -210,39 +210,39 @@ and a linear form $\ell: \calV \to \RR$,
 \end{equation*}
 Our variational problem is as follows: find $u \in \calV$ such that
 \begin{equation}
-  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:gen_poisson_nd_weak}
+  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:posnd_weak}
 \end{equation}
-Again, using the same procedure as the one-dimensional case, we can show that $u \in \calV$ is the solution to the variational form~\eqref{eq:gen_poisson_nd_weak} if and only if it is the solution to the minimization form~\eqref{eq:gen_poisson_nd_min}.
+Again, using the same procedure as the one-dimensional case, we can show that $u \in \calV$ is the solution to the variational form~\eqref{eq:posnd_weak} if and only if it is the solution to the minimization form~\eqref{eq:posnd_min}.
 
 
 
 
 \section{Mixed problems: essential and natural boundary conditions}
-\label{sec:gen_mixed}
+\label{sec:posnd_mixed}
 We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \supset \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
 \begin{align}
   -\Delta u &= f \quad \text{in } \Omega \notag \\
-  u &= 0 \quad \text{on } \Gamma_D \label{eq:gen_mixed_bc_strong} \\
+  u &= 0 \quad \text{on } \Gamma_D \label{eq:posnd_mixed_bc_strong} \\
   \pp{u}{n} &= g \quad \text{on } \Gamma_N. \notag
 \end{align}
 
-To obtain a minimization form of~\eqref{eq:gen_mixed_bc_strong}, we redefine relative to the homogeneous Dirichlet boundary condition case (i) the function space and (ii) the energy functional.  The function space suitable for the mixed boundary condition is
+To obtain a minimization form of~\eqref{eq:posnd_mixed_bc_strong}, we redefine relative to the homogeneous Dirichlet boundary condition case (i) the function space and (ii) the energy functional.  The function space suitable for the mixed boundary condition is
 \begin{equation}
   \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
-  \label{eq:gen_mixed_bc_space}
+  \label{eq:posnd_mixed_bc_space}
 \end{equation}
 Note that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; functions in $H^1_0(\Omega)$ must vanish everywhere on $\partial \Omega$, functions in $\calV$ must vanish only on $\Gamma_D \subset \partial \Omega$, and functions in $H^1(\Omega)$ has no conditions on their boundary values. We now introduce a functional $J: \calV \to \RR$ given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} \int_\Omega \nabla w \cdot \nabla w dx - \int_\Omega f w dx - \int_{\Gamma_N} g w ds \quad \forall w \in \calV;
-  \label{eq:gen_mixed_bc_min_func}
+  \label{eq:posnd_mixed_bc_min_func}
 \end{equation}
 note the addition of the term on $\Gamma_N$.
 Our minimization problem is as follows: find $u \in \calV$ such that
 \begin{equation}
-  u = \argmin_{w \in \calV} J(w). \label{eq:gen_mixed_bc_min}
+  u = \argmin_{w \in \calV} J(w). \label{eq:posnd_mixed_bc_min}
 \end{equation}
 
-We can readily show that the solution to the strong form~\eqref{eq:gen_mixed_bc_strong} satisfies the minimization condition~\eqref{eq:gen_mixed_bc_min}. To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:gen_mixed_bc_strong} and $v$ is an arbitrary function in $\calV$. We  then observe
+We can readily show that the solution to the strong form~\eqref{eq:posnd_mixed_bc_strong} satisfies the minimization condition~\eqref{eq:posnd_mixed_bc_min}. To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:posnd_mixed_bc_strong} and $v$ is an arbitrary function in $\calV$. We  then observe
 \begin{align*}
   J(u + v)
   &=
@@ -259,15 +259,15 @@ We integrate by parts the first term of $J'(u;v)$ to obtain
   \\
   &= - \int_\Omega v (\underbrace{ \Delta u + f }_{= 0 \text{ as } -\Delta u = f \text{ in } \Omega}) dx + \int_{\Gamma_D} \underbrace{ v \pp{u}{n} }_{=0 \text{ as } v \in \calV}ds + \int_{\Gamma_N}  v (\underbrace{ \pp{u}{n} - g }_{= 0 \text{ as } \pp{u}{n} = g \text{ on } \Gamma_N}) ds = 0;
 \end{align*}
-if $u$ is the solution to the strong form~\eqref{eq:gen_mixed_bc_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It follows
+if $u$ is the solution to the strong form~\eqref{eq:posnd_mixed_bc_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It follows
 \begin{equation*}
   J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
 \end{equation*}
-and hence the solution $u$ to strong form~\eqref{eq:gen_mixed_bc_strong} is the minimizer of the energy functional~\eqref{eq:gen_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:gen_mixed_bc_min}.
+and hence the solution $u$ to strong form~\eqref{eq:posnd_mixed_bc_strong} is the minimizer of the energy functional~\eqref{eq:posnd_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:posnd_mixed_bc_min}.
 
-In the minimization formulation of the mixed boundary condition, the Dirichlet and Neumann conditions are treated differently.  On one hand, we explicitly impose the Dirichlet boundary condition $u = 0$ on $\Gamma_D$ through the choice of the space $\calV$ in~\eqref{eq:gen_mixed_bc_space}. On the other hand, the Neumann boundary condition $\pp{u}{n} = g$ on $\Gamma_N$ is implicitly contained in the minimization statement~\eqref{eq:gen_mixed_bc_min}.  A boundary condition that is explicitly imposed by the choice of the function space is called a \emph{essential boundary condition}; a boundary condition that is implicitly imposed by the minimization statement is called a \emph{natural boundary condition}.  In the above treatment of the Poisson equation with a mixed boundary condition, the Dirichlet condition is an essential boundary condition, and the Neumann condition is a natural boundary condition.
+In the minimization formulation of the mixed boundary condition, the Dirichlet and Neumann conditions are treated differently.  On one hand, we explicitly impose the Dirichlet boundary condition $u = 0$ on $\Gamma_D$ through the choice of the space $\calV$ in~\eqref{eq:posnd_mixed_bc_space}. On the other hand, the Neumann boundary condition $\pp{u}{n} = g$ on $\Gamma_N$ is implicitly contained in the minimization statement~\eqref{eq:posnd_mixed_bc_min}.  A boundary condition that is explicitly imposed by the choice of the function space is called a \emph{essential boundary condition}; a boundary condition that is implicitly imposed by the minimization statement is called a \emph{natural boundary condition}.  In the above treatment of the Poisson equation with a mixed boundary condition, the Dirichlet condition is an essential boundary condition, and the Neumann condition is a natural boundary condition.
 
-We can similarly consider a variational form of~\eqref{eq:gen_mixed_bc_strong}. We again work with the space $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$. We then introduce a bilinear form $a: \calV \times \calV \to \RR$ given by
+We can similarly consider a variational form of~\eqref{eq:posnd_mixed_bc_strong}. We again work with the space $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$. We then introduce a bilinear form $a: \calV \times \calV \to \RR$ given by
 \begin{equation*}
   a(w,v) \equiv \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV,
 \end{equation*}
@@ -277,18 +277,18 @@ and a linear form $\ell: \calV \to \RR$ given by
 \end{equation*}
 Our variational problem is as follows: find $u \in \calV$ such that
 \begin{equation}
-  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:gen_mixed_bc_weak}
+  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:posnd_mixed_bc_weak}
 \end{equation}
-We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:gen_mixed_bc_weak} if and only if it is the solution to the minimization problem~\eqref{eq:gen_mixed_bc_min}.
+We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:posnd_mixed_bc_weak} if and only if it is the solution to the minimization problem~\eqref{eq:posnd_mixed_bc_min}.
 
 \section{Inhomogeneous Dirichlet boundary condition}
 We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition.  The strong form is as follows: find $u$ such that
 \begin{align}
-  -\Delta u &= f \quad \text{in } \Omega \label{eq:gen_inhomo_bc_strong} \\
+  -\Delta u &= f \quad \text{in } \Omega \label{eq:posnd_inhomo_bc_strong} \\
   u &= u_B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
 \end{align}
-for some boundary function $u_B$ and source term $f$. While we focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:gen_mixed} to treat mixed problems with inhomogeneous Dirichlet boundary conditions.
-To obtain a minimization form of~\eqref{eq:gen_inhomo_bc_strong}, we introduce a spaces
+for some boundary function $u_B$ and source term $f$. While we focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:posnd_mixed} to treat mixed problems with inhomogeneous Dirichlet boundary conditions.
+To obtain a minimization form of~\eqref{eq:posnd_inhomo_bc_strong}, we introduce a spaces
 \begin{align*}
   \calV_D &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
   \calV &\equiv H^1_0(\Omega).
@@ -296,16 +296,16 @@ To obtain a minimization form of~\eqref{eq:gen_inhomo_bc_strong}, we introduce a
 Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. Rather, $\calV_D$ is an \emph{affine space}: given an arbitrary fixed element $u_D \in \calV_D$, we have $\calV_D = u_D + \calV = \{ u_D + v \ | \ v \in \calV \}$. In any event, we introduce a functional $J: \calV_D \to \RR$ given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} \int_{\Omega} \nabla w \cdot \nabla w dx - \int_\Omega f w dx
-  \label{eq:gen_inhomo_bc_min_func}
+  \label{eq:posnd_inhomo_bc_min_func}
 \end{equation}
 and introduce a minimization problem: find $u \in \calV_D$ such that
 \begin{equation}
   u = \argmin_{w \in \calV_D} J(w).
-  \label{eq:gen_inhomo_bc_min}
+  \label{eq:posnd_inhomo_bc_min}
 \end{equation}
 We note that the inhomogeneous Dirichlet boundary condition $u = u_B$ on $\Gamma_D$ is an essential boundary condition.
 
-We now show that the solution to~\eqref{eq:gen_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:gen_inhomo_bc_min}. We first set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:gen_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
+We now show that the solution to~\eqref{eq:posnd_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:posnd_inhomo_bc_min}. We first set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:posnd_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
 \begin{align*}
   J(u + v)
   &=
@@ -324,17 +324,17 @@ the second term vanishes because $v \in \calV$ (and not $\calV_D$). It follows
 \begin{equation*}
   J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
 \end{equation*}
-and hence the solution $u$ to strong form~\eqref{eq:gen_mixed_bc_strong} is the minimizer of the functional~\eqref{eq:gen_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:gen_mixed_bc_min}.
+and hence the solution $u$ to strong form~\eqref{eq:posnd_mixed_bc_strong} is the minimizer of the functional~\eqref{eq:posnd_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:posnd_mixed_bc_min}.
 
 The associated variational problem is as follows: find $u \in \calV_D$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV.
-  \label{eq:gen_inhomo_bc_var}
+  \label{eq:posnd_inhomo_bc_var}
 \end{equation}
 The trial space $\calV_D$ is an affine space of functions that satisfy the inhomogeneous Dirichlet boundary condition; the test space $\calV$ is a linear space of functions that vanish on the Dirichlet boundary.
 %The solution is sought in the space $\calV_D$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
 
-In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:gen_inhomo_bc_var} as
+In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
 \begin{equation*}
   a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
   a(\tilde u,v) = \ell(v) - a(u_D,v).
@@ -438,7 +438,7 @@ We summarize key points of this lecture:
 
 
 %% \section{Finite element approximation}
-%% We now wish to obtain a finite element approximation of the variational form~\eqref{eq:gen_poisson_nd_weak} or, equivalently, the minimization form~\eqref{eq:gen_poisson_nd_min}. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $N_e$ non-overlapping elements $\kappa_1, \dots, \kappa_{N_e}$:
+%% We now wish to obtain a finite element approximation of the variational form~\eqref{eq:posnd_poisson_nd_weak} or, equivalently, the minimization form~\eqref{eqpoisson_nd_min}. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $N_e$ non-overlapping elements $\kappa_1, \dots, \kappa_{N_e}$:
 %% \begin{equation*}
 %%   \calT_h \equiv \{ \kappa_i \}_{i=1}^{N_e}.
 %% \end{equation*}
