@@ -1,0 +1,21 @@
+\chapter{Hyperbolic equations: discontinuous Galerkin method}
+
+
+
+\begin{align*}
+  \pp{u}{t} + \nabla \cdot (\beta u) &= 0 \quad \text{in } \Omega \times I, \\
+  u &= u_D \quad \text{on } \Gamma_- \times I, \\
+  u &= u_0 \quad \text{on } \Omega, \ t = 0;
+\end{align*}
+here $\Gamma_-$ is the inflow boundary
+\begin{equation*}
+  \Gamma_- \equiv \{ x \in \partial \Omega \ | \ \beta \cdot n < 0 \}.
+\end{equation*}
+
+\begin{equation*}
+  \int_\kappa v \pp{u_h}{t} dx
+  - \int_\kappa \nabla v \cdot \beta u_h dx
+  + \int_{\partial \kappa} v \hat n \cdot \widehat{\beta u_h} ds = 0. 
+\end{equation*}
+
+
