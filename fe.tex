@@ -2,98 +2,175 @@
 
 \disclaimer
 
-\section{Linear Lagrange finite element on lines}
+\section{Introduction}
+
+\section{Finite element spaces}
+We now introduce a few commonly used finite element spaces. To this end, we first introduce a conforming \emph{tessellation} (or \emph{triangulation}) of $\Omega \subset \RR^d$ into $n_e$ non-overlapping elements $K_1, \dots, K_{n_e}$:
+\begin{equation*}
+  \calT_h \equiv \{ K_i \}_{i=1}^{n_e}.
+\end{equation*}
+A tessellation often comprises line segments in one dimension, triangles or quadrilaterals in two dimension, and tetrahedrons or hexahedrons in three dimensions.  A tessellation $\calT_h$ is characterized by a maximum diameter of the elements that comprise the set: $h \equiv \max_{i} \text{diam}(K_i)$, where $\text{diam}(K_i)$ is the diameter of the smallest ball that inscribes the element $K_i$.
+
+Given a tessellation, we choose an associated piecewise polynomial space as the finite element space $\calV_h$.  We recall that our variational (or weak) formulation requires that the finite element space is a subset of the function space for the exact PDE.  For second-order elliptic equations (e.g., Poisson equation), the appropriate function space is $\calV \subset H^1(\Omega)$.  Since our finite element space $\calV_h$ is piecewise polynomial, the continuity across element boundaries is the necessary and sufficient condition for $\calV_h \subset \calV$: for a piecewise polynomial space $\calV_h$,
+\begin{equation*}
+  \calV_h \subset \calV \quad \Leftrightarrow \quad \calV_h \subset C^0(\overline \Omega) ,
+\end{equation*}
+where  $C^0(\overline \Omega)$ is the space of continuous functions over $\overline \Omega$.
+
+Given the continuity requirement, we will construct finite element spaces of the form
+\begin{equation}
+  \calV_h \equiv \{ v \in C^0(\overline \Omega) \ | v |_{K_i} \in \PP^p(K_i), \ i = 1,\dots, n_e \};
+  \label{eq:fe_space}
+\end{equation}
+we recall that $\PP^p(K_i)$ is the space of degree $p$ polynomials over $K_i$. Formally, a finite element space is parametrized by the following three properties:
+\begin{enumerate}
+\item the tessellation $\calT_h$ of $\Omega$;
+\item the type of functions that constitutes the space (e.g., piecewise linear polynomial);
+\item the degree of freedom used to describe functions in the space.
+\end{enumerate}
+The first two are apparent from the definition of the finite element space~\eqref{eq:fe_space}.  The last property determines how a function $v \in \calV_h$ is represented on a computer.  Specifically, given a $N$-dimensional function space $\calV_h$, we assign $N$ degrees of freedom --- typically choosing $N$ basis functions --- such that the a function $v \in \calV_h$ can be uniquely described by $N$ real numbers.  We will clarify this third property in Section~\ref{sec:fe_map}.
+
+
+\section{Linear Lagrange element on a line segment}
 \label{sec:fe_lin_line}
-We first introduce arguably the simplest form of finite element: linear Lagrange elements on (one-dimensional) line. In one dimension, any linear function can be expressed as a linear combination of a monomial basis
+We first introduce arguably the simplest finite element: linear Lagrange element on a unit line segment $\hat K$.  Our unit line segment $\hat K \equiv (\hat x^1, \hat x^2)$ is delineated by two endpoints
 \begin{equation*}
-  \{ 1, x \};
+  \hat x^1 = 0 \quad \text{and} \quad \hat x^2 = 1.
 \end{equation*}
-by construction, $\text{span}\{1,x\} = \PP^1(\kappa)$. Our goal is to find the \emph{Lagrange shape functions}
+For the linear polynomial space $\PP^1(\hat K)$ and the interpolation points $\{\hat x^1, \hat x^2\}$, a unique set of \emph{Lagrange basis functions} (or \emph{Lagrange shape functions}) is given by
 \begin{equation*}
-  \{ \phi_1, \phi_2 \}
+  \hat \phi_1(\hat x) = 1 - \hat x \quad \text{and} \quad \hat \phi_2(\hat x) = \hat x.
 \end{equation*}
-that forms a basis (i.e., $\text{span}\{ \phi_1, \phi_2 \} = \PP^1(\kappa)$) and satisfies the interpolation condition
-\begin{equation}
-  \phi_i(x^j) = \delta_{ij};  \label{eq:fe_interp}
- % \equiv
- % \begin{cases}
- %   1, \quad i = j \\
- %   0, \quad i \neq j
- % \end{cases} 
-\end{equation}
-here $\delta_{ij}$ is the \emph{Kronecker delta} such that $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.  To find the basis, we first express the shape functions in terms of the monomial basis:
-\begin{equation}
-  \phi_i(x) = a^i_1 + a^i_2 x \quad i = 1, 2.
-  \label{eq:fe_lin_line_rep}
-\end{equation}
-We now apply the interpolation condition~\eqref{eq:fe_interp} to find the coefficients.  For instance, $\phi_1$ must satisfy
+Note that these basis functions satisfy the interpolation condition
 \begin{equation*}
-  \bmat{cc}
-  1 & x^1 \\
-  1 & x^2 \\
-  \emat
-  \bmat{c}
-  a_1^1 \\ a_2^1 
-  \emat
-  =
-  \bmat{c}
-  1 \\ 0 
-  \emat
+  \phi_i(\hat x^j) = \delta_{ij}.
 \end{equation*}
-We can also pose a single matrix equation for the monomial coefficients of all three shape functions: 
-\begin{equation*}
-  \bmat{cc}
-  1 & x^1 \\
-  1 & x^2 \\
-  \emat
-  \bmat{cc}
-  a_1^1 & a_1^2 \\
-  a_2^1 & a_2^2 \\
-  \emat
-  =
-  \bmat{cc}
-  1 & 0 \\
-  0 & 1 \\
-  \emat.
-\end{equation*}
-We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not colinear, which is equivalent to the condition that the triangle have a finite area.
+Here $\delta_{ij}$ is the \emph{Kronecker delta}: $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.
 
-Once we find the coefficients of the shape functions, we can evaluate the value of the functions at any point in the triangle by evaluating~\eqref{eq:fe_lin_line_rep}. We can also differentiate~\eqref{eq:fe_lin_line_rep} to obtain the gradient of the shape functions:
-\begin{align*}
-  \pp{\phi_i}{x}(x) = a_2^i
-\end{align*}
-The derivatives are constant over the element because the shape functions are linear.
+With these basis functions, we can describe any function $v \in \PP^1(\hat K)$ as
+\begin{equation*}
+  v = \sum_{i=1}^{n_s} \hat v_i \hat \phi_i
+\end{equation*}
+for $\hat v_i \equiv v(\hat x^i)$, $i = 1,2$; the values of the function at the end points are the degree of freedom of the finite element.  Similarly, the derivative of the function is given by
+\begin{equation*}
+  \pp{v}{\hat x} = \sum_{i=1}^{n_s} \hat v_i \pp{\hat \phi_i}{\hat x},
+\end{equation*}
+where the direct differentiation of the basis functions yields $\pp{\hat \phi_1}{\hat x} = -1$ and $\pp{\hat \phi_2}{\hat x} = 1$.
 
-\section{Linear Lagrange finite element on triangles}
+We use this simple finite element as an example to describe three properties that formally defines a \emph{finite element}:
+\begin{enumerate}
+\item the domain $\hat K$ over which the element is defined (e.g., the line segment $(0,1)$);
+\item the finite-dimensional linear space of functions (e.g., the linear polynomial space $\PP^1(\hat K)$);
+\item the degree of freedom used to describe functions (e.g., the values of the function at the endpoints $\hat x^1$ and $\hat x^2$).
+\end{enumerate}
+
+%To see the equivalence, we observe that .  Conversely, if a polynomial space is no
+%We hence choose
+%\begin{equation*}
+%  \calV_h \equiv \{ v \in C^0(\overline \Omega) \ | v |_{K_i} \in \PP^p(K_i), \ i = 1,\dots, n_e \};
+%\end{equation*}
+%
+
+
+
+%% \section{Linear Lagrange finite element on line segments}
+
+
+%% \label{sec:fe_lin_line}
+%% We first introduce arguably the simplest form of finite element: linear Lagrange elements on (one-dimensional) line. In one dimension, any linear function can be expressed as a linear combination of a monomial basis
+%% \begin{equation*}
+%%   \{ 1, x \};
+%% \end{equation*}
+%% by construction, $\text{span}\{1,x\} = \PP^1(K)$. Our goal is to find the \emph{Lagrange shape functions}
+%% \begin{equation*}
+%%   \{ \phi_1, \phi_2 \}
+%% \end{equation*}
+%% that forms a basis (i.e., $\text{span}\{ \phi_1, \phi_2 \} = \PP^1(K)$) and satisfies the interpolation condition
+%% \begin{equation}
+%%   \phi_i(x^j) = \delta_{ij};  \label{eq:fe_interp}
+%%  % \equiv
+%%  % \begin{cases}
+%%  %   1, \quad i = j \\
+%%  %   0, \quad i \neq j
+%%  % \end{cases} 
+%% \end{equation}
+%% here $\delta_{ij}$ is the \emph{Kronecker delta} such that $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.  To find the basis, we first express the shape functions in terms of the monomial basis:
+%% \begin{equation}
+%%   \phi_i(x) = a^i_1 + a^i_2 x \quad i = 1, 2.
+%%   \label{eq:fe_lin_line_rep}
+%% \end{equation}
+%% We now apply the interpolation condition~\eqref{eq:fe_interp} to find the coefficients.  For instance, $\phi_1$ must satisfy
+%% \begin{equation*}
+%%   \bmat{cc}
+%%   1 & x^1 \\
+%%   1 & x^2 \\
+%%   \emat
+%%   \bmat{c}
+%%   a_1^1 \\ a_2^1 
+%%   \emat
+%%   =
+%%   \bmat{c}
+%%   1 \\ 0 
+%%   \emat
+%% \end{equation*}
+%% We can also pose a single matrix equation for the monomial coefficients of all three shape functions: 
+%% \begin{equation*}
+%%   \bmat{cc}
+%%   1 & x^1 \\
+%%   1 & x^2 \\
+%%   \emat
+%%   \bmat{cc}
+%%   a_1^1 & a_1^2 \\
+%%   a_2^1 & a_2^2 \\
+%%   \emat
+%%   =
+%%   \bmat{cc}
+%%   1 & 0 \\
+%%   0 & 1 \\
+%%   \emat.
+%% \end{equation*}
+%% We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not colinear, which is equivalent to the condition that the triangle have a finite area.
+
+%% Once we find the coefficients of the shape functions, we can evaluate the value of the functions at any point in the triangle by evaluating~\eqref{eq:fe_lin_line_rep}. We can also differentiate~\eqref{eq:fe_lin_line_rep} to obtain the gradient of the shape functions:
+%% \begin{align*}
+%%   \pp{\phi_i}{x}(x) = a_2^i
+%% \end{align*}
+%% The derivatives are constant over the element because the shape functions are linear.
+
+\section{Linear Lagrange finite element on a triangle}
 \label{sec:fe_lin_tri}
-We introduce arguably the simplest form of finite element in two dimensions: linear Lagrange basis on traingles.  In two dimensions, any linear function can be expressed as a linear combination of a monomial basis
+We next introduce arguably the simplest form of finite element in two dimensions: linear Lagrange element on a reference triangle.  Our \emph{reference triangle} is delineated by three vertices
 \begin{equation*}
-  \{ 1, x_1, x_2\};
+  x^1 \equiv (0,0), \quad x^2 \equiv (1,0), \quad \text{and} \quad x^3 \equiv (0,1).
 \end{equation*}
-by construction, $\text{span}\{1,x_1,x_2\} = \PP^1(\kappa)$. Our goal is to find the \emph{Lagrange shape functions}
+While we may identify the Lagrange basis functions for the linear space by inspection as we have done in Section~\ref{sec:fe_lin_line} for a line segment, we here follow a more systematic procedure that apply to more complex domains and higher-order polynomials.  To this end, we first note that any linear function can be expressed as a linear combination of a monomial basis
 \begin{equation*}
-  \{ \phi_1, \phi_2, \phi_3 \}
+  \{ 1, \hat x_1, \hat x_2\}.
 \end{equation*}
-that forms a basis (i.e., $\text{span}\{ \phi_1, \phi_2, \phi_3 \} = \PP^1(\kappa)$) and satisfies the interpolation condition
+Our goal is to find the Lagrange basis functions
+\begin{equation*}
+  \{ \hat \phi_1, \hat \phi_2, \hat \phi_3 \}
+\end{equation*}
+that satisfies the interpolation condition
 \begin{equation}
-  \phi_i(x^j) = \delta_{ij};  \label{eq:fe_interp_tri}
+  \hat \phi_i(\hat x^j) = \delta_{ij};  \label{eq:fe_interp_tri}
  % \equiv
  % \begin{cases}
  %   1, \quad i = j \\
  %   0, \quad i \neq j
  % \end{cases} 
 \end{equation}
-here $\delta_{ij}$ is the \emph{Kronecker delta} such that $\delta_{ij} = 1$ for $i = j$ and $\delta_{ij} = 0$ for $i \neq j$.  To find the basis, we first express the shape functions in terms of the monomial basis:
+To find the basis, we first express the shape functions in terms of the monomial basis:
 \begin{equation}
-  \phi_i(x) = a^i_1 + a^i_2 x_1 + a_3^i x_2 \quad i = 1, 2, 3.
+  \hat \phi_i(\hat x) = a^i_1 + a^i_2 \hat x_1 + a_3^i \hat x_2 \quad i = 1, 2, 3.
   \label{eq:fe_lin_tri_rep}
 \end{equation}
-We now apply the interpolation condition~\eqref{eq:fe_interp_tri} to find the coefficients.  For instance, $\phi_1$ must satisfy
+We now apply the interpolation condition~\eqref{eq:fe_interp_tri} to find the coefficients.  For instance, $\hat \phi_1$ must satisfy
 \begin{equation*}
   \bmat{ccc}
-  1 & x_1^1 & x_2^1 \\
-  1 & x_1^2 & x_2^2 \\
-  1 & x_1^3 & x_2^3 \\
+  1 & \hat x_1^1 & \hat x_2^1 \\
+  1 & \hat x_1^2 & \hat x_2^2 \\
+  1 & \hat x_1^3 & \hat x_2^3 \\
   \emat
   \bmat{ccc}
   a_1^1 \\ a_2^1 \\ a_3^1
@@ -106,9 +183,9 @@ We now apply the interpolation condition~\eqref{eq:fe_interp_tri} to find the co
 We can also pose a single matrix equation for the monomial coefficients of all three shape functions: 
 \begin{equation*}
   \bmat{ccc}
-  1 & x_1^1 & x_2^1 \\
-  1 & x_1^2 & x_2^2 \\
-  1 & x_1^3 & x_2^3 \\
+  1 & \hat x_1^1 & \hat x_2^1 \\
+  1 & \hat x_1^2 & \hat x_2^2 \\
+  1 & \hat x_1^3 & \hat x_2^3 \\
   \emat
   \bmat{ccc}
   a_1^1 & a_1^2 & a_1^3 \\
@@ -122,18 +199,44 @@ We can also pose a single matrix equation for the monomial coefficients of all t
   0 & 0 & 1
   \emat.
 \end{equation*}
-We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not colinear, which is equivalent to the condition that the triangle have a finite area.
+We note that the matrix in the first matrix in the left hand side is the \emph{Vandermonde matrix} associated with our monomial basis evaluated at the vertices of the triangle.  The linear equation is well-posed as long as the interpolation points are not collinear, which is equivalent to the condition that the triangle have a finite area; the condition is obviously satisfied for our reference triangle $\hat K$.
 
 Once we find the coefficients of the shape functions, we can evaluate the value of the functions at any point in the triangle by evaluating~\eqref{eq:fe_lin_tri_rep}. We can also differentiate~\eqref{eq:fe_lin_tri_rep} to obtain the gradient of the shape functions:
 \begin{align*}
-  \pp{\phi_i}{x_1}(x) = a_2^i
+  \pp{\phi_i}{\hat x_1}(x) = a_2^i
   \quad \text{and} \quad
-  \pp{\phi_i}{x_2}(x) = a_3^i, \quad i = 1,2,3.
+  \pp{\phi_i}{\hat x_2}(x) = a_3^i, \quad i = 1,2,3.
 \end{align*}
 The derivatives are constant over the element because the shape functions are linear.
 
-\section{Bilinear Lagrange basis on quadrilaterals}
-We now consider arguably the simplest basis function on a quadrilaterial: bilinear Lagrange basis.  In two dimensions, any bilinear function can be expressed as a linear combination of monomial basis $\{ 1, x_1, x_2, x_1 x_2 \}$, which, unlike the triangular case, includes the cross term. Our interpolation points are the four vertices of the quadrilateral $\{ x^1, x^2, x^3, x^4 \}$.  Our shape functions are given by 
+\section{Generation: Lagrange element of arbitrary degree on arbitrary domain}
+We can generalize the procedure to generate a Lagrange element of an arbitrary degree on an arbitrary domain.  Say we wish to generate Lagrange basis for a polynomial space of degree $p$ with a dimension of $n_s$.  Then, we first identify \emph{any} basis 
+\begin{align*}
+  \hat \phi_i = \sum_{j=1}^{n_s} a^i \psi_j
+\end{align*}
+
+\begin{align*}
+  \bmat{ccc}
+  \psi_1(\hat x^1) & \cdots & \psi_{n_s}(\hat x^1) \\
+  \vdots & \ddots & \vdots \\
+  \psi_{n_s}(\hat x^1) & \cdots & \psi_{n_s}(\hat x^{n_s}) 
+  \emat
+  \bmat{ccc}
+  a^1_1 & \cdots & a^{n_s}_1 \\
+  \vdots & \ddots & \vdots \\
+  a^1_{n_s} & \cdots & a^{n_s}_{n_s}
+  \emat
+  =
+  I_{n_s},
+\end{align*}
+where $I_{n_s}$ is the $n_s \times n_s$ identity matrix.
+
+\section{Bilinear Lagrange element on a quadrilateral}
+We now consider arguably the simplest basis function on quadrilaterals: bilinear Lagrange basis on a reference quadrilateral.  Our reference quadrilateral is a unit square that is delineated by vertices
+\begin{equation*}
+  x^1 = (0,0), \quad x^2 = (1,0), \quad x^3 = (0,1), \quad \text{and} \quad x^4 = (1,1).
+\end{equation*}
+In two dimensions, any bilinear function can be expressed as a linear combination of monomial basis $\{ 1, x_1, x_2, x_1 x_2 \}$, which, unlike the triangular case, includes the cross term. Our interpolation points are the four vertices of the quadrilateral $\{ x^1, x^2, x^3, x^4 \}$.  Our shape functions are given by 
 \begin{equation}
   \phi_i(x) = a_1^i + a_2^i x_1 + a_3^i x_2 + a_4^i x_1 x_2, \quad i = 1,\dots,4,
   \label{eq:fe_lin_quad_rep}
@@ -179,15 +282,21 @@ For instance, for the linear Lagrange element in Section~\ref{sec:fe_lin_tri} ch
 
 In general, a Lagrange basis is uniquely determined by (i) the degree of polyno
 
-\section{Isoparametric mapping}
-We have so far focused on the generation of shape functions on reference elements.  We now wish to map these shape functions to the physical element that constitutes the mesh.  To this end, we introduce the procedure based on \emph{isoparametric mapping}.
 
-The isoparametric mapping is a mapping from the reference element to the physical element such that (i) the mapping is polynomial and (ii) the Lagrange interpolation points of the reference element are mapped to the respective Lagrange interpolation points of the physical element. For instance, for a linear triangle, the mapping is linear and vertices of the reference triangle are mapped to the respective vertices of the physical triangle.  For a quadratic triangle, the mapping is quadratic and vertices and mid-edge nodes of the reference triangle are mapped to the respective vertices and mid-edge nodes. Algebraically, the isoparametric mapping that maps $\xi \in \hat \kappa$ to $x \in \kappa$ can be written as
+\section{Isoparametric mapping}
+We have so far focused on the generation of shape functions on reference elements.  We now wish to map these shape functions to the physical elements that constitute the triangulation $\calT_h$.  To this end, we introduce the procedure based on \emph{isoparametric mapping}.
+
+The isoparametric mapping is a mapping from the reference element to the physical element such that (i) the mapping is polynomial and (ii) the Lagrange interpolation points of the reference element are mapped to the respective Lagrange interpolation points of the physical element. For instance, for a linear triangle, the mapping is linear and vertices of the reference triangle are mapped to the respective vertices of the physical triangle.  For a quadratic triangle, the mapping is quadratic and vertices and mid-edge nodes of the reference triangle are mapped to the respective vertices and mid-edge nodes of the physical triangle. Algebraically, the isoparametric mapping that maps $\xi \in \hat K$ to $x \in K$ is given by
 \begin{equation}
-  x_i(\xi) = \sum_{j=1}^{n_s} x^j_i \hat \phi_i(\xi), \quad i = 1,\dots,d,
+  x_i(\xi) = \sum_{j=1}^{n_s} x^j_i \hat \phi_j(\xi), \quad i = 1,\dots,d,
   \label{eq:fe_iso_map}
 \end{equation}
-where $x_i^j$ is the $i$-th coordinate of the $j$-th interpolation point, and $\hat \phi_i$ is the Lagrange shape function on the reference element associated with the $i$-th interpolation node.
+where $x_i^j$ is the $i$-th coordinate of the $j$-th interpolation point, and $\hat \phi_i$ is the Lagrange basis function on the reference element associated with the $i$-th interpolation node. This map satisfies the two conditions of isoparametric mapping:
+\begin{itemize}
+\item[(i)] Because the Lagrange basis functions are polynomial, the mapping $\xi \mapsto x$ is polynomial.
+\item[(ii)] The $k$-th interpolation point of the reference triangle $\xi^k$ is mapped to the $k$-th interpolation point of the physical triangle $x^k$ since $x(\xi^k) = \sum_{j=1}^{n_s} x^j \hat \phi_j(\xi^k) = \sum_{j=1}^{n_s} x^j \delta_{jk} = x^k$.
+\end{itemize}
+Hence, $\hat K \ni \xi \mapsto x \in K$ is an isoparametric mapping.
 
 We can differentiate~\eqref{eq:fe_iso_map} to evaluate the \emph{Jacobian} of the isoparametric mapping; the $(i,j)$ entry of the Jacobian $J \equiv \pp{x}{\xi_j} \in \RR^{d \times d}$, is given by
 \begin{equation*}
@@ -209,6 +318,10 @@ We can differentiate~\eqref{eq:fe_iso_map} to evaluate the \emph{Jacobian} of th
 \begin{equation*}
   \pp{\phi}{x_i}(x) = \left. \pp{\hat \phi}{\xi_j} \right|_\xi  \left. \pp{\xi_j}{x_i} \right|_\xi
 \end{equation*}
+
+\section{Mapping of local and global degrees of freedom}
+\label{sec:fe_map}
+
 
 
 \section{Interpolation error: linear element in one dimension}
