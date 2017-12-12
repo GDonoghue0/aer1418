@@ -9,11 +9,11 @@ In this lecture, we provide a brief overview of variational formulation and the 
 \label{sec:pos1d_strong}
 We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:pos1d_string}.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: find $u$ such that
 \begin{align}
-  - \dd{^2u}{x^2} &= f \quad \text{in } \Omega  \label{eq:pos1d_strong} \\
+  - \dd{^2u}{x^2} &= f \qquad \text{in } \Omega  \label{eq:pos1d_strong} \\
   u(x=0) &= 0 \notag , \\
   u(x=1) &= 0 \notag ,
 \end{align}
-where $f$ is associated with the transverse load.  We may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We will refer to this particular form of the problem as the \emph{strong form}.
+where $f$ is associated with the transverse load.  For an integrable $f$, we may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We refer to this particular form of the problem as the \emph{strong form}.  The name derives from the fact the equation is enforced strongly in the point-wise sense for each $x$ in $\Omega$; the nomenclature should become clearer once we introduce the \emph{weak form} in the next section.
 
 \begin{figure}
   \centering
@@ -29,8 +29,21 @@ where $f$ is associated with the transverse load.  We may integrate the ODE twic
 %% \end{align*}
 %% here $u$ is the displacement, $\sigma$ is the internal force (i.e. area weighted stress), $E$ is the Young's modulus, $A$ is the cross sectional area, and $f$ is the distributed external force. We recognize that the problem fits in the model equation~\eqref{eq:pos1d_strong}.
 
-\section{Minimization form}
-We now consider a \emph{minimization form} of the model problem~\eqref{eq:pos1d_strong}.  To this end, we first introduce a linear space
+\section{Variational form (or weak form)}
+\label{sec:pos1d_var}
+We now consider a different form of~\eqref{eq:pos1d_strong} that is amenable to finite element discretization. To begin, we choose a (sufficiently regular) test function such that $v(x=0) = v(x=1) = 0$, multiply~\eqref{eq:pos1d_strong} by the function, and integrate the expression to obtain
+\begin{equation}
+  \int_\Omega v \left( -\dd{^2u}{x^2} \right) dx = \int_\Omega v f dx.
+  \label{eq:pos1d_weak_pre}
+\end{equation}
+We then integrate by parts the left hand side to obtain
+\begin{equation*}
+  \int_\Omega \dd{v}{x} \dd{u}{x} dx = \int_\Omega v f dx;
+  \label{eq:pos1d_weak}
+\end{equation*}
+note that the boundary terms vanish because we require $v(x=0) = v(x=1) = 0$. If the $u$ is the solution to~\eqref{eq:pos1d_strong}, then we expect the expression~\eqref{eq:pos1d_weak_pre}, and in turn~\eqref{eq:pos1d_weak}, to hold for \emph{any} test function $v$.  In fact, the \emph{variational form}, which is also known as the \emph{weak form}, is derived from seeking the solution $u$ which satisfies~\eqref{eq:pos1d_weak_pre} for all suitable test functions $v$.  We may speculate that, given we consider a suitably large set of test functions, the solution $u$ is unique and coincide with the solution to~\eqref{eq:pos1d_strong}.
+
+We now formalize the procedure. To this end, we first introduce a linear space
 \begin{equation}
   \calV \equiv \{ v \ | \
    v \text{ is continuous, } 
@@ -38,44 +51,7 @@ We now consider a \emph{minimization form} of the model problem~\eqref{eq:pos1d_
    v(x=0) = v(x=1) = 0 \}.
   \label{eq:pos1d_V}
 \end{equation}
-The first two conditions are related to the smoothness of the solution sought, and the last condition imposes the boundary condition.
-We then define a functional $J: \calV \to \RR$ given by
-\begin{equation}
-  J(w) \equiv \frac{1}{2} \int_\Omega \left( \dd{w}{x} \right)^2 dx - \int_\Omega f w dx \quad \forall w \in \calV.
-  \label{eq:pos1d_J}
-\end{equation}
-Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
-\begin{equation}
-  u = \argmin_{w \in \calV} J(w).
-  \label{eq:pos1d_min}
-\end{equation}
-For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:pos1d_strong}, the functional $J$ represents the total energy in the system; $\int_\Omega (\pp{w}{x})^2 dx$ is the internal energy and $\int_\Omega f w dx$ is the external work.  Our minimization statement is hence a statement of energy minimization at the equilibrium. 
-
-We can readily show that the solution to the strong form~\eqref{eq:pos1d_strong} solves the minimization problem~\eqref{eq:pos1d_min}.  To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:pos1d_strong} and $v$ is an arbitrary function in $\calV$.  We then note that $J(w) = J(u+v)$ can be decomposed into three terms:
-\begin{align*}
-  J(u+v) &= \frac{1}{2} \int_{\Omega} \left( \dd{(u+v)}{x} \right)^2 dx - \int_\Omega f(u+v) dx \\
-  &= \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{u}{x} \right)^2 dx - \int_\Omega f u dx }_{J(u)}
-  + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx }_{J'(u;v) \text{ --- first variation}}
-  + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0}.
-\end{align*}
-Here, $J'(u;v)$ denotes the first variation of $J$ at $u$ in the direction $v$.  We integrate by parts $J'(u;v)$ to obtain
-\begin{align*}
-  J'(u;v) &= \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx
-  =
-  - \int_{\Omega} v ( \underbrace{ \dd{^2u}{x^2} + f}_{= 0 \text{ as $u$ solves \eqref{eq:pos1d_strong}}} ) dx + \underbrace{ \left[ v \dd{u}{x} \right]_{x=0}^1 }_{= 0 \text{ as $v$ is in $\calV$}}
-  = 0;
-\end{align*}
-in other words, if $u$ is the solution to the strong form~\eqref{eq:pos1d_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It thus follows
-\begin{align*}
-  J(u + v) = J(u) + \frac{1}{2} \int_\Omega \left( \dd{v}{x} \right)^2 dx
-  > J(u)  \quad \forall v \neq 0.
-\end{align*}
-The solution $u$ to the strong form~\eqref{eq:pos1d_strong} is the minimizer of the functional~\eqref{eq:pos1d_J} and hence the solution to the minimization form~\eqref{eq:pos1d_min}.
-
-While the solution to the strong form~\eqref{eq:pos1d_strong} is also the solution to the minimization form~\eqref{eq:pos1d_min}, the converse is not true in general.  In fact, the minimization form admits more general loads $f$ and associated solutions than the strong form.
-
-\section{Variational form}
-We now consider a \emph{variational form} of the model problem~\eqref{eq:pos1d_strong}. As in the minimization form, we work with the function space~$\calV$ defined in~\eqref{eq:pos1d_V}. We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
+The first two conditions are related to the smoothness of the solution sought, and the last condition imposes the boundary condition. We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
 \begin{equation}
   a(w,v) \equiv \int_{\Omega} \dd{v}{x} \dd{w}{x} dx \quad \forall w, v \in \calV,
   \label{eq:pos1d_a}
@@ -94,12 +70,60 @@ The form $a: \calV \times \calV \to \RR$ is called a \emph{bilinear form} becaus
   a(w, \tilde v) & \text{ is a linear form in $w$ for a fixed $\tilde v$, and} \\
   a(\tilde w, v) & \text{ is a linear form in $v$ for a fixed $\tilde w$}.
 \end{align*}
-Our \emph{variational problem} is as follows: find $u \in \calV$ such that
+Our \emph{variational form} of the problem is as follows: find $u \in \calV$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:pos1d_var}
 \end{equation}
-This variational form of the problem is also called the \emph{weak form}.  The space $\calV$ to which the solution $u$ belongs is called the \emph{trial space}; the space $\calV$ to which the test function $v$ belongs is called the \emph{test space}.  A variational form which uses the same function space for the trial and test spaces is called the \emph{Galerkin formulation}.  The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
+This variational form of the problem is also called the \emph{weak form}.  The space $\calV$ to which the solution $u$ belongs is called the \emph{trial space}; the space $\calV$ to which the test function $v$ belongs is called the \emph{test space}.  A variational form which uses the same function space for the trial and test spaces is called the \emph{Galerkin formulation}; our variational form~\eqref{eq:pos1d_var} is a Galerkin formulation because both the trial and test spaces are $\calV$ defined by~\eqref{eq:pos1d_V}. The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
+
+We can readily show that the solution to the strong from~\eqref{eq:pos1d_strong} solves the variational form~\eqref{eq:pos1d_var}.  To see this, we observe that, for all $v \in \calV$,
+\begin{equation*}
+  a(u,v) - \ell(v) \equiv
+  \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega vf dx
+  =
+  \int_\Omega v  \underbrace{ \left( -\dd{^2u}{x^2} - f \right) }_{= 0 \text{ as $u$ solves \eqref{eq:pos1d_strong}}}  dx  = 0 ;
+\end{equation*}
+the boundary terms again vanish because $v(x=0) = v(x=1) = 0$ for all $v \in \calV$. Hence, the solution to the strong form~\eqref{eq:pos1d_strong} satisfies the weak form~\eqref{eq:pos1d_var}. 
+
+While the solution to the strong form~\eqref{eq:pos1d_strong} is also the solution to the variational form~\eqref{eq:pos1d_var}, the converse is not true in general.  In fact, the variational form admits more general loads $f$ and associated solutions than the strong form.  For instance, a Dirac delta function, which corresponds to a point load, is an admissible load for the \eqref{eq:pos1d_var} and there exists a unique solution to the problem; however, the strong from~\eqref{eq:pos1d_strong} is not well defined for a Dirac delta function $f$ because $f$ does not have well-defined point-wise values. 
+
+\section{Minimization form}
+We now introduce a \emph{minimization form}, which is closely related to the variational form~\eqref{eq:pos1d_var}. We note that not all boundary value problems possess a minimization form; only those problems with an intrinsic energy, such as our model problem~\eqref{eq:pos1d_strong}, possesses a minimization form. To obtain a minimization form, we introduce a functional $J: \calV \to \RR$ given by
+\begin{equation}
+  J(w) \equiv \frac{1}{2} \int_\Omega \left( \dd{w}{x} \right)^2 dx - \int_\Omega f w dx \quad \forall w \in \calV,
+  \label{eq:pos1d_J}
+\end{equation}
+where $\calV$ is defined in~\eqref{eq:pos1d_V}. Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
+\begin{equation}
+  u = \argmin_{w \in \calV} J(w).
+  \label{eq:pos1d_min}
+\end{equation}
+For a physical system with intrinsic energy, such as the taut-string problem in Section~\ref{eq:pos1d_strong}, the functional $J$ represents the total energy in the system; $\int_\Omega (\pp{w}{x})^2 dx$ is the internal energy and $\int_\Omega f w dx$ is the external work.  Our minimization statement is hence a statement of energy minimization at the equilibrium. 
+
+%% We can readily show that the solution to the strong form~\eqref{eq:pos1d_strong} solves the minimization problem~\eqref{eq:pos1d_min}.  To see this, let $w = u + v$, where $u \in \calV$ is the solution to~\eqref{eq:pos1d_strong} and $v$ is an arbitrary function in $\calV$.  We then note that $J(w) = J(u+v)$ can be decomposed into three terms:
+%% \begin{align*}
+%%   J(u+v) &= \frac{1}{2} \int_{\Omega} \left( \dd{(u+v)}{x} \right)^2 dx - \int_\Omega f(u+v) dx \\
+%%   &= \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{u}{x} \right)^2 dx - \int_\Omega f u dx }_{J(u)}
+%%   + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx }_{J'(u;v) \text{ --- first variation}}
+%%   + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0}.
+%% \end{align*}
+%% Here, $J'(u;v)$ denotes the first variation of $J$ at $u$ in the direction $v$.  We integrate by parts $J'(u;v)$ to obtain
+%% \begin{align*}
+%%   J'(u;v) &= \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx
+%%   =
+%%   - \int_{\Omega} v ( \underbrace{ \dd{^2u}{x^2} + f}_{= 0 \text{ as $u$ solves \eqref{eq:pos1d_strong}}} ) dx + \underbrace{ \left[ v \dd{u}{x} \right]_{x=0}^1 }_{= 0 \text{ as $v$ is in $\calV$}}
+%%   = 0;
+%% \end{align*}
+%% in other words, if $u$ is the solution to the strong form~\eqref{eq:pos1d_strong}, then $J'(u;v) = 0$ for all $v \in \calV$. It thus follows
+%% \begin{align*}
+%%   J(u + v) = J(u) + \frac{1}{2} \int_\Omega \left( \dd{v}{x} \right)^2 dx
+%%   > J(u)  \quad \forall v \neq 0.
+%% \end{align*}
+%% The solution $u$ to the strong form~\eqref{eq:pos1d_strong} is the minimizer of the functional~\eqref{eq:pos1d_J} and hence the solution to the minimization form~\eqref{eq:pos1d_min}.
+
+%% \section{Variational form}
+%% We now consider a \emph{variational form} of the model problem~\eqref{eq:pos1d_strong}. As in the minimization form, we work with the function space~$\calV$ defined in~\eqref{eq:pos1d_V}.
 
 We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var} if and only if it is the solution to the minimization problem~\eqref{eq:pos1d_min}.  Suppose that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var}.  Then, for $w = u + v$ for any $v \in \calV$, we obtain
 \begin{align*}
@@ -114,7 +138,7 @@ Conversely, suppose $u \in \calV$ is the solution to the minimization problem~\e
   - \int_{\Omega} f v dx
   = a(u,v) - \ell(v) = 0 \quad \forall v \in \calV,
 \end{equation*}
-which the exact condition of our variational problem~\eqref{eq:pos1d_var}. Hence we conclude that $u \in \calV$ is the solution to~\eqref{eq:pos1d_var} if and only if it is the solution to~\eqref{eq:pos1d_min}.  We will soon see that we can derive a finite element approximation from either~\eqref{eq:pos1d_var} or \eqref{eq:pos1d_min}.
+which the exact condition of our variational problem~\eqref{eq:pos1d_var}. Hence we conclude that $u \in \calV$ is the solution to~\eqref{eq:pos1d_var} if and only if it is the solution to~\eqref{eq:pos1d_min}; the two problem are equivalent.  It follows that, as noted in  Section~\ref{sec:pos1d_var}, if the solution $u$ solves the strong form~\eqref{eq:pos1d_strong}, then it also the solution to the minimization form~\eqref{eq:pos1d_min}; however, the minimization form admits more general loads $f$ and associated solutions than the strong form. We will soon see that we can derive a finite element approximation from either~\eqref{eq:pos1d_var} or \eqref{eq:pos1d_min}.
 
 \section{Finite element (FE) approximation}
 In order to construct a finite element (FE) approximation, we must choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first \emph{tessellate} (or \emph{triangulate}) the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
@@ -146,17 +170,18 @@ We make a few observations.  First, we require $v$ is in $\calV$ defined in \eqr
   \label{fig:pos1d_fe_space}
 \end{figure}
 
-We can now state our FE approximation problem in either the minimization form or the variational form.  The FE minimization form is as follows: find $u_h \in \calV_h$ such that
-\begin{equation}
-  u_h = \argmin_{v \in \calV_h} J(v),
-  \label{eq:pos1d_min_fe}
-\end{equation}
-where $J: \calV \to \RR$ is the energy functional~\eqref{eq:pos1d_J}. In words, we seek the minimizer in the subspace $\calV_h$ of $\calV$.  Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$. Similarly, the FE variational form is as follows: find $u_h \in \calV_h$ such that
+We can now state our FE approximation problem in either the variational form or the minimization form. The FE variational form is as follows: find $u_h \in \calV_h$ such that
 \begin{equation}
   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h,
   \label{eq:pos1d_var_fe}
 \end{equation}
-where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are biilnear form~\eqref{eq:pos1d_a} and linear form~\eqref{eq:pos1d_ell}, respectively.  As before, $u_h \in \calV_h$ is the solution to the FE minimization problem~\eqref{eq:pos1d_min_fe} if and only if it is the solution to the FE variational problem~\eqref{eq:pos1d_var_fe}. We will henceforth refer to $u_h$ as the \emph{finite element solution}.
+where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are bilinear form~\eqref{eq:pos1d_a} and linear form~\eqref{eq:pos1d_ell}, respectively. In words, we seek the solution in and test against the finite-dimensional (hence computable) subspace $\calV_h$ of $\calV$.  Similarly, the FE minimization form is as follows: find $u_h \in \calV_h$ such that
+\begin{equation}
+  u_h = \argmin_{v \in \calV_h} J(v),
+  \label{eq:pos1d_min_fe}
+\end{equation}
+where $J: \calV \to \RR$ is the energy functional~\eqref{eq:pos1d_J}. In words, we seek the minimizer in the subspace $\calV_h$ of $\calV$.  %Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$.
+As before, $u_h \in \calV_h$ is the solution to the FE minimization problem~\eqref{eq:pos1d_min_fe} if and only if it is the solution to the FE variational problem~\eqref{eq:pos1d_var_fe}. We will henceforth refer to $u_h$ as the \emph{finite element solution}.
 
 
 \section{Finite element approximation: implementation}
