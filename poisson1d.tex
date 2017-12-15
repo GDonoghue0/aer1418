@@ -151,7 +151,7 @@ Conversely, suppose $u \in \calV$ is the solution to the minimization problem~\e
 which is the exact formulation of our variational problem~\eqref{eq:pos1d_var}. Hence we conclude that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var} if and only if it is the solution to the minimization problem~\eqref{eq:pos1d_min}; the two problem are equivalent.  It follows that, as noted in  Section~\ref{sec:pos1d_var}, if the solution $u$ solves the strong form~\eqref{eq:pos1d_strong}, then it also the solution to the minimization form~\eqref{eq:pos1d_min}; however, the minimization form admits more general loads $f$ and associated solutions than the strong form. We will soon see that we can derive a finite element approximation from either~\eqref{eq:pos1d_var} or \eqref{eq:pos1d_min}.
 
 \section{Finite element (FE) approximation}
-In order to construct a finite element (FE) approximation, we must first choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first\emph{triangulate} the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
+In order to construct a finite element (FE) approximation, we must first choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first \emph{triangulate} the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
 \begin{equation*}
   0 \equiv x_0 < x_1 < \cdots < x_N < x_{N+1} \equiv 1
 \end{equation*}
