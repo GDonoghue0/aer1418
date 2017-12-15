@@ -3,17 +3,17 @@
 \disclaimer
 
 \section{Introduction}
-In this lecture, we provide a brief overview of variational formulation and the associated finite element approximation using a concrete example: one-dimensional Poisson equation. The goal is to illustrate the main ideas without complexities associated with higher dimensions and more general equations; we also defer some of the technical discussions to later lectures.
+In this lecture, we provide a brief overview of the variational formulation and the associated finite element approximation using a concrete example: the one-dimensional Poisson equation. The goal is to provide an accessible overview that illustrates the main ideas without complexities associated with higher dimensions and more general equations; we also defer some of the technical discussions to later lectures.
 
 \section{Model problem: strong form}
 \label{sec:pos1d_strong}
-We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:pos1d_string}.  Given an appropriate normalization, the shape of the string can be modeled as a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: find $u$ such that
+We consider a taut string with fixed ends subjected to a distributed transverse load as shown in Figure~\ref{fig:pos1d_string}.  Given an appropriate normalization, the shape of the string can be modeled as the solution to a one-dimensional Poisson equation on $\Omega \equiv (0,1)$: %find $u$ such that
 \begin{align}
-  - \dd{^2u}{x^2} &= f \qquad \text{in } \Omega  \label{eq:pos1d_strong} \\
+  - \dd{^2u}{x^2} &= f \qquad \text{in } \Omega,  \label{eq:pos1d_strong} \\
   u(x=0) &= 0 \notag , \\
   u(x=1) &= 0 \notag ,
 \end{align}
-where $f$ is associated with the transverse load.  For an integrable $f$, we may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We refer to this particular form of the problem as the \emph{strong form}.  The name derives from the fact the equation is enforced strongly in the point-wise sense for each $x$ in $\Omega$; the nomenclature should become clearer once we introduce the \emph{weak form} in the next section.
+where $f$ is associated with the transverse load.  For an integrable $f$, we may integrate the ODE twice to confirm the existence and uniqueness of the solution.  We refer to this particular form of the problem as the \emph{strong form}.  The name derives from the fact the equation is enforced strongly in the point-wise sense for each $x$ in $\Omega$, which can be contrasted with the \emph{weak form} introduced in the next section. %the nomenclature should become clearer once we introduce the \emph{weak form} in the next section.
 
 \begin{figure}
   \centering
@@ -29,29 +29,29 @@ where $f$ is associated with the transverse load.  For an integrable $f$, we may
 %% \end{align*}
 %% here $u$ is the displacement, $\sigma$ is the internal force (i.e. area weighted stress), $E$ is the Young's modulus, $A$ is the cross sectional area, and $f$ is the distributed external force. We recognize that the problem fits in the model equation~\eqref{eq:pos1d_strong}.
 
-\section{Variational form (or weak form)}
+\section{Variational formulation (or weak formulation)}
 \label{sec:pos1d_var}
-We now consider a different form of~\eqref{eq:pos1d_strong} that is amenable to finite element discretization. To begin, we choose a (sufficiently regular) test function such that $v(x=0) = v(x=1) = 0$, multiply~\eqref{eq:pos1d_strong} by the function, and integrate the expression to obtain
+We now consider a different form of the Poisson equation~\eqref{eq:pos1d_strong} that is (i) more general than the strong form and (ii) amenable to finite element discretization. To obtain this new form of~\eqref{eq:pos1d_strong}, we use the \emph{weighted residual method}. To begin, we choose a (sufficiently regular) test function such that $v(x=0) = v(x=1) = 0$, multiply~\eqref{eq:pos1d_strong} by this function, and integrate the expression to obtain
 \begin{equation}
   \int_\Omega v \left( -\dd{^2u}{x^2} \right) dx = \int_\Omega v f dx.
   \label{eq:pos1d_weak_pre}
 \end{equation}
-We then integrate by parts the left hand side to obtain
-\begin{equation*}
-  \int_\Omega \dd{v}{x} \dd{u}{x} dx = \int_\Omega v f dx;
+We then integrate the left hand side by parts to obtain
+\begin{equation}
+  \int_\Omega \dd{v}{x} \dd{u}{x} dx - \cancel{ \left[ v \dd{u}{x} \right]_{x=0}^1} = \int_\Omega v f dx;
   \label{eq:pos1d_weak}
-\end{equation*}
-note that the boundary terms vanish because we require $v(x=0) = v(x=1) = 0$. If the $u$ is the solution to~\eqref{eq:pos1d_strong}, then we expect the expression~\eqref{eq:pos1d_weak_pre}, and in turn~\eqref{eq:pos1d_weak}, to hold for \emph{any} test function $v$.  In fact, the \emph{variational form}, which is also known as the \emph{weak form}, is derived from seeking the solution $u$ which satisfies~\eqref{eq:pos1d_weak_pre} for all suitable test functions $v$.  We may speculate that, given we consider a suitably large set of test functions, the solution $u$ is unique and coincide with the solution to~\eqref{eq:pos1d_strong}.
+\end{equation}
+note that the boundary terms vanish because we require $v(x=0) = v(x=1) = 0$. If $u$ is the solution to~\eqref{eq:pos1d_strong}, then we expect the expression~\eqref{eq:pos1d_weak_pre}, and in turn~\eqref{eq:pos1d_weak}, to hold for \emph{any} test function $v$.  In fact, the \emph{variational problem} seeks the solution $u$ which satisfies~\eqref{eq:pos1d_weak} for all suitable test functions $v$.  We may speculate that, given a suitably large set of test functions, the solution $u$ is unique and coincides with the solution to the strong form of the Poisson equation~\eqref{eq:pos1d_strong}.  
 
-We now formalize the procedure. To this end, we first introduce a linear space
+We now formalize the above procedure. To this end, we first introduce a linear space
 \begin{equation}
   \calV \equiv \{ v \ | \
    v \text{ is continuous, } 
    \int_\Omega \left(\dd{v}{x}\right)^2 dx \text{ is bounded, and } % \text{ is piecewise continuous and bounded on $\Omega$, and } \\
-   v(x=0) = v(x=1) = 0 \}.
+   v(x=0) = v(x=1) = 0 \};
   \label{eq:pos1d_V}
 \end{equation}
-The first two conditions are related to the smoothness of the solution sought, and the last condition imposes the boundary condition. We then introduce a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
+here, first two conditions are related to the smoothness of the solution sought, and the last condition imposes the boundary conditions. We then define a \emph{bilinear form} $a: \calV \times \calV \to \RR$,
 \begin{equation}
   a(w,v) \equiv \int_{\Omega} \dd{v}{x} \dd{w}{x} dx \quad \forall w, v \in \calV,
   \label{eq:pos1d_a}
@@ -70,31 +70,30 @@ The form $a: \calV \times \calV \to \RR$ is called a \emph{bilinear form} becaus
   a(w, \tilde v) & \text{ is a linear form in $w$ for a fixed $\tilde v$, and} \\
   a(\tilde w, v) & \text{ is a linear form in $v$ for a fixed $\tilde w$}.
 \end{align*}
-Our \emph{variational form} of the problem is as follows: find $u \in \calV$ such that
+Our \emph{variational formulation} of the problem is as follows: find $u \in \calV$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:pos1d_var}
 \end{equation}
-This variational form of the problem is also called the \emph{weak form}.  The space $\calV$ to which the solution $u$ belongs is called the \emph{trial space}; the space $\calV$ to which the test function $v$ belongs is called the \emph{test space}.  A variational form which uses the same function space for the trial and test spaces is called the \emph{Galerkin formulation}; our variational form~\eqref{eq:pos1d_var} is a Galerkin formulation because both the trial and test spaces are $\calV$ defined by~\eqref{eq:pos1d_V}. The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
+This variational form of the problem is also called the \emph{weak formulation}.  The space $\calV$ to which the solution $u$ belongs is called the \emph{trial space}; the space $\calV$ to which the test function $v$ belongs is called the \emph{test space}. (While we choose the same trial and test spaces in this example, the two spaces need not be the same in general.)  A variational form which uses the same function space for the trial and test spaces is called the \emph{Galerkin formulation}; our variational form~\eqref{eq:pos1d_var} is a Galerkin formulation because both the trial and test spaces are $\calV$ defined by~\eqref{eq:pos1d_V}. The variational problem has a unique solution; we will study the well-posedness of the problem in subsequent lectures.
 
-We can readily show that the solution to the strong from~\eqref{eq:pos1d_strong} solves the variational form~\eqref{eq:pos1d_var}.  To see this, we observe that, for all $v \in \calV$,
+We can readily show that the solution to the strong from~\eqref{eq:pos1d_strong} solves the variational form~\eqref{eq:pos1d_var}.  To see this, we integrate by parts and observe that, for all $v \in \calV$,
 \begin{equation*}
   a(u,v) - \ell(v) \equiv
   \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega vf dx
   =
   \int_\Omega v  \underbrace{ \left( -\dd{^2u}{x^2} - f \right) }_{= 0 \text{ as $u$ solves \eqref{eq:pos1d_strong}}}  dx  = 0 ;
 \end{equation*}
-the boundary terms again vanish because $v(x=0) = v(x=1) = 0$ for all $v \in \calV$. Hence, the solution to the strong form~\eqref{eq:pos1d_strong} satisfies the weak form~\eqref{eq:pos1d_var}. 
+the boundary terms again vanish because $v(x=0) = v(x=1) = 0$ for all $v \in \calV$. Hence, the solution to the strong form~\eqref{eq:pos1d_strong} satisfies the weak form~\eqref{eq:pos1d_var}, while the converse is not necessarily true.  In fact, the variational form admits more general loads $f$ and associated solutions than the strong form.  For instance, a Dirac delta function, which corresponds to a point load, is an admissible load for the variational formulation \eqref{eq:pos1d_var} and there exists a unique solution to the problem; however, the strong from~\eqref{eq:pos1d_strong} is not well defined for a Dirac delta function $f$ because $f$ does not have well-defined point-wise values. 
 
-While the solution to the strong form~\eqref{eq:pos1d_strong} is also the solution to the variational form~\eqref{eq:pos1d_var}, the converse is not true in general.  In fact, the variational form admits more general loads $f$ and associated solutions than the strong form.  For instance, a Dirac delta function, which corresponds to a point load, is an admissible load for the \eqref{eq:pos1d_var} and there exists a unique solution to the problem; however, the strong from~\eqref{eq:pos1d_strong} is not well defined for a Dirac delta function $f$ because $f$ does not have well-defined point-wise values. 
-
-\section{Minimization form}
-We now introduce a \emph{minimization form}, which is closely related to the variational form~\eqref{eq:pos1d_var}. We note that not all boundary value problems possess a minimization form; only those problems with an intrinsic energy, such as our model problem~\eqref{eq:pos1d_strong}, possesses a minimization form. To obtain a minimization form, we introduce a functional $J: \calV \to \RR$ given by
+\section{Minimization formulation}
+\label{sec:pos1d_min}
+We now introduce a \emph{minimization form}, which is closely related to the variational form~\eqref{eq:pos1d_var}. We note that not all boundary value problems possess a minimization form; only those problems with an intrinsic energy, such as our model problem~\eqref{eq:pos1d_strong}, possess a minimization form. To obtain a minimization form, we introduce a functional $J: \calV \to \RR$ given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} \int_\Omega \left( \dd{w}{x} \right)^2 dx - \int_\Omega f w dx \quad \forall w \in \calV,
   \label{eq:pos1d_J}
 \end{equation}
-where $\calV$ is defined in~\eqref{eq:pos1d_V}. Our \emph{minimization problem} is as follows: find $u \in \calV$ such that
+where $\calV$ is defined by~\eqref{eq:pos1d_V}. Our \emph{minimization formulation} is as follows: find $u \in \calV$ such that
 \begin{equation}
   u = \argmin_{w \in \calV} J(w).
   \label{eq:pos1d_min}
@@ -127,9 +126,20 @@ For a physical system with intrinsic energy, such as the taut-string problem in 
 
 We can readily show that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var} if and only if it is the solution to the minimization problem~\eqref{eq:pos1d_min}.  Suppose that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var}.  Then, for $w = u + v$ for any $v \in \calV$, we obtain
 \begin{align*}
-  J(w) = J(u + v) = J(u) + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx}_{= a(u,v) - \ell(v) = 0 \ \forall v \in \calV \text{ by \eqref{eq:pos1d_var}}}
-  + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0} > J(u) \quad \forall v \neq 0;
+   J(w) = J(u + v) = J(u) + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx}_{\text{(I)}}
+  + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{\text{(II)}}. %> J(u) \quad \forall v \neq 0.
+%  J(w) = J(u + v) = J(u) + \underbrace{ \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx}_{= a(u,v) - \ell(v) = 0 \ \forall v \in \calV \text{ by \eqref{eq:pos1d_var}}}
+%  + \underbrace{ \frac{1}{2} \int_{\Omega} \left( \dd{v}{x} \right)^2 dx }_{> 0 \text{ for } v \neq 0} > J(u) \quad \forall v \neq 0.
 \end{align*}
+The term $\text{(I)}$ vanishes because by~\eqref{eq:pos1d_var}
+\begin{equation*}
+  \int_{\Omega} \dd{v}{x} \dd{u}{x} dx - \int_\Omega f v dx
+  = a(u,v) - \ell(v) = 0 \quad \forall v \in \calV.
+\end{equation*}
+We now analyze $\text{(II)}$.  We first note that the term is greater than $0$ for all non-constant function (i.e. $\dd{v}{x} \neq 0$); $\text{(II)}$ is zero only if $v$ is a constant function.  We next note that for a constant function to satisfy the boundary conditions of $\calV$,  $v(x=0) = v(x=1) = 0$, the function must be the zero function: $ v= 0$. Hence, we conclude that $\text{(II)}$ is greater than $0$ for any non-zero function.  It thus follows that
+\begin{equation*}
+  J(w) = J(u+v)  > J(u) \quad \forall v \neq 0;
+\end{equation*}
 hence the solution $u \in \calV$ of the variational problem~\eqref{eq:pos1d_var} solves the minimization problem~\eqref{eq:pos1d_min}. 
 Conversely, suppose $u \in \calV$ is the solution to the minimization problem~\eqref{eq:pos1d_min}.  Then, we know that $u$ must be a stationary point of $J$: i.e., $J'(u;v) = 0$, $\forall v \in \calV$; we hence require
 \begin{equation*}
@@ -138,10 +148,10 @@ Conversely, suppose $u \in \calV$ is the solution to the minimization problem~\e
   - \int_{\Omega} f v dx
   = a(u,v) - \ell(v) = 0 \quad \forall v \in \calV,
 \end{equation*}
-which the exact condition of our variational problem~\eqref{eq:pos1d_var}. Hence we conclude that $u \in \calV$ is the solution to~\eqref{eq:pos1d_var} if and only if it is the solution to~\eqref{eq:pos1d_min}; the two problem are equivalent.  It follows that, as noted in  Section~\ref{sec:pos1d_var}, if the solution $u$ solves the strong form~\eqref{eq:pos1d_strong}, then it also the solution to the minimization form~\eqref{eq:pos1d_min}; however, the minimization form admits more general loads $f$ and associated solutions than the strong form. We will soon see that we can derive a finite element approximation from either~\eqref{eq:pos1d_var} or \eqref{eq:pos1d_min}.
+which is the exact formulation of our variational problem~\eqref{eq:pos1d_var}. Hence we conclude that $u \in \calV$ is the solution to the variational problem~\eqref{eq:pos1d_var} if and only if it is the solution to the minimization problem~\eqref{eq:pos1d_min}; the two problem are equivalent.  It follows that, as noted in  Section~\ref{sec:pos1d_var}, if the solution $u$ solves the strong form~\eqref{eq:pos1d_strong}, then it also the solution to the minimization form~\eqref{eq:pos1d_min}; however, the minimization form admits more general loads $f$ and associated solutions than the strong form. We will soon see that we can derive a finite element approximation from either~\eqref{eq:pos1d_var} or \eqref{eq:pos1d_min}.
 
 \section{Finite element (FE) approximation}
-In order to construct a finite element (FE) approximation, we must choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first \emph{tessellate} (or \emph{triangulate}) the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
+In order to construct a finite element (FE) approximation, we must first choose a suitable subspace of $\calV$ that well approximates $\calV$ and is amenable to computer implementation. To this end, we first\emph{triangulate} the domain $\Omega \equiv (0,1)$ into $N+1$ non-overlapping segments; we introduce points
 \begin{equation*}
   0 \equiv x_0 < x_1 < \cdots < x_N < x_{N+1} \equiv 1
 \end{equation*}
@@ -149,19 +159,19 @@ and segments
 \begin{equation*}
   K_i \equiv (x_{i-1}, x_i) \quad i = 1,\dots,N+1.
 \end{equation*}
-We denote the \emph{tessellation} of the domain $\Omega$, which comprises collection of segments, by
+We denote the \emph{triangulation} of the domain $\Omega$, which comprises collection of line segments, by
 \begin{equation}
   \calT_h \equiv \{ K_i \}_{i=1}^{N+1}.
   \label{eq:pos1d_Th}
 \end{equation}
-We denote the length of each segment by $h_i \equiv x_i - x_{i-1}$, $i = 1,\dots,N+1$; a tessellation $\calT_h$ is characterized by the maximum segment length $h \equiv \max_{i=\{ 1,\dots,N+1\}} h_i$.
+We denote the length of each segment by $h_i \equiv x_i - x_{i-1}$, $i = 1,\dots,N+1$; a triangulation $\calT_h$ is characterized by the maximum segment length $h \equiv \max_{i=\{ 1,\dots,N+1\}} h_i$.
 
-We now introduce a space of piecewise linear functions associated with our tessellation $\calT_h$ and that belong to $\calV$:
+We now introduce a space of piecewise linear functions defined over our triangulation $\calT_h$ such that they also belong to $\calV$:
 \begin{equation}
   \calV_h \equiv \{ v \in \calV \ | \ v|_{K_i} \in \PP^1(K_i), \ i = 1,\dots,N+1\}.
   \label{eq:pos1d_Vh}
 \end{equation}
-We make a few observations.  First, we require $v$ is in $\calV$ defined in \eqref{eq:pos1d_V}: (i) $v$ must be continuous, (ii) $\dd{v}{x}$ must be piecewise continuous and bounded, and (iii) $v$ must vanish at the boundaries.  Second, we require $v$ restricted to segment $K_i$ to be in $\PP^1(K_i)$; here, $\PP^1(K_i)$ denotes the space of linear polynomials over $K_i$.  Hence, any function in $\calV_h \subset \calV$ is continuous, piecewise linear, and vanishes at the boundaries. An example of a function in $\calV_h$ is shown in Figure~\ref{fig:pos1d_fe_space}.
+We make a few observations about this particular space.  First, we require that $v$ is in $\calV$ defined by~\eqref{eq:pos1d_V}: (i) $v$ must be continuous, (ii) $\dd{v}{x}$ must be piecewise continuous and bounded, and (iii) $v$ must vanish at the boundaries.  Second, we require $v$ restricted to segment $K_i$ to be in $\PP^1(K_i)$; here, $\PP^1(K_i)$ denotes the space of linear polynomials over $K_i$.  Hence, any function in $\calV_h \subset \calV$ is continuous, piecewise linear, and vanishes at the boundaries. An example of a function in $\calV_h$ is shown in Figure~\ref{fig:pos1d_fe_space}.
 
 \begin{figure}
   \centering
@@ -170,22 +180,24 @@ We make a few observations.  First, we require $v$ is in $\calV$ defined in \eqr
   \label{fig:pos1d_fe_space}
 \end{figure}
 
-We can now state our FE approximation problem in either the variational form or the minimization form. The FE variational form is as follows: find $u_h \in \calV_h$ such that
+We can now state our FE approximation problem in either the variational form or the minimization form. The FE variational formulation of our original problem~\eqref{eq:pos1d_var} is as follows: find $u_h \in \calV_h$ such that
 \begin{equation}
   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h,
   \label{eq:pos1d_var_fe}
 \end{equation}
-where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are bilinear form~\eqref{eq:pos1d_a} and linear form~\eqref{eq:pos1d_ell}, respectively. In words, we seek the solution in and test against the finite-dimensional (hence computable) subspace $\calV_h$ of $\calV$.  Similarly, the FE minimization form is as follows: find $u_h \in \calV_h$ such that
+where $a: \calV \times \calV \to \RR$ and $\ell: \calV \to \RR$ are the bilinear form~\eqref{eq:pos1d_a} and linear form~\eqref{eq:pos1d_ell}, respectively. In words, we seek the solution in and test against the finite-dimensional (hence computable) subspace $\calV_h$ of $\calV$.
+
+Similarly, the FE minimization form is as follows: find $u_h \in \calV_h$ such that
 \begin{equation}
   u_h = \argmin_{v \in \calV_h} J(v),
   \label{eq:pos1d_min_fe}
 \end{equation}
-where $J: \calV \to \RR$ is the energy functional~\eqref{eq:pos1d_J}. In words, we seek the minimizer in the subspace $\calV_h$ of $\calV$.  %Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$.
+where $J: \calV \to \RR$ is the energy functional~\eqref{eq:pos1d_J}. In words, we seek the minimizer of $J$ in the subspace $\calV_h$ of $\calV$.  %Note that $v \in \calV_h$ is an admissible argument of $J$ since $\calV_h \subset \calV$.
 As before, $u_h \in \calV_h$ is the solution to the FE minimization problem~\eqref{eq:pos1d_min_fe} if and only if it is the solution to the FE variational problem~\eqref{eq:pos1d_var_fe}. We will henceforth refer to $u_h$ as the \emph{finite element solution}.
 
 
 \section{Finite element approximation: implementation}
-We now wish to implement~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}).  To this end, we introduce a \emph{basis} for $\calV_h$ defined in~\eqref{eq:pos1d_Vh}.  A convenient basis for $\calV_h$ is a \emph{Lagrange basis} $\{\phi_i\}_{i=1}^N$ such that 
+We now wish to develop a computationally tractable formulation such that we can implement~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) and find an approximation to the original problem~\eqref{eq:pos1d_var} (or equivalently~\eqref{eq:pos1d_min}).  To this end, we introduce a \emph{basis} for $\calV_h$ defined in~\eqref{eq:pos1d_Vh}.  A convenient basis for $\calV_h$ is a \emph{Lagrange basis}  $\{\phi_i\}_{i=1}^N$ comprised piecewise linear polynomials such that 
 \begin{equation*}
   \phi_i(x_j) = \delta_{ij} \equiv  \begin{cases}
     1 \quad j = i \\
@@ -193,7 +205,7 @@ We now wish to implement~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1
   \end{cases},
   \quad j = 0,\dots,N+1;
 \end{equation*}
-in words, $\phi_i$ is a continuous piecewise linear function that is takes the value of 1 at the interpolation point $x_i$ and the value of 0 at all other interpolation points.  The basis functions are shown in Figure~\ref{fig:pos1d_basis}.
+in words, $\phi_i$ is a continuous piecewise linear function that is takes the value of 1 at the interpolation point $x_i$ and the value of 0 at all other interpolation points.  These basis functions are shown in Figure~\ref{fig:pos1d_basis}.
 
 \begin{figure}
   \centering
@@ -227,7 +239,7 @@ for some $\hat u_h \in \RR^N$ and $\hat v \in \RR^N$, and consider the following
   \sum_{i=1}^N \hat v_i \ell(\phi_i) = 0 \quad \forall \hat v \in \RR^N.
   \label{eq:pos1d_fe_disc_step_1}
 \end{equation}
-Here, we have appealed to the bilinearity and linearity of $a(\cdot,\cdot)$ and $\ell(\cdot)$, respectively. We then note that in~\eqref{eq:pos1d_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement hold for $\hat v \in \{e_i \}_{i=1}^N$ for $\{e_i\}_{i=1}^N$ the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:pos1d_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
+Here, we have appealed to the bilinearity and linearity of $a(\cdot,\cdot)$ and $\ell(\cdot)$, respectively. We then note that in~\eqref{eq:pos1d_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement holds $\hat v \in \{e_i \}_{i=1}^N$, where $\{e_i\}_{i=1}^N$ is the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:pos1d_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
 \begin{equation}
   \sum_{j=1}^N a(\phi_j,\phi_i) \hat u_{h,j} = \ell(\phi_i) \quad  \forall i = 1,\dots,N.
   \label{eq:pos1d_sys}
@@ -252,7 +264,7 @@ The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is c
 
 %\section{Solution of $A_h \hat u_h = f_h$}
 
-We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We decompose the matrix into four parts: main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
+We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We consider four distinct parts of the matrix: the main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
 \begin{equation*}
   a(\phi_i,\phi_i) = \int_{x_{i-1}}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_i}{x} dx
   = \int_{x_{i-1}}^{x_{i}} \left( \frac{1}{h_i} \right)^2 dx +
@@ -292,10 +304,10 @@ We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}
   \right)
   > 0 \quad \forall \hat v \neq 0.
 \end{align*}
-Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) is given by the representation~\eqref{eq:pos1d_uh_rep}.
+Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm, which is a form of Gaussian elimination, in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to the FE variational formulation~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) is given by the representation~\eqref{eq:pos1d_uh_rep}.
 
 \section{An error estimate: optimality and polynomial approximation}
-We now assess how accurately our finite element solution $u_h \in \calV_h$ to~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:pos1d_var} (or equivalently~\eqref{eq:pos1d_min}).  To this end, we need to first define a norm with which we measure the ``closeness'' of the approximation. We in particular introduce the \emph{energy norm} associated with the model problem,
+We now assess how accurately our finite element solution $u_h \in \calV_h$ to~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:pos1d_var} (or equivalently~\eqref{eq:pos1d_min}).  To this end, we need to first define a norm with which we can measure the ``closeness'' of the approximation. In particular, we introduce the \emph{energy norm} associated with the model problem,
 \begin{equation*}
   \enorm{v} \equiv \sqrt{a(v,v)}  = \left( \int_{\Omega} \left( \dd{v}{x} \right)^2 dx \right)^{1/2} \quad \forall v \in \calV.
 \end{equation*}
@@ -303,16 +315,16 @@ Because $\enorm{ \cdot }$ is the induced norm associated with an inner product $
 
 We next state a key ingredient of the FE error estimate: \emph{Galerkin orthogonality}: since $\ell(v) = a(u,v)$, $\forall v \in \calV$, the FE variational statement~\eqref{eq:pos1d_var_fe} implies
 \begin{equation*}
-  \ell(v) - a(u_h,v) = a(u,v) - a(u_h,v) = a(u-u_h,v) \quad \forall v \in V_h;
+  0 = \ell(v) - a(u_h,v) = a(u,v) - a(u_h,v) = a(u-u_h,v) = 0 \quad \forall v \in \calV_h;
 \end{equation*}
 the relationship is called Galerkin orthogonality because it states that the error $u - u_h$ is orthogonal to the space $\calV_h$ in the inner product $a(\cdot,\cdot)$. We now observe that, for any $w_h \in \calV_h$,
 \begin{align*}
   \enorm{u-u_h}^2
   &=
-  a(u-u_h, u-w_h) + a(u-u_h,w_h - u_h)
+  a(u-u_h, u-w_h) + \underbrace{ a(u-u_h,w_h - u_h) }_{= 0 \text{ by Galerkin orthogonality}}
   \\
   &=
-  a(u-u_h, u - w_h) & \text{(Galerkin orthogonality)}
+  a(u-u_h, u - w_h)% & \text{(Galerkin orthogonality)}
   \\
   &\leq  \enorm{u - u_h} \enorm{u - w_h}. & \text{(Cauchy-Schwarz inequality)}.
 \end{align*}
@@ -327,7 +339,7 @@ or, equivalently,
 \end{equation*}
 We observe that the FE approximation $u_h \in \calV_h$ is \emph{optimal} in the energy norm in the sense that it is the closest approximation to the solution $u \in \calV$ out of all elements in $\calV_h$.  In other words, even if we knew the solution $u$, we could not have found a better solution in $\calV_h$ than $u_h$.
 
-As the optimality statement~\eqref{eq:pos1d_fe_opt} holds for any $w \in \calV_h$, we can set $w_h = \calI_h u = \sum_{i=1}^N u(x_i) \phi_i$, the polynomial interpolant associated with our Lagrange basis functions.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
+As the optimality statement~\eqref{eq:pos1d_fe_opt} holds for any $w_h \in \calV_h$, we can set $w_h = \calI_h u = \sum_{i=1}^N u(x_i) \phi_i$, the polynomial interpolant associated with our Lagrange basis functions.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
 \begin{align*}
   \enorm{v - \calI_h v} &\leq \frac{1}{8} h^2 \max_{x \in \Omega} |v''(x)| \\
   \enorm{\dd{v}{x} - \dd{(\calI_h u)}{x}} &\leq h \max_{x \in \Omega} |v''(x)| .
@@ -336,7 +348,7 @@ As the optimality statement~\eqref{eq:pos1d_fe_opt} holds for any $w \in \calV_h
 \begin{equation*}
   \enorm{u - u_h} \leq \enorm{u - \calI_h u} \leq h \max_{x \in \Omega}  | u''(x) |.
 \end{equation*}
-In words, the energy-norm error of our finite element solution $u_h \in \calV_h$  depends on  (i)the maximum second derivative over the domain and (ii) the tessellation parameter $h$.
+In words, the energy-norm error of our finite element solution $u_h \in \calV_h$  depends on  (i)the maximum second derivative over the domain and (ii) the triangulation parameter $h$.
 
 To demonstrate the convergence of the finite element approximation, we consider the Poisson problem~\eqref{eq:pos1d_strong} for $f = 1$. The exact solution is $u(x) = x(1-x)/2$. Figure~\eqref{fig:pos1d_conv} shows that the energy norm of the error $\enorm{u - u_h}$ converges at the rate of $h^1$ as predicted by theory.
 \begin{figure}
@@ -347,13 +359,13 @@ To demonstrate the convergence of the finite element approximation, we consider 
 \end{figure}
 
 \section{Summary}
-In this lecture, we considered the variational formulation and the associated finite element approximation of one-dimensional Poisson equation to introduce main ideas without complexities associated with higher dimensions and more general equations.  We summarize key points of the lecture:
+In this lecture, we considered the variational formulation and the associated finite element approximation of the one-dimensional Poisson equation to introduce the main ideas without the complexities associated with higher dimensions and more general equations.  We summarize key points of the lecture:
 \begin{enumerate}
 \item A one-dimensional Poisson problem can be written in the strong form, minimization form, or variational (or weak) form. 
 \item The solution to the strong form is also the solution to the minimization and variational form, but the converse is not true in general.  The minimization and variational forms admit more general loads $f$ and the associated solutions.
-\item A finite element approximation space $\calV_h$ is a subspace of $\calV$.  In one dimension, we may choose $\calV_h$ as the space of piecewise linear polynomials associated with a tessellation of $\Omega \subset \RR^1$ into segments.
+\item A finite element approximation space $\calV_h$ is a subspace of $\calV$.  In one dimension, we may choose $\calV_h$ as the space of piecewise linear polynomials associated with a triangulation of $\Omega \subset \RR^1$ into segments.
 \item The finite element solution is the solution of the minimization or variational problem in the finite element subspace $\calV_h \subset \calV$.
-\item Given a basis for $\calV_h$, the finite element solution can be computed in a systematic manner by assembling the associated stiffness matrix and the load vector and by solving the linear system.
+\item Given a basis for $\calV_h$, the finite element solution can be computed in a systematic manner by assembling the associated stiffness matrix and load vector and then solving the resulting linear system.
 \item For the Poisson equation, the finite element approximation $u_h$ is optimal in energy norm; even \emph{if} we knew the exact solution $u \in \calV$, we could not have found a better solution in $\calV_h$ than $u_h$.
 \item The error in the linear finite element approximation of the Poisson equation converges as $h^1$ in energy norm, where $h$ is the mesh spacing.
 \end{enumerate}
