@@ -6,9 +6,9 @@
 In the previous lecture, we focused on the development of the finite element method for the one-dimensional Poisson equation with homogeneous Dirichlet boundary conditions. In this lecture, we generalize the formulation to (i) problems in higher spatial dimensions and (ii) more general boundary conditions.  
 
 \section{Hilbert and Banach spaces}
-We start the section with an apology: it may be difficult to appreciate the formalism provided in this and next section at this point.  But, we introduce these spaces upfront such that we can state our weak formulations in a proper functional setting.  We will later see that this formalism allows us to provide various theoretical results about the weak formulation and the associated finite element approximation; the strong theoretical foundation is a strength of the finite element method. 
+We start the section with an apology: it may be difficult to appreciate the formalism provided in this section and the next at this point.  But, we introduce these spaces upfront such that we can state our weak formulations in a proper functional setting.  We will later see that this formalism allows us to provide various theoretical results about the weak formulation and the associated finite element approximation; this strong theoretical foundation is a strength of the finite element method. 
 
-The solution to the PDEs are most naturally sought in a Hilbert space. By way of preliminaries, we recall the definition of a \emph{linear space}, \emph{norm}, and \emph{inner product}. (We limit ourselves to spaces of real-valued functions; however the statements readily extend to spaces of complex-valued functions.)
+The solutions to the PDEs are most naturally sought in Hilbert spaces. By way of preliminaries, we recall the definition of a \emph{linear space}, \emph{norm}, and \emph{inner product}. (We limit ourselves to spaces of real-valued functions; however the following statements readily extend to spaces of complex-valued functions.)
 \begin{definition}[linear space]
   $\calV$ is a linear space if the following conditions hold:
   \begin{enumerate}
@@ -87,7 +87,7 @@ We now define a \emph{Hilbert space} and a \emph{Banach space}.
 We recall that a space $\calV$ is said to be \emph{complete} if any Cauchy sequence with respect to the norm $\| \cdot \|: \calV \to \RR$ converges to an element of $\calV$.  We recall that a sequence $v_1$, $v_2$, $v_3$, $\dots$ is said to be a Cauchy sequence if for any $\delta > 0$ there exists a number $N$ such that $\| v_i - v_j \| \leq \delta$, $\forall i,j  > N$.  Moreover, the sequence $v_i$ is said to converge to $v$ if $\| v - v_i \| \to 0$ as $i \to \infty$. The readers unfamiliar with the concept of completeness may think of a Hilbert space and a Banach space simply as an inner product space and a normed space. However, completeness is an important property of the Hilbert and Banach spaces, which makes the spaces suitable for the weak formulation of PDEs.
 
 \section{Sobolev spaces}
-We now introduce Hilbert spaces that are most commonly used in the weak formulation of PDEs.  The first is the space of square integrable functions on $\Omega$ (in Lebesgue sense).
+We now introduce Hilbert spaces that are most commonly used in the weak formulation of PDEs.  The first is the space of square integrable functions on $\Omega \subset \RR^d$ (in the Lebesgue sense).
 \begin{definition}[$L^2(\Omega)$ space]
   The Lebesgue space $L^2(\Omega)$ is endowed with an inner product
   \begin{equation*}
@@ -98,11 +98,13 @@ We now introduce Hilbert spaces that are most commonly used in the weak formulat
     L^2(\Omega) \equiv \{ w \ | \ \| w \|_{L^2(\Omega)} < \infty \}.
   \end{equation*}
 \end{definition}
+The $L^2(\Omega)$ space consists of functions that are square integrable over $\Omega$.  The space include functions that are discontinuous and also possibly unbounded.  
+
 We now recall the multi-index notation for derivatives and define Sobolev spaces of differentiable functions.
 \begin{definition}[multi-dimensional derivative]
   Let $\alpha \equiv (\alpha_1, \dots, \alpha_d)$ be a $d$-dimensional multi-index of non-negative integers, and define its absolute value by $|\alpha| \equiv \alpha_1 + \cdots + \alpha_d$. The partial derivative operator $D^\alpha$ is given by 
   \begin{equation*}
-    D^\alpha (\cdot)  \equiv \pp{^k (\cdot)}{x_1^{\alpha_1}  \cdots \partial x_d^{\alpha_d}}.
+    D^\alpha (\cdot)  \equiv \pp{^{|\alpha|} (\cdot)}{x_1^{\alpha_1}  \cdots \partial x_d^{\alpha_d}}.
   \end{equation*}
 \end{definition}
 \begin{definition}[$H^k(\Omega)$ space]
@@ -119,7 +121,7 @@ For instance, the Sobolev space $H^1(\Omega)$ is endowed with the inner product
 \begin{equation*}
   (w,v)_{H^1(\Omega)} \equiv \int_\Omega ( \nabla v \cdot \nabla w + v w ) dx
 \end{equation*}
-and consists of functions $v$ that satisfies $\int_\Omega (\nabla v \cdot \nabla v + v^2) dx < \infty$; we recognize that the $H^1(\Omega)$ space for $\Omega \equiv (0,1)$ is the same as the $\calV$ space introduce in Section~\ref{sec:pos1d_var} modulo the condition on the boundary.
+and consists of functions $v$ that satisfies $\int_\Omega (\nabla v \cdot \nabla v + v^2) dx < \infty$; we recognize that the $H^1(\Omega)$ space for $\Omega \equiv (0,1)$ is the same as the $\calV$ space introduced in Section~\ref{sec:pos1d_var} modulo the condition on the boundary.
  
 The Lebesgue space $L^2(\Omega)$ is the Sobolev space $H^{k=0}(\Omega)$. Note that $H^1(\Omega) \subset L^2(\Omega)$ by construction; the $H^1(\Omega)$ space only contains functions whose value \emph{and} first-derivative are square integrable, whereas the $L^2(\Omega)$ space contains functions whose first-derivative may not be square integrable.
 
@@ -130,7 +132,7 @@ Another related space that is frequently encountered in the weak formulation of 
 \end{equation*}
 where $\partial \Omega$ denotes the boundary of $\Omega$.
 \end{definition}
-The space consists of a subset of $H^1(\Omega)$ functions that vanish on the boundary.  Note that $H^1_0(\Omega)$ for $\Omega \equiv (0,1) \subset \RR^1$ is precisely the space $\calV$ we used in Sections~\eqref{sec:pos1d_var}~and~\eqref{sec:pos1d_min} for the variational and minimization formulations, respectively, of one-dimensional Poisson equation with the homogeneous Dirichlet boundary condition.  By construction $H^1_0(\Omega) \subset H^1(\Omega)$ since the $H^1(\Omega)$ space contains functions that do not vanish on the boundary.
+The space consists of a subset of $H^1(\Omega)$ functions that vanish on the boundary.  Note that $H^1_0(\Omega)$ for $\Omega \equiv (0,1) \subset \RR^1$ is precisely the space $\calV$ we used in Sections~\eqref{sec:pos1d_var}~and~\eqref{sec:pos1d_min} for the variational and minimization formulations, respectively, of the one-dimensional Poisson equation with the homogeneous Dirichlet boundary conditions.  By construction $H^1_0(\Omega) \subset H^1(\Omega)$ since the $H^1(\Omega)$ space contains functions that do not vanish on the boundary.
 
 We also introduce $H^k(\Omega)$ \emph{semi-norm}:
 \begin{definition}[$H^k(\Omega)$ semi-norm]
@@ -182,18 +184,18 @@ While we most frequently encounter the Hilbert spaces $L^2(\Omega)$ and $H^k(\Om
 
 \section{$d$-dimensional Poisson problem: homogeneous Dirichlet BC}
 \label{sec:posnd_homo_dir}
-We consider a Poisson equation in $\RR^d$, $d \geq 1$.  To this end, we first introduce a $d$-dimensional Lipschitz domain $\Omega \subset \RR^d$. The strong form of the Poisson equation with homogeneous Dirichlet boundary conditions is as follows: find $u$ such that
+We consider a Poisson equation in $\RR^d$ for $d \geq 1$.  To this end, we first introduce a $d$-dimensional Lipschitz domain $\Omega \subset \RR^d$; i.e. a domain with a ``sufficiently regular'' boundary. The strong form of the Poisson equation with homogeneous Dirichlet boundary conditions is as follows: find $u$ such that
 \begin{align}
   - \Delta u &= f \quad \text{in } \Omega \label{eq:posnd_strong} \\
   u &= 0 \quad \text{on } \partial \Omega \notag.
 \end{align}
- Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.  The Poisson equation models for instance steady heat transfer: $u$ is the temperature field (relative to the ambient temperature), $f$ is the volume heat source, and the homogeneous Dirichlet boundary condition corresponds to the fixed-temperature condition.
+ Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.  The Poisson equation models, for instance, steady heat transfer: $u$ is the temperature field (relative to the ambient temperature), $f$ is the volume heat source, and the homogeneous Dirichlet boundary condition corresponds to the fixed-temperature condition.
 
 Both the variational and minimization formulations require an appropriate choice of the space in which the solution is sought.  For homogeneous Dirichlet boundary condition, the appropriate Sobolev space is
 \begin{equation*}
   \calV \equiv H^1_0(\Omega).
 \end{equation*}
-We recall that $H^1_0(\Omega) \equiv \{ w \in H^1(\Omega) \ | \ w|_{\partial \Omega} = 0 \}$; i.e., the space consists of functions (i) whose value and first derivative are square integrable and (ii) that vanish on the boundary.  Note that any function $w \in H^1_0(\Omega)$ satisfy the boundary condition $u|_{\partial \Omega} = 0$ by construction.
+We recall that $H^1_0(\Omega) \equiv \{ w \in H^1(\Omega) \ | \ w|_{\partial \Omega} = 0 \}$; i.e., the space consists of functions (i) whose value and first derivative are square integrable and (ii) that vanish on the boundary.  Note that any function $w \in H^1_0(\Omega)$ satisfies the boundary condition $u|_{\partial \Omega} = 0$ by construction.
 
 To obtain a variational (or weak) form, we employ the weighted residual method: we multiply~\eqref{eq:posnd_strong} by a test function $v \in \calV$, integrate the expression, and then integrate by parts the left hand side:
 \begin{equation*}
@@ -226,7 +228,7 @@ Again, using the same procedure as the one-dimensional case, we can show that $u
 
 \section{Mixed problems: essential and natural boundary conditions}
 \label{sec:posnd_mixed}
-We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \supset \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
+We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \cap \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
 \begin{align}
   -\Delta u &= f \quad \text{in } \Omega \notag \\
   u &= 0 \quad \text{on } \Gamma_D \label{eq:posnd_mixed_bc_strong} \\
@@ -234,12 +236,12 @@ We have so far considered Poisson equations with a homogeneous Dirichlet boundar
 \end{align}
 where $f$ is the volume source term and $g$ is the boundary source term.  In case of a steady heat transfer, $f$ represents a volume heat source and $g$ represents heat transfer through boundary.
 
-To obtain a variational form of~\eqref{eq:posnd_mixed_bc_strong},  we redefine the function space relative to the homogeneous Dirichlet boundary condition case.  The function space suitable for the mixed boundary condition is
+To obtain a variational form of~\eqref{eq:posnd_mixed_bc_strong},  we redefine the function space relative to the homogeneous Dirichlet boundary condition case.  The function space suitable for the mixed boundary condition case is
 \begin{equation}
   \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
   \label{eq:posnd_mixed_bc_space}
 \end{equation}
-Note that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; functions in $H^1_0(\Omega)$ must vanish everywhere on $\partial \Omega$, functions in $\calV$ must vanish only on $\Gamma_D \subset \partial \Omega$, and functions in $H^1(\Omega)$ have no conditions on their boundary values. We now apply the weighted residual method to obtain the variational form: we multiply \eqref{eq:posnd_mixed_bc_strong} by a test function $v \in \calV$, integrate the expression, the integrate by parts the left hand side:
+Note that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; functions in $H^1_0(\Omega)$ must vanish everywhere on $\partial \Omega$, functions in $\calV$ must vanish only on $\Gamma_D \subset \partial \Omega$, and functions in $H^1(\Omega)$ have no conditions on their boundary values. We now apply the weighted residual method to obtain the variational form: we multiply \eqref{eq:posnd_mixed_bc_strong} by a test function $v \in \calV$, integrate the expression, and then integrate by parts the left hand side:
 \begin{equation*}
   \int_\Omega v (-\Delta u) dx = \int_\Omega v f dx
   \quad \Rightarrow \quad
@@ -328,7 +330,7 @@ We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition
   -\Delta u &= f \quad \text{in } \Omega \label{eq:posnd_inhomo_bc_strong} \\
   u &= u_B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
 \end{align}
-for some boundary function $u_B$ and source term $f$. While we focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:posnd_mixed} to treat mixed problems with inhomogeneous Dirichlet and Neumann boundary conditions.
+for some boundary function $u_B$ and source term $f$. While we here focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:posnd_mixed} to treat mixed problems with inhomogeneous Dirichlet and Neumann boundary conditions.
 
 To obtain a variational form of~\eqref{eq:posnd_inhomo_bc_strong}, we introduce spaces
 \begin{align*}
@@ -365,10 +367,10 @@ We readily observe that the solution to the strong form~\eqref{eq:posnd_inhomo_b
   &= \int_\Omega v \underbrace{ (-\Delta u - f) }_{= 0 \text{ as $-\Delta u=  0$ in $\Omega$}} dx
   + \underbrace{ \int_{\partial \Omega} v \pp{u}{n} ds }_{= 0 \text{ as $v|_{\Gamma_D \equiv \partial \Omega} = 0$}}.
 \end{align*}
-More over, the boundary condition $u = u_B$ on $\Gamma_D \equiv \partial \Omega$ is satisfied because $u \in \calV_D$. 
+Moreover, the boundary condition $u = u_B$ on $\Gamma_D \equiv \partial \Omega$ is satisfied because $u \in \calV_D$. 
 Hence a solution to the strong form~\eqref{eq:posnd_inhomo_bc_strong} is a solution to the variational form~\eqref{eq:posnd_inhomo_bc_var}; however, again the converse is not true as the variational form admits more general solutions.
 
-In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed element $u_D$ in $\calV_D$; the element $u_D$ can be any element that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
+In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed function $u_D$ in $\calV_D$; the function $u_D$ can be any function that satisfies the inhomogeneous Dirichlet boundary condition (and the $H^1$ regularity requirement). We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
 \begin{equation*}
   a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
   a(\tilde u,v) = \ell(v) - a(u_D,v).
@@ -496,13 +498,13 @@ which is the Dirichlet boundary condition on $\Gamma_D$.
 \section{Summary}
 We summarize key points of this lecture:
 \begin{enumerate}
-\item Hilbert space is a complete inner-product space; Banach space is a complete normed space.
+\item A Hilbert space is a complete inner-product space; a Banach space is a complete normed space.
 \item The Lebesgue space $L^2(\Omega)$ consists of functions that are square integrable (in the Lebesgue sense).
-\item The Sobolev space $H^k(\Omega)$ consists of functions whose (weak) derivatives of up to and including order $k$ is square integrable (in the Lebesgue sense).
-\item $d$-dimensional Poisson equation can be cast in the strong, minimization, or variational (or weak) form.
-\item Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
+\item The Sobolev space $H^k(\Omega)$ consists of functions whose (weak) derivatives of up to and including order $k$ are square integrable (in the Lebesgue sense).
+\item The $d$-dimensional Poisson equation can be cast in the strong, minimization, or variational (or weak) form.
+\item A Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
 \item Inhomogeneous Dirichlet boundary conditions are imposed strongly by an affine (and not linear) trial space.
-\item Weighted residual method can be used to derive a variational form from a strong form and vice versa. 
+\item The eeighted residual method can be used to derive a variational form from a strong form and vice versa. 
 \end{enumerate}
 
 
