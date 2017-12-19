@@ -228,7 +228,7 @@ Again, using the same procedure as the one-dimensional case, we can show that $u
 
 \section{Mixed problems: essential and natural boundary conditions}
 \label{sec:posnd_mixed}
-We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \cap \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
+We have so far considered Poisson equations with a homogeneous Dirichlet boundary condition.  We now consider a problem with a mixed boundary condition. To this end, given $\Omega \subset \RR^d$, we first partition the domain boundary $\partial \Omega$ into a Dirichlet part $\Gamma_D$ and a Neumann part $\Gamma_N$ such that $\overline{\partial \Omega} = \overline \Gamma_D \cup \overline \Gamma_N$ and $\Gamma_N \neq \emptyset$.  We then consider the following boundary value problem: find $u$ such that
 \begin{align}
   -\Delta u &= f \quad \text{in } \Omega \notag \\
   u &= 0 \quad \text{on } \Gamma_D \label{eq:posnd_mixed_bc_strong} \\
@@ -325,6 +325,7 @@ We can readily show, using the same procedure used in Section~\ref{sec:pos1d_min
 
 
 \section{Inhomogeneous Dirichlet boundary condition}
+\label{sec:posnd_inhomo_bc}
 We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition.  The strong form is as follows: find $u$ such that
 \begin{align}
   -\Delta u &= f \quad \text{in } \Omega \label{eq:posnd_inhomo_bc_strong} \\
@@ -420,80 +421,82 @@ We can readily show, using the same procedure used in Section~\ref{sec:pos1d_min
 
 
 \section{General second-order elliptic equation}
-We have so far considered the strong, minimization, or variational form as given and analyzed the consistency among different forms.  In practice, the PDEs are often provided in the strong form. As such, it is also useful to identify a systematic procedure to transform a boundary value problem provided in a strong form to a weak form; we here outline the \emph{weighted-residual procedure} for the task.
-
-To demonstrate the idea, we consider a mixed problem with (inhomogeneous) Dirichlet, Neumann, and Robin boundary conditions.
-To this end, we partition the Lipschitz domain $\Omega \subset \RR^d$ into the Dirichlet boundary $\Gamma_D$, the Neuamnn boundary $\Gamma_N$, and the Robin boundary $\Gamma_R$ such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N \cup \overline{\Gamma}_R$; we assume $\Gamma_D \cup \Gamma_R \neq \emptyset$. We then consider a problem of the following form: find $u$ such that
-\begin{align*}
-  - \Delta u &= f \quad \text{in } \Omega
-  \\
-  u &= u_B \quad \text{on } \Gamma_D \\
-  \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
-  \pp{u}{n}+ k u &= q \quad \text{on } \Gamma_R,
-\end{align*}
-where $f$ is the source term,  $n$ is the outward-point normal on $\partial \Omega$, $u_B$ is the Dirichlet boundary function, $g$ is the Neumann source term, $k$ is the Robin coefficient, and $q$ is the Robin source term.
-
-To obtain a variational form of the problem, we first multiply the strong form of the PDE with a test function $v$, integrated the $v$-weighted expression, and integrate by parts the Laplacian operator:
-\begin{align*}
-  \int_{\Omega} v (-\Delta u - f) dx
-  =
-  \int_{\Omega} (\nabla v \cdot \nabla u - v f) dx
-  - \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{\text{(D)}}
-  - \underbrace{\int_{\Gamma_N} v \pp{u}{n} ds}_{\text{(N)}}
-  - \underbrace{\int_{\Gamma_R} v \pp{u}{n} ds}_{\text{(R)}}
-\end{align*}
-We now impose the three boundary conditions. The (inhomogeneous) Dirichlet boundary condition on $\Gamma_D$ is enforced strongly through the choice of the trial and test spaces.  Namely, we choose for our trial and test spaces
-\begin{align*}
-  \calV_D &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B \} \\
-  \calV &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \};
-\end{align*}
-note that the choice will result in the elimination of the boundary term (D) since $v|_{\Gamma_D} = 0$ for $v \in \calV$. The Neumann boundary condition $\pp{u}{n} = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
+We have so far considered the variational and minimization formulation of Poisson equations with various boundary conditions. We can readily extend our approach to treat general second-order elliptic equations. To demonstrate the idea, we consider a convection-reaction-diffusion equation with (inhomogeneous) Dirichlet, Neumann, and Robin boundary conditions. To this end, we partition the Lipschitz domain $\Omega \subset \RR^d$ into the Dirichlet boundary $\Gamma_D$, the Neuamnn boundary $\Gamma_N$, and the Robin boundary $\Gamma_R$ such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N \cup \overline{\Gamma}_R$; we assume $\Gamma_D \cup \Gamma_R \neq \emptyset$. We then consider a problem of the following form: find $u$ such that
+\begin{align}
+  - \nabla \cdot (a \nabla u) + b \cdot \nabla u + c u &= f \quad \text{in } \Omega
+  \notag \\
+  u &= u_B \quad \text{on } \Gamma_D \label{eq:posnd_gen_strong} \\
+  \pp{u}{n} &= g \quad \text{on } \Gamma_N \notag \\
+  \pp{u}{n}+ k u &= q \quad \text{on } \Gamma_R, \notag
+\end{align}
+where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  We note that for the second-order PDE to be \emph{elliptic} we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
 \begin{equation*}
-  \int_\Omega (\nabla v \cdot \nabla u - v f) dx
+  \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
+\end{equation*}
+Also note that in order for the differentiation $\nabla \cdot (\nabla a \nabla u)$ for the \emph{strong formulation} \eqref{eq:posnd_gen_strong} to be well defined, the diffusivity field must satisfy certain smoothness conditions; we will soon see that this is not a requirement for the weak formulation.
+
+To obtain a variational form of~\eqref{eq:posnd_gen_strong}, we introduce spaces
+\begin{equation*}
+  \calV_D \equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
+  \calV \equiv \{ w \in H^1(\Omega) \ | \ w_{\Gamma_D} = 0 \}.
+\end{equation*}
+As discussed in Section~\ref{sec:posnd_inhomo_bc}, the Dirichlet boundary condition is imposed strongly; the Neumann and Robin boundary conditions will be imposed weakly.  We now multiply~\eqref{eq:posnd_gen_strong} by a test function $v$ in the linear space $\calV$, integrate the expression, and integrate by parts the diffusion term to obtain
+\begin{align*}
+  &\int_\Omega v (- \nabla \cdot a \nabla u + b \cdot \nabla u + c u - f) dx = 0 \\
+  & \Rightarrow
+  \int_\Omega (\nabla v \cdot a \nabla u  + v b \cdot \nabla u + c vu -vf ) dx
+  -  \underbrace{\int_{\Gamma_D} v n \cdot a \nabla u ds}_{\text{(D)}}
+  - \underbrace{\int_{\Gamma_N} v n \cdot a \nabla u ds}_{\text{(N)}}
+  - \underbrace{\int_{\Gamma_R} v n \cdot a \nabla u ds}_{\text{(R)}}
+\end{align*}
+We now impose the boundary conditions.  The Dirichlet boundary condition is imposed strongly by the choice of the trial space $\calV_D$ and the test space $\calV$; the term (D) vanishes because $v|_{\Gamma_D} = 0$ for all $v \in \calV$.  The Neumann boundary condition $\pp{u}{n} = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
+\begin{equation*}
+  \int_\Omega (\nabla v \cdot a \nabla u  + v b \cdot \nabla u + c vu - vf) dx
   - \int_{\Gamma_N} v g ds - \int_{\Gamma_R} v (-ku + q) ds = 0
   \quad \forall v \in \calV.
 \end{equation*}
-Some reorganization of the terms yield the following weak statement: find $u \in \calV_D$ such that
-\begin{equation*}
+Some reorganization of the terms yield the following variational formulation: find $u \in \calV_D$ such that
+\begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
-\end{equation*}
+  \label{eq:posnd_gen_weak}
+\end{equation}
 where
 \begin{align*}
-  a(w,v) &\equiv \int_\Omega \nabla v \cdot \nabla w dx + \int_{\Gamma_R} k vw ds \quad \forall w, v \in \calV \\
+  a(w,v) &\equiv \int_\Omega (\nabla v \cdot a \nabla w + v b \cdot \nabla u + c vu ) dx + \int_{\Gamma_R} k vw ds \quad \forall w, v \in \calV \\
   \ell(v) &\equiv \int_\Omega fv dx + \int_{\Gamma_N} gv ds + \int_{\Gamma_R} qv ds.
   \quad \forall v \in \calV.
 \end{align*}
-We have hence identified a variational form of the problem starting from the strong form.
+With the variational formulation~\eqref{eq:posnd_gen_weak}, unlike with the strong formulation~\eqref{eq:posnd_gen_strong}, we need not assume any smoothness of the coefficients $a$, $b$, or $c$.  We only require that the coefficients are bounded: $a \in (L^\infty(\Omega))^{d \times d}$, $b \in (L^\infty(\Omega))^d$, and $c \in L^\infty(\Omega)$.
 
-We note that it is also possible to perform the procedure in reverse: we start from the variational form and then identify the associated strong form. Specifically, we start with the variational form, and invoke the integration by parts to identify the PDE and boundary conditions: for all $v \in \calV$,
-\begin{align*}
-  0 &=
-  a(u,v) - \ell(v)
-  =
-  \int_\Omega \nabla v \cdot \nabla u dx + \int_{\Gamma_R} k vu ds
-  - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
-  \\
-  &= \int_\Omega v (-\Delta u) dx + \int_{\partial \Omega} v \pp{u}{n} ds
-  + \int_{\Gamma_R} k vu ds
-  - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
-  \\
-  &=
-  \int_\Omega v(-\Delta u - f) dx
-  + \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{=0 \text{ since $v \in \calV$}}
-  + \int_{\Gamma_N} v (\pp{u}{n} - g) ds
-  + \int_{\Gamma_R} v (\pp{u}{n} + ku - q) ds.
-\end{align*}
-In order for the statement to hold for \emph{all} $v \in \calV$, we need each of the integrals to vanish.  The condition requires that
-\begin{align*}
-  -\Delta u &= f \quad \text{in } \Omega \\
-  \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
-  \pp{u}{n} + ku &= q \quad \text{on } \Gamma_R.
-\end{align*}
-We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N$, and (iii) the Robin boundary condition on $\Gamma_R$.  Finally, because $u \in \calV_D \equiv \{ u \in H^1(\Omega) \ | \ u|_{\Gamma_D} = u_B \}$, we have
-\begin{equation*}
-  u|_{\Gamma_D} = u_B \quad \text{on } \Gamma_D,
-\end{equation*}
-which is the Dirichlet boundary condition on $\Gamma_D$.
+%% We note that it is also possible to perform the procedure in reverse: we start from the variational form and then identify the associated strong form. Specifically, we start with the variational form, and invoke the integration by parts to identify the PDE and boundary conditions: for all $v \in \calV$,
+%% \begin{align*}
+%%   0 &=
+%%   a(u,v) - \ell(v)
+%%   =
+%%   \int_\Omega \nabla v \cdot \nabla u dx + \int_{\Gamma_R} k vu ds
+%%   - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
+%%   \\
+%%   &= \int_\Omega v (-\Delta u) dx + \int_{\partial \Omega} v \pp{u}{n} ds
+%%   + \int_{\Gamma_R} k vu ds
+%%   - \int_\Omega fv dx - \int_{\Gamma_N} gv ds - \int_{\Gamma_R} qv ds
+%%   \\
+%%   &=
+%%   \int_\Omega v(-\Delta u - f) dx
+%%   + \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{=0 \text{ since $v \in \calV$}}
+%%   + \int_{\Gamma_N} v (\pp{u}{n} - g) ds
+%%   + \int_{\Gamma_R} v (\pp{u}{n} + ku - q) ds.
+%% \end{align*}
+%% In order for the statement to hold for \emph{all} $v \in \calV$, we need each of the integrals to vanish.  The condition requires that
+%% \begin{align*}
+%%   -\Delta u &= f \quad \text{in } \Omega \\
+%%   \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
+%%   \pp{u}{n} + ku &= q \quad \text{on } \Gamma_R.
+%% \end{align*}
+%% We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N$, and (iii) the Robin boundary condition on $\Gamma_R$.  Finally, because $u \in \calV_D \equiv \{ u \in H^1(\Omega) \ | \ u|_{\Gamma_D} = u_B \}$, we have
+%% \begin{equation*}
+%%   u|_{\Gamma_D} = u_B \quad \text{on } \Gamma_D,
+%% \end{equation*}
+%% which is the Dirichlet boundary condition on $\Gamma_D$.
 
 \section{Summary}
 We summarize key points of this lecture:
@@ -542,3 +545,20 @@ We summarize key points of this lecture:
 
 
 %% We first introduce a strong 
+
+
+%% To obtain a variational form of the problem, we first multiply the strong form of the PDE with a test function $v$, integrated the $v$-weighted expression, and integrate by parts the Laplacian operator:
+%% \begin{align*}
+%%   \int_{\Omega} v (-\Delta u - f) dx
+%%   =
+%%   \int_{\Omega} (\nabla v \cdot \nabla u - v f) dx
+%%   - \underbrace{\int_{\Gamma_D} v \pp{u}{n} ds}_{\text{(D)}}
+%%   - \underbrace{\int_{\Gamma_N} v \pp{u}{n} ds}_{\text{(N)}}
+%%   - \underbrace{\int_{\Gamma_R} v \pp{u}{n} ds}_{\text{(R)}}
+%% \end{align*}
+%% We now impose the three boundary conditions. The (inhomogeneous) Dirichlet boundary condition on $\Gamma_D$ is enforced strongly through the choice of the trial and test spaces.  Namely, we choose for our trial and test spaces
+%% \begin{align*}
+%%   \calV_D &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B \} \\
+%%   \calV &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \};
+%% \end{align*}
+%% note that the choice will result in the elimination of the boundary term (D) since $v|_{\Gamma_D} = 0$ for $v \in \calV$.
