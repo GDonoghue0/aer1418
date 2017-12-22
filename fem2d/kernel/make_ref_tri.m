@@ -17,8 +17,12 @@ ref.xint = interp_nodes_tri(p);
 ref.p = p;
 [ref.shp, ref.shpx] = shape_tri(p, ref.xq);
 
-% nodes on faces
+% nodes on edges
 ref.e2n = make_nodes_on_edge(p);
+
+% face quadrature
+[ref.xq1d, ref.wq1d] = quad_line(pquad);
+[ref.shp1d, ref.shpx1d] = shape_line(p, ref.xq1d);
 
 end
 

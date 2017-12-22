@@ -1,5 +1,5 @@
-function [shp,shpx] = monomial(p,x)
-% MONOMIAL computes the (complete) monomials in 2d
+function [shp,shpx] = monomial_tri(p,x)
+% MONOMIAL_TRI computes the (complete) monomials in 2d
 % INPUTS:
 %   p: polynomial order; must be 1 or 2.
 %   x: np by 2 matrix of evaluation points; np is the number of nodes.
