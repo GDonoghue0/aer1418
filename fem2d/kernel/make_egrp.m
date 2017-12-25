@@ -1,4 +1,17 @@
 function mesh = make_egrp(mesh)
+% MAKE_EGRP adds edge-group structure to a mesh for DG discretization
+% REMARKS: two arrays are added to the mesh
+%   t2e: nelem by 3 array of triangle-to-edge connectivity.  t2e(i,j) is
+%        the global edge number of the j-th local edge of the i-th element
+%   egrp: nedge by 6 array of edge-to-triangle connecivity.
+%         egrp(i,[1:2]) is the two vertices that comprise the edge
+%         egrp(i,3) is the global element index of the left element
+%         egrp(i,4) is the local edge index of the left element
+%         egrp(i,5) is the global element index of the right element.  If
+%           this a boundary edge, then the number is the negative of the
+%           boundary group number.
+%         egrp(i,6) is the local edge index of the right element
+
 tri = mesh.tri;
 ntri = size(tri,1);
 tedge = [tri(:,[2,3])

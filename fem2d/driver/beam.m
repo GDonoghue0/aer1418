@@ -1,22 +1,31 @@
 function beam
+% BEAM is a driver file for a linear elastic beam problem
+%   The driver file demonstrate the following ideas: (i) treatment of a
+%   system of equations; (ii) isoparameteric mapping and curved elements;
+%   (iii) locking for linear elasticity
 
+% set equation parameters
+nu = 0.3;
+lame(1) = nu/((1+nu)*(1-2*nu));
+lame(2) = 1/(2*(1+nu));
+loadmag = 0.01;
+
+% set discretization parameters
 dim = 2;
 h = 0.1;
 p = 2;
 pquad = 2*p;
 
-nu = 0.3;
-lame(1) = nu/((1+nu)*(1-2*nu));
-lame(2) = 1/(2*(1+nu));
-
+% make reference element
 ref = make_ref_tri(p,pquad);
+
+% generate mesh
 mesh = make_beam_mesh(h);
-%figure(1), clf, plot_mesh(mesh); axis equal; return;
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-mesh = fix_holes(mesh);
+mesh = fix_holes(mesh); % fix iso-parametric holes
 
 % useful variables
 [nelem,nshp] = size(mesh.tri);
@@ -85,10 +94,10 @@ for elem = 1:nelem
     ivec(:,:,elem) = iloc;
 end
 
-
 % boundary conditions
 for bgrp = 1:length(mesh.bgrp)
     if bgrp ~= 2
+        % skip all other boundaries
         continue;
     end
     for edge = 1:size(mesh.bgrp{bgrp},1)
@@ -111,7 +120,7 @@ for bgrp = 1:length(mesh.bgrp)
         
         % tip Neumann boundary condition
         ffloc = zeros(nshp,dim);
-        ffloc(lnode,2) = phiq'*(wqJ.*-1.0);
+        ffloc(lnode,2) = phiq'*(wqJ.*-loadmag);
         fvec(:,:,elem) = fvec(:,:,elem) + ffloc;        
     end
 end
@@ -132,19 +141,32 @@ U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
 figure(1), clf,
-sca = 0.01;
-Uv = sca*reshape(U,[nnode,2]);
+Uv = reshape(U,[nnode,2]);
 mesh2 = mesh;
 mesh2.coord = mesh2.coord + Uv;
 plot_field(mesh2,ref,sqrt(sum(Uv.^2,2)),struct('edgecolor',[0.5,0.5,0.5]));
 
 J = F'*U;
-disp(J)
-%err = F'*U - 1.266514783536662e-02
+fprintf('compliance output: %.8e\n', J);
 
 end
 
 function mesh = make_beam_mesh(h)
+% MAKE_BEAM_MESH creates a beam mesh with four holes
+% INPUT
+%   h: approximate element diameter
+% OUTPUT
+%   mesh: mesh structure
+% REMARKS
+%   boundary groups:
+%     1: left
+%     2: right
+%     3: bottom
+%     4: top
+%     5: hole centered at (0.5,0.5)
+%     6: hole centered at (1.5,0.5)
+%     7: hole centered at (2.5,0.5)
+%     8: hole centered at (3.5,0.5)
 if (nargin < 1)
     h = 0.25;
 end
@@ -164,9 +186,9 @@ mesh.coord = coord;
 mesh.tri = tri;
 
 % create boundary edge groups
-edge = [tri(:,2), tri(:,3)
-        tri(:,3), tri(:,1)
-        tri(:,1), tri(:,2)];
+edge = [tri(:,[2,3])
+        tri(:,[3,1])
+        tri(:,[1,2])];
 % find boundary edges by finding edges that occur only once
 [~,ia,ie] = unique(sort(edge,2),'rows'); 
 ibedge = histcounts(ie,(1:max(ie)+1)-0.5)==1;

@@ -30,8 +30,6 @@ figure(1), clf,
 axis equal;
 plot_field(mesh,ref,u);
 for iter = 1:10000
-    %res = compute_residual(mesh,ref,u);
-    %u = u - dt*res;
     u = rk4(resfun,dt,nsteps,u);
     if exist('hp')
         delete(hp);

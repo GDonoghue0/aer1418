@@ -29,12 +29,17 @@ end
 function e2n = make_nodes_on_edge(p)
 switch p
     case 1
-        e2n = [2 3 1 
-               3 1 2];
+        e2n(:,:,1) = [2 3 1 
+                      3 1 2];
+        e2n(:,:,2) = e2n([2,1],:,1);
     case 2
-        e2n = [2 3 1
-               3 1 2
-               4 5 6];
+        e2n(:,:,1) = [2 3 1
+                      3 1 2
+                      4 5 6];
+        e2n(:,:,2) = e2n([2,1,3],:,1);
     otherwise
+        error('unsupported polynomial order');
 end
+
+
 end

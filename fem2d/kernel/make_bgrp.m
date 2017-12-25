@@ -9,9 +9,9 @@ function mesh = make_bgrp(mesh)
 %         for the boundary edge
 tri = mesh.tri;
 ntri = size(tri,1);
-edge = [tri(:,2),tri(:,3)
-        tri(:,3),tri(:,1)
-        tri(:,1),tri(:,2)];
+edge = [tri(:,[2,3])
+        tri(:,[3,1])
+        tri(:,[1,2])];
 for ibgrp = 1:length(mesh.bgrp)
     bvert = sort(mesh.bgrp{ibgrp},2);
     edge = sort(edge,2);

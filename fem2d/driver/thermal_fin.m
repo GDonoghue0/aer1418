@@ -1,11 +1,23 @@
 function thermal_fin
+% THERMAL_FIN is a driver file for the thermal fin problem
+%   The driver file demonstrate the following ideas: (i) generation of a
+%   relatively complex geometry using distmesh; (ii) treatment of
+%   homogeneous Dirichlet, inhomogeneous Neumann, and Robin boundary
+%   conditions; (iii) evaluation of linear functional output
 
+% discretization parameters
 dim = 2;
 h = 0.5;
 p = 2;
-pquad = 4*p;
+pquad = 2*p;
 
+% Biot number for Robin boundary condition
+Bi = 0.1;
+
+% make reference element
 ref = make_ref_tri(p,pquad);
+
+% make mesh
 mesh = make_thermal_fin_mesh(h);
 mesh = uniform_refine(mesh);
 if p == 2
@@ -13,10 +25,9 @@ if p == 2
 end
 mesh = make_bgrp(mesh);
 
+% get useful parameters
 [nelem,nshp] = size(mesh.tri);
 nq = length(ref.wq);
-
-Bi = 0.1;
 
 % compute and store local matrices
 amat = zeros(nshp,nshp,nelem);
@@ -125,17 +136,28 @@ axis equal;
 strue = 1.407815193325423e+00; % using h = 0.05
 s = F'*U;
 serr = strue - s;
-disp(serr);
+fprintf('output = %.6e\noutput error = %.2e\n',s,serr);
 
 end
 
 function mesh = make_thermal_fin_mesh(h)
-w = 1.0;
-wf = 0.5;
-s = 0.5;
-l = 3.0;
-nfins = 3;
+% MAKE_THERMAL_FIN_MESH creates a thermal fin mesh
+% INPUT
+%   h: approximate element diameter
+% OUTPUT
+%   mesh: mesh structure
+% REMARKS
+%   boundary groups:
+%     1: root boundary
+%     2: all other boundaries
 
+w = 1.0; % width of the conductor
+wf = 0.5; % width of a fin
+s = 0.5; % separation between fins
+l = 3.0; % length of each fin
+nfins = 3; % number of fin pairs
+
+% basic fin structure to be repeated
 pv0 = [w/2, 0
        w/2, s
        w/2+l, s
@@ -161,9 +183,9 @@ mesh.coord = coord;
 mesh.tri = tri;
 
 % create boundary edge groups
-edge = [tri(:,2), tri(:,3)
-        tri(:,3), tri(:,1)
-        tri(:,1), tri(:,2)];
+edge = [tri(:,[2,3])
+        tri(:,[3,1])
+        tri(:,[1,2])];
 % find boundary edges by finding edges that occur only once
 [~,ia,ie] = unique(sort(edge,2),'rows'); 
 ibedge = histcounts(ie,(1:max(ie)+1)-0.5)==1;

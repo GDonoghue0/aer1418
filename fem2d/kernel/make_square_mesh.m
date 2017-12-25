@@ -4,8 +4,13 @@ function mesh = make_square_mesh(h,type)
 %   ne1d: number of element in each dimension
 %   type (optional): options are 'structured' and 'unstructured'
 % OUTPUT
-%   mesh: mesh structure. The boundary edge groups are as follows:
-%         1 = left; 2 = right; 3 = bottom; 4 = top
+%   mesh: mesh structure
+% REMARKS
+%   boundary groups: 
+%     1: left 
+%     2: right 
+%     3: bottom 
+%     4: top 
 if (nargin < 1)
     h = 1;
 end

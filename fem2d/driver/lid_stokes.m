@@ -1,13 +1,18 @@
 function lid_stokes
+% LID_STOKES is a driver file for a lid-driven stokes flow
+%   The driver file demonstrate the following ideas: (i) treatment of a
+%   system of equations; (ii) use of Taylor-Hood element for BB inf-sup
 
+% discretization parameters
 dim = 2;
 h = 0.05;
 pquad = 4;
 
-mu = 1.0;
-
+% reference element
 ref1 = make_ref_tri(1,pquad);
 ref2 = make_ref_tri(2,pquad);
+
+% generate mesh
 mesh = make_square_mesh(h,'unstructured');
 mesh = add_quadratic_nodes(mesh);
 mesh = make_bgrp(mesh);
@@ -91,9 +96,9 @@ for elem = 1:nelem
     
     % insert matrix entries
     lap2 = phi2xq(:,:,1)'*diag(wqJ)*phi2xq(:,:,1) + phi2xq(:,:,2)'*diag(wqJ)*phi2xq(:,:,2);
-    aaloc(ldof{1},ldof{1}) = mu*lap2;
+    aaloc(ldof{1},ldof{1}) = lap2;
     aaloc(ldof{1},ldof{3}) = -phi2xq(:,:,1)'*diag(wqJ)*phi1q;
-    aaloc(ldof{2},ldof{2}) = mu*lap2;
+    aaloc(ldof{2},ldof{2}) = lap2;
     aaloc(ldof{2},ldof{3}) = -phi2xq(:,:,2)'*diag(wqJ)*phi1q;
     aaloc(ldof{3},ldof{1}) = -phi1q'*diag(wqJ)*phi2xq(:,:,1);
     aaloc(ldof{3},ldof{2}) = -phi1q'*diag(wqJ)*phi2xq(:,:,2);
@@ -142,9 +147,5 @@ mesh1 = mesh;
 mesh1.tri = mesh.tri(:,1:3);
 plot_field(mesh1,ref1,U(2*nnode+(1:nnode1)));
 axis equal;
-
-%J = F'*U;
-%disp(J)
-%err = F'*U - 1.266514783536662e-02
 
 end

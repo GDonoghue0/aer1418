@@ -1,4 +1,4 @@
-function h = plot_field(mesh,ref,u,opt)
+function [h,he] = plot_field(mesh,ref,u,opt)
 % PLOT_FIELD plots the solution field
 % INPUT
 %   mesh: mesh structure
@@ -7,7 +7,8 @@ function h = plot_field(mesh,ref,u,opt)
 %   opt: option structure
 % OUTPUT
 %   h: handle to the patch object
-
+%   he: handle to the edge object (if opt.edgecolor is not 'none')
+%
 if (nargin < 4)
     opt = [];
 end
@@ -46,7 +47,11 @@ x_all = zeros(nx_ref, 2, nelem);
 tri_all = zeros(3, ntri_ref, nelem);
 for elem = 1:nelem
     tril = mesh.tri(elem,:)';
-    ul = u(tril);
+    if (size(u,2) == 1)
+        ul = u(tril);
+    else
+        ul = u(:,elem);
+    end
     xl = mesh.coord(tril,:);
     
     u_all(:,elem) = shp_ref*ul;
@@ -80,10 +85,11 @@ if (plot_edge)
     yye = reshape(x_all(tri_edge_all,2),2,[]);
     if (plot_3d)
         uue = reshape(u_all(tri_edge_all),2,[]);
-        plot3(xxe,yye,uue,'k-');
+        he = plot3(xxe,yye,uue,'k-');
     else
-        plot(xxe,yye,'k-');
+        he = plot(xxe,yye,'k-');
     end
+    set(he,'color',opt.edgecolor);
 end
 
 

@@ -1,21 +1,32 @@
 function poisson
+% POISSON is a driver file for solving a Poisson equation
+%   The driver file is designed to demonstrate the basic working of the
+%   fem2d code.
+
+% discretization parameters
 dim = 2;
+h = 0.3;
 p = 2;
 pquad = 2*p;
 
+% set the source function
+ffun = @(x) sin(pi*x(:,1)).*sin(pi*x(:,2));
+
+% generate reference element
 ref = make_ref_tri(p,pquad);
-mesh = make_square_mesh(0.3,'unstructured');
-%mesh = make_square_mesh(0.02,'structured');
-%mesh = make_circle_mesh(0.2); 
+
+% generate a mesh
+mesh = make_square_mesh(h,'unstructured');
+%mesh = make_square_mesh(h,'structured');
+%mesh = make_circle_mesh(h); 
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
 
+% get useful parameters
 [nelem,nshp] = size(mesh.tri);
 nq = length(ref.wq);
-
-ffun = @(x) sin(pi*x(:,1)).*sin(pi*x(:,2));
 
 % compute and store local matrices
 amat = zeros(nshp,nshp,nelem);
@@ -24,6 +35,7 @@ jmat = zeros(nshp,nshp,nelem);
 fvec = zeros(nshp,nelem);
 ivec = zeros(nshp,nelem);
 for elem = 1:nelem
+    % get dof indices
     tril = mesh.tri(elem,:).';
     
     % compute mesh jacobians
@@ -84,7 +96,8 @@ U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
 figure(1), clf,
-plot_field(mesh,ref,U,struct('surf','on','edgecolor',[0.5,0.5,0.5]));
+plot_field(mesh,ref,U,struct('nref',8,'surf','on','edgecolor',[0.5,0.5,0.5]));
+view(-30,45);
 
 %err = F'*U - 1.266514783536662e-02
 
