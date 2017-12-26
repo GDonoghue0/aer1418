@@ -1,7 +1,7 @@
 function setup(mode)
 if (nargin < 1), mode = 1; end
 
-dirs = {'distmesh','kernel'};
+dirs = {'distmesh','mesh','ref'};
 d0=fileparts([pwd,filesep]);
 d0=[d0,filesep];
 switch mode
