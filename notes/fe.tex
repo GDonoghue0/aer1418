@@ -10,7 +10,7 @@ We first introduce a \emph{triangulation} of $\Omega \subset \RR^d$.  A triangul
 \begin{equation*}
   \calT_h \equiv \{ K_i \}_{i=1}^{n_e}
 \end{equation*}
-is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of the closure of the elements cover the domain: $\cup_{i=1}^{n_e} \overline K_i = \overline \Omega$.   (We consider the closure of the elements because we consider each element to be open.) An example of triangulation of a square domain $\Omega$ is shown in Figure~\ref{fig:fe_mesh_p1}.  The triangulation comprise $n_e = 16$ triangular elements, which are delineated by $n_v = 15$ vertices.  In general, a triangulation comprises line segments in one dimension, triangles or quadrilaterals in two dimension, and tetrahedrons or hexahedrons in three dimensions.  In addition, a triangulation $\calT_h$ is characterized by a maximum diameter of the elements that comprise the set: $h \equiv \max_{i} \text{diam}(K_i)$, where $\text{diam}(K_i)$ is the diameter of the smallest ball that inscribes the element $K_i$.
+is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of the closure of the elements cover the domain: $\cup_{i=1}^{n_e} \overline K_i = \overline \Omega$.   (We consider the closure of the elements because we consider each element to be open.) An example of triangulation of a square domain $\Omega$ is shown in Figure~\ref{fig:fe_mesh_p1}. The triangulation comprise $n_e = 16$ triangular elements, which are delineated by $n_v = 15$ vertices.  The subscript $h$ of the triangulation $\calT_h$ signifies the maximum diameter of the elements in the triangulation; specifically, $h \equiv \max_{i} \text{diam}(K_i)$, where $\text{diam}(K_i)$ is the diameter of the smallest ball that inscribes the element $K_i$.  Intuitively (as we will see more formally), the finite element spaces associated with a sequence of triangulations get finer as $h$ decreases.  In general, a triangulation comprises line segments in one dimension, triangles or quadrilaterals in two dimension, and tetrahedrons or hexahedrons in three dimensions.
 
 
 \begin{figure}
@@ -22,7 +22,7 @@ is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of th
   \label{fig:fe_mesh_p1}
 \end{figure}
 
-While mathematically a triangulation is simply a collection of non-overlapping elements, we need a convenient means to represent the triangulation on a computer.  One approach is to store a table of \emph{node coordinates} and \emph{element-node connectivity}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, element 7 is delineated by the nodes 7, 8, and 11; the coordinate table then indicates that the coordinates of these three nodes are $(0.33,0.66)$, $(0.43,0.31)$, and $(0.68,0.58)$, respectively.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in a tabular form.
+While mathematically a triangulation is simply a collection of non-overlapping elements, we need a convenient means to represent the triangulation on a computer.  One approach is to store a table of \emph{node coordinates} and \emph{element-node connectivity}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, element 7 is delineated by the nodes 7, 8, and 11; the coordinate table then indicates that the coordinates of these three nodes are $(0.33,0.66)$, $(0.43,0.31)$, and $(0.68,0.58)$, respectively.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in an array form.
 
 \begin{table}
   \centering
@@ -75,6 +75,8 @@ While mathematically a triangulation is simply a collection of non-overlapping e
   \label{tb:fe_mesh_p1}
 \end{table}
 
+The task of generating a triangulation for a given domain is called \emph{mesh generation} and a program that carries out the task is called a \emph{mesh generator} or \emph{meshers}.  Mesh generation is a non-trivial task.  In fact, the development of algorithms that can robustly and automatically generate high-quality triangulation for complex geometries in three dimensions is an area of ongoing research.  Nevertheless, because mesh generation is essential for any finite element discretization, there is a large number of commercial and open-source meshers.  Here we name a few user-friendly, open-source meshers. The \texttt{triangle} is a mesh generator developed by Richard Shewchuk which creates two-dimensional meshes with a guaranteed quality certificate (in terms of the minimum angle). The \texttt{tetgen} is a popular open-source three-dimensional mesher.  The \texttt{distmesh} is a \textsc{Matlab} mesh generator developed by Per-Olof Persson, which is particularly user friendly.  The mesh shown in Figure~\ref{fig:fe_Mesh_p1} was in fact generated by \texttt{distmesh}.  We will extensively use \texttt{distmesh} to generate meshes in this course due to its ease of use.
+
 \section{Linear Lagrange finite element space}
 \label{sec:fe_lin_tri}
 We now consider the construction of a piecewise linear polynomial space associated with the triangulation $\calT_h$. We recall that our variational (or weak) formulation requires that the finite element space is a subset of the function space for the exact PDE, which, for second-order elliptic equations, is some $\calV$ which is a subset of $H^1(\Omega)$. Since our finite element space $\calV_h$ is piecewise polynomial, the continuity across element boundaries is the necessary and sufficient condition for $\calV_h \subset \calV$.  Hence, our goal is to devise a systematic procedure to represent any functions in
@@ -82,7 +84,7 @@ We now consider the construction of a piecewise linear polynomial space associat
   \calV_h \equiv \{ v \in C^0(\overline \Omega) \ | \ v|_K \in \PP^1(K), \ K \in \calT_h \},
   \label{eq:fe_lin_Vh}
 \end{equation}
-where $C^0(\overline \Omega)$ is the space of continuous functions over $\overline \Omega$.  Figure~\ref{fig:fe_fun_p1} shows an example of a function in $\calV_h$ associated with $\calT_h$ in Figure~\ref{fig:fe_mesh_p1}.
+where $C^0(\overline \Omega)$ is the space of continuous functions over $\overline \Omega$.  Figure~\ref{fig:fe_fun_p1} shows an example of a continuous, piecewise-linear function in $\calV_h$ associated with $\calT_h$ shown in Figure~\ref{fig:fe_mesh_p1}.
 \begin{figure}
   \centering
   \includegraphics[width=0.45\textwidth]{fe_fun_p1}
@@ -90,10 +92,7 @@ where $C^0(\overline \Omega)$ is the space of continuous functions over $\overli
   \label{fig:fe_fun_p1}
 \end{figure}
 
-
-We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely describe any function in $\calV_h$.  While the choice of global degrees of freedom is not unique, one convenient choice is the value of the function at the nodes of the triangulation~$\calT_h$.  For instance, the piecewise linear function shown in Figure~\ref{fig:fe_fun_p1} can be described uniquely by the values that the function takes at 16 nodes of the triangulation~$\calT_h$ shown in Figure~\ref{fig:fe_mesh_p1}.
-
-In the next three sections, we will detail a procedure to 
+We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}, such as the one shown in Figure~\ref{fig:fe_fun_p1}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely describe any function in $\calV_h$.  While the choice of global degrees of freedom is not unique, one convenient choice is the value of the function at the nodes of the triangulation~$\calT_h$.  For instance, the piecewise linear function shown in Figure~\ref{fig:fe_fun_p1} can be described uniquely by the values that the function takes at 16 nodes of the triangulation~$\calT_h$ shown in Figure~\ref{fig:fe_mesh_p1}.  This may be intuitively obvious, 
 
 
 

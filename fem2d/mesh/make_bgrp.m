@@ -13,9 +13,9 @@ edge = [tri(:,[2,3])
         tri(:,[3,1])
         tri(:,[1,2])];
 for ibgrp = 1:length(mesh.bgrp)
-    bvert = sort(mesh.bgrp{ibgrp},2);
+    bvert = sort(mesh.bgrp{ibgrp}(:,1:2),2);
     edge = sort(edge,2);
     [~,ib] = intersect(edge,bvert,'rows');
     [belem,bledge] = ind2sub([ntri,3],ib);
-    mesh.bgrp{ibgrp} = [mesh.bgrp{ibgrp}, belem, bledge];
+    mesh.bgrp{ibgrp} = [mesh.bgrp{ibgrp}(:,1:2), belem, bledge];
 end
