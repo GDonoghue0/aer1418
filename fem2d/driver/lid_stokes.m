@@ -24,16 +24,20 @@ nshp1 = size(ref1.shp,2);
 nnode = size(mesh.coord,1);
 nnode1 = max(max(mesh.tri(:,1:3)));
 
-% compute and store local matrices
+% create local indices
 ldof{1} = 1:nshp2;
 ldof{2} = nshp2 + (1:nshp2);
 ldof{3} = 2*nshp2 + (1:nshp1);
 ldof{4} = 2*nshp2+nshp1+1;
+
+% allocate matrices and vectors
 nldof = 2*nshp2+nshp1+1;
 amat = zeros(nldof,nldof,nelem);
 imat = zeros(nldof,nldof,nelem);
 jmat = zeros(nldof,nldof,nelem);
 %ivec = zeros(nldof,nelem);
+
+% compute and store local matrices
 for elem = 1:nelem
     tril = mesh.tri(elem,:).';
     

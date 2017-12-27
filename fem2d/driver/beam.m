@@ -32,12 +32,19 @@ mesh = fix_holes(mesh); % fix iso-parametric holes
 nq = length(ref.wq);
 nnode = size(mesh.coord,1);
 
+% create local indices
+ldof{1} = 1:nshp;
+ldof{2} = nshp + (1:nshp);
+
+% allocate matrices and vectors
+nldof = 2*nshp;
+amat = zeros(nldof,nldof,nelem);
+imat = zeros(nldof,nldof,nelem);
+jmat = zeros(nldof,nldof,nelem);
+fvec = zeros(nldof,nelem);
+ivec = zeros(nldof,nelem);
+
 % compute and store local matrices
-amat = zeros(nshp,nshp,dim,dim,nelem);
-imat = zeros(nshp,nshp,dim,dim,nelem);
-jmat = zeros(nshp,nshp,dim,dim,nelem);
-fvec = zeros(nshp,dim,nelem);
-ivec = zeros(nshp,dim,nelem);
 for elem = 1:nelem
     tril = mesh.tri(elem,:).';
     
@@ -68,30 +75,30 @@ for elem = 1:nelem
     end
     
     % compute stiffness matrix
-    aaloc = zeros(nshp,nshp,dim,dim);
-    iiloc = zeros(nshp,nshp,dim,dim);
-    jjloc = zeros(nshp,nshp,dim,dim);
-    iloc = zeros(nshp,dim);
+    aaloc = zeros(nldof,nldof);
+    iiloc = zeros(nldof,nldof);
+    jjloc = zeros(nldof,nldof);
+    iloc = zeros(nldof,1);
     for i = 1:dim
         for j = 1:dim
-            iiloc(:,:,i,j) = repmat(tril,[1,nshp]) + (i-1)*nnode;
-            jjloc(:,:,i,j) = repmat(tril',[nshp,1]) + (j-1)*nnode;
+            iiloc(ldof{i},ldof{j}) = repmat(tril,[1,nshp]) + (i-1)*nnode;
+            jjloc(ldof{i},ldof{j}) = repmat(tril',[nshp,1]) + (j-1)*nnode;
             
-            aaloc(:,:,i,i) = aaloc(:,:,i,i) + 0.5*lame(2)*phixq(:,:,j)'*diag(wqJ)*phixq(:,:,j);
-            aaloc(:,:,i,j) = aaloc(:,:,i,j) + 0.5*lame(2)*phixq(:,:,j)'*diag(wqJ)*phixq(:,:,i);
-            aaloc(:,:,j,i) = aaloc(:,:,j,i) + 0.5*lame(2)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,j);
-            aaloc(:,:,j,j) = aaloc(:,:,j,j) + 0.5*lame(2)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,i);
+            aaloc(ldof{i},ldof{i}) = aaloc(ldof{i},ldof{i}) + 0.5*lame(2)*phixq(:,:,j)'*diag(wqJ)*phixq(:,:,j);
+            aaloc(ldof{i},ldof{j}) = aaloc(ldof{i},ldof{j}) + 0.5*lame(2)*phixq(:,:,j)'*diag(wqJ)*phixq(:,:,i);
+            aaloc(ldof{j},ldof{i}) = aaloc(ldof{j},ldof{i}) + 0.5*lame(2)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,j);
+            aaloc(ldof{j},ldof{j}) = aaloc(ldof{j},ldof{j}) + 0.5*lame(2)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,i);
             
-            aaloc(:,:,i,j) = aaloc(:,:,i,j) + lame(1)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,j);
+            aaloc(ldof{i},ldof{j}) = aaloc(ldof{i},ldof{j}) + lame(1)*phixq(:,:,i)'*diag(wqJ)*phixq(:,:,j);
         end
-        iloc(:,i) = tril + (i-1)*nnode;
+        iloc(ldof{i}) = tril + (i-1)*nnode;
     end
  
     % insert to global matrix
-    amat(:,:,:,:,elem) = aaloc;
-    imat(:,:,:,:,elem) = iiloc;
-    jmat(:,:,:,:,elem) = jjloc;
-    ivec(:,:,elem) = iloc;
+    amat(:,:,elem) = aaloc;
+    imat(:,:,elem) = iiloc;
+    jmat(:,:,elem) = jjloc;
+    ivec(:,elem) = iloc;
 end
 
 % boundary conditions
@@ -119,9 +126,9 @@ for bgrp = 1:length(mesh.bgrp)
         phiq = ref.shp1d;
         
         % tip Neumann boundary condition
-        ffloc = zeros(nshp,dim);
-        ffloc(lnode,2) = phiq'*(wqJ.*-loadmag);
-        fvec(:,:,elem) = fvec(:,:,elem) + ffloc;        
+        ffloc = zeros(nldof,1);
+        ffloc(ldof{2}(lnode)) = phiq'*(wqJ.*-loadmag);
+        fvec(:,elem) = fvec(:,elem) + ffloc;        
     end
 end
 

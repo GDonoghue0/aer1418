@@ -73,18 +73,21 @@ u = reshape(U(1:2*nnode),[nnode,2]);
 p = U(2*nnode+(1:nnode1));
 lam = U(2*nnode+nnode1+1);
 
-% compute and store local matrices
+% create local indices
 ldof{1} = 1:nshp2;
 ldof{2} = nshp2 + (1:nshp2);
 ldof{3} = 2*nshp2 + (1:nshp1);
 ldof{4} = 2*nshp2+nshp1+1;
-nldof = 2*nshp2+nshp1+1;
 
+% allocate matrices and vectors
+nldof = 2*nshp2+nshp1+1;
 rumat = zeros(nldof,nldof,nelem);
 imat = zeros(nldof,nldof,nelem);
 jmat = zeros(nldof,nldof,nelem);
 rvec = zeros(nldof,nelem);
 ivec = zeros(nldof,nelem);
+
+% compute and store local matrices
 for elem = 1:nelem
     tril = mesh.tri(elem,:).';
     
