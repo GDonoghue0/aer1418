@@ -1,23 +1,17 @@
-function mesh1 = refine_mesh_nvb(mesh,tmark)
+function mesh = refine_mesh_nvb(mesh,tmark)
+% REFINE_MESH_NVB refines specified elements using newest-vertex bisection
+% INPUT
+%   mesh: mesh structure
+%   tmark: ntri-vector of refinement markers, where ntri is the number of 
+%          elements. Elements to be refined should be marked by 1.
+% OUTPUT
+%   mesh: updated mesh structure.
 
 coord = mesh.coord;
 tri = mesh.tri(:,1:3);
 nvert = size(coord,1);
 ntri = size(tri,1);
-t2v = [2,3
-       3,1
-       1,2];
-
-% get local refinement edge for each element
-if isfield(mesh,'lref_edge')
-    lref_edge = mesh.lref_edge;
-else
-    edge = reshape(tri(:,t2v),[3*ntri,2]);
-    xedge = reshape(coord(edge,:),[ntri,3,2,2]); % end point of each edge
-    elen = reshape(sum((xedge(:,:,2,:)-xedge(:,:,1,:)).^2,4),[ntri,3]); % length of each edge
-    [~,lref_edge] = max(elen,[],2);
-end
-
+   
 % get tri-to-edge and edge-to-tri
 mesh_temp = mesh;
 mesh_temp = make_egrp(mesh_temp);
@@ -26,6 +20,15 @@ e2v = mesh_temp.egrp(:,[1,2]);
 e2t = mesh_temp.egrp(:,[3,5]);
 e2le = mesh_temp.egrp(:,[4,6]);
 nedge = size(e2t,1);
+
+% get local refinement edge for each element
+if isfield(mesh,'lref_edge')
+    lref_edge = mesh.lref_edge;
+else
+    elen = sum((coord(e2v(:,2),:)-coord(e2v(:,1),:)).^2,2);
+    telen = elen(t2e);
+    [~,lref_edge] = max(telen,[],2);
+end
 
 % mark triangle to be refined
 emark = zeros(nedge,1);
@@ -98,7 +101,7 @@ for ibgrp = 1:nbgrp
     ie = find(bemark==ibgrp);
     v0 = e2v(ie,:); % original vertices
     er = find(emark(ie)); % edges to be refined
-    ern = find(~emark(ie));
+    ern = ~emark(ie); % edges not to be refined
     rnode = e2n(ie(er));
     bgrp{ibgrp} = [v0(ern,:)
                    v0(er,1),rnode
@@ -106,10 +109,10 @@ for ibgrp = 1:nbgrp
 end
 
 % construct the mesh structure
-mesh1.coord = [coord; coord_add];
-mesh1.tri = tri;
-mesh1.bgrp = bgrp;
-mesh1.lref_edge = lref_edge;
+mesh.coord = [coord; coord_add];
+mesh.tri = tri;
+mesh.bgrp = bgrp;
+mesh.lref_edge = lref_edge;
 
 
 end

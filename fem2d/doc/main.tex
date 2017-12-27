@@ -47,9 +47,9 @@
 \section{Introduction}
 FEM2d is a simple \textsc{Matlab} finite element solver.  The code consists of three functional blocks:
 \begin{itemize}
-\item Mesh in \texttt{/mesh}: comprises functions that provide the geometric description of the problem. 
-\item Reference element in \texttt{/ref}: comprises functions that define the reference finite element.
-\item Driver in \texttt{/driver}: the problem-specific driver script.
+\item \texttt{/mesh}: comprises functions that provide the geometric description of the problem. 
+\item \texttt{/ref}: comprises functions that define the reference finite element.
+\item \texttt{/driver}: the problem-specific driver script.
 \end{itemize}
 \section{The \texttt{mesh} structure}
 We will describe the mesh structure using the following $p=1$ mesh as an example.
@@ -115,6 +115,7 @@ ans =
      7     5     1     2
 \end{verbatim}
 \end{itemize}
+
 \section{The \texttt{ref} structure}
 The \texttt{ref} structure contains information about the reference element.  We use the $p=1$ reference element with $p_{\rm quad} = 4$ quadrature rule to illustrate the construction.  The \texttt{ref} structure can be divided into multiple functional groups; we will describe each group separately.
 
