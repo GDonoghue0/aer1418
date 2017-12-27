@@ -20,24 +20,7 @@ ref.xint = interp_nodes_tri(p);
 [ref.shp1d, ref.shpx1d] = shape_line(p, ref.xq1d);
 
 % nodes on edges
-ref.e2n = make_nodes_on_edge(p);
+ref.e2n = nodes_on_edge(p);
 
 end
 
-function e2n = make_nodes_on_edge(p)
-switch p
-    case 1
-        e2n(:,:,1) = [2 3 1 
-                      3 1 2];
-        e2n(:,:,2) = e2n([2,1],:,1);
-    case 2
-        e2n(:,:,1) = [2 3 1
-                      3 1 2
-                      4 5 6];
-        e2n(:,:,2) = e2n([2,1,3],:,1);
-    otherwise
-        error('unsupported polynomial order');
-end
-
-
-end

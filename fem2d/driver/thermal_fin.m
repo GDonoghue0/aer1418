@@ -23,15 +23,7 @@ if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-
-rng(0);
-%for iter = 1:5
-%    tmark = rand(size(mesh.tri,1),1) < 0.2;
-%    mesh = refine_mesh_nvb(mesh,tmark);
-%end
-for iter = 1:2
-    mesh = refine_uniform(mesh); 
-end
+mesh = refine_uniform(mesh); 
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);
