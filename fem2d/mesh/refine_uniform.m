@@ -1,4 +1,4 @@
-function mesh = uniform_refine(mesh)
+function mesh = refine_uniform(mesh)
 % UNIFORM_REFINE uniformsly refines a mesh
 % INPUT
 %   mesh: mesh structure

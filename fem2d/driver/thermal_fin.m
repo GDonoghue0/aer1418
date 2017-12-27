@@ -19,7 +19,7 @@ ref = make_ref_tri(p,pquad);
 
 % make mesh
 mesh = make_thermal_fin_mesh(h);
-mesh = uniform_refine(mesh);
+mesh = refine_uniform(mesh);
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end

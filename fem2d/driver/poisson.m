@@ -96,7 +96,7 @@ U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
 figure(1), clf,
-plot_field(mesh,ref,U,struct('nref',8,'surf','on','edgecolor',[0.5,0.5,0.5]));
+plot_field(mesh,ref,U,struct('nref',4,'surf','on','edgecolor',[0.5,0.5,0.5]));
 view(-30,45);
 
 %err = F'*U - 1.266514783536662e-02
