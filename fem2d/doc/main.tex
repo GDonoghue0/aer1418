@@ -49,8 +49,11 @@ FEM2d is a simple \textsc{Matlab} finite element solver.  The code consists of t
 \begin{itemize}
 \item \texttt{/mesh}: comprises functions that provide the geometric description of the problem. 
 \item \texttt{/ref}: comprises functions that define the reference finite element.
-\item \texttt{/driver}: the problem-specific driver script.
+\item \texttt{/driver}: comprises problem-specific driver scripts.
 \end{itemize}
+In addition, the code contains \texttt{/distmesh} which provides meshing capabilities.  To add all the required directory to the path, call \texttt{setup} in the root directory.
+
+
 \section{The \texttt{mesh} structure}
 We will describe the mesh structure using the following $p=1$ mesh as an example.
 \begin{figure}[!h]
