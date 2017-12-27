@@ -10,19 +10,17 @@ function ref = make_ref_tri(p, pquad)
 ref.pquad = pquad;
 [ref.xq, ref.wq] = quad_tri(pquad);
 
-% interpolation nodes
-ref.xint = interp_nodes_tri(p);
-
-% shape functions evaluated at quadrature points
+% shape functions 
 ref.p = p;
+ref.xint = interp_nodes_tri(p);
 [ref.shp, ref.shpx] = shape_tri(p, ref.xq);
-
-% nodes on edges
-ref.e2n = make_nodes_on_edge(p);
 
 % face quadrature
 [ref.xq1d, ref.wq1d] = quad_line(pquad);
 [ref.shp1d, ref.shpx1d] = shape_line(p, ref.xq1d);
+
+% nodes on edges
+ref.e2n = make_nodes_on_edge(p);
 
 end
 

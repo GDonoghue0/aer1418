@@ -1,4 +1,11 @@
 function [xq,wq] = quad_line(pquad)
+% QUAD_TRI provides 1d quadrature rule for the unit line segment
+% INPUT
+%   pquad: quadrature degree
+% OUTPUT
+%   xq: nq-vector of quadrature points, where nq is the number of
+%       quadrature points
+%   wq: nq-vector of quadrature weights
 switch pquad
     case {0, 1}
         dat = [

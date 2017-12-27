@@ -1,4 +1,11 @@
 function [xq,wq] = quad_tri(pquad)
+% QUAD_TRI provides 2d quadrature rule for the reference triangle
+% INPUT
+%   pquad: quadrature degree
+% OUTPUT
+%   xq: nq by 2 matrix of quadrature points, where nq is the number of
+%       quadrature points
+%   wq: nq-vector of quadrature weights
 switch pquad
     case {0,1}
         dat = [
