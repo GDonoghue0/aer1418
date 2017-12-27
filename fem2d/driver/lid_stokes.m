@@ -128,7 +128,9 @@ inodes = setdiff((1:ndof)', bnodes);
 % construct rhs associated with the inhomogeneous dirichlet bc
 bnodes_lid = nodes_on_boundary(mesh,ref2,4);
 Ub = zeros(ndof,1);
-Ub(bnodes_lid) = 1;
+lid_vel_fun = @(x) exp(-0.05./(0.25-(x(:,1)-0.5).^2)); % regularized velocity
+%lid_vel_fun = @(x) (x(:,1) > 1e-8).*(x(:,1) < 1-1e-8); % non-regularized velocity
+Ub(bnodes_lid) = lid_vel_fun(mesh.coord(bnodes_lid,:));
 F = -A*Ub;
 
 % solve linear system

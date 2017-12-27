@@ -211,8 +211,10 @@ RU(bnodes0,:) = 0;
 RU(bnodes0,bnodes0) = eye(length(bnodes0));
 
 % inhomogeneous Dirichlet
+lid_vel_fun = @(x) exp(-0.05./(0.25-(x(:,1)-0.5).^2)); % regularized velocity
+%lid_vel_fun = @(x) (x(:,1) > 1e-8).*(x(:,1) < 1-1e-8); % non-regularized velocity
 bnodes1 = nodes_on_boundary(mesh,ref2,4);
-R(bnodes1) = U(bnodes1) - 1;
+R(bnodes1) = U(bnodes1) - lid_vel_fun(mesh.coord(bnodes1,:));
 RU(bnodes1,bnodes1) = eye(length(bnodes1));
 
 end
