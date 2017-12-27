@@ -19,11 +19,19 @@ ref = make_ref_tri(p,pquad);
 
 % make mesh
 mesh = make_thermal_fin_mesh(h);
-mesh = refine_uniform(mesh);
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
+
+rng(0);
+%for iter = 1:5
+%    tmark = rand(size(mesh.tri,1),1) < 0.2;
+%    mesh = refine_mesh_nvb(mesh,tmark);
+%end
+for iter = 1:2
+    mesh = refine_uniform(mesh); 
+end
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);

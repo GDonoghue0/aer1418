@@ -7,10 +7,28 @@ function mesh = refine_mesh_nvb(mesh,tmark)
 % OUTPUT
 %   mesh: updated mesh structure.
 
+p = size(mesh.tri,2)/3;
 coord = mesh.coord;
 tri = mesh.tri(:,1:3);
-nvert = size(coord,1);
+bgrp = mesh.bgrp;
+
+% strip p=2 nodes
+nlist = unique(tri(:)); % list of nodes to be kept
+nmap = -ones(size(mesh.coord,1),1);
+nmap(nlist) = 1:length(nlist); % mapping from old indices to new indices
+coord = coord(nlist,:);
+tri = nmap(tri);
+for ibgrp = 1:length(bgrp)
+    bgrp{ibgrp}(:,1:2) = nmap(bgrp{ibgrp}(:,1:2));
+end
+nvert = length(nlist); % number of vertices
 ntri = size(tri,1);
+
+if size(bgrp{1},2) > 2
+    init_bgrp = true;
+else
+    init_bgrp = false;
+end
    
 % get tri-to-edge and edge-to-tri
 mesh_temp = mesh;
@@ -92,7 +110,7 @@ end
 nbgrp = length(mesh.bgrp);
 bemark = zeros(nedge,1);
 for ibgrp = 1:nbgrp
-    [~,ia] = intersect(e2v, mesh.bgrp{ibgrp}(:,1:2), 'rows');
+    [~,ia] = intersect(e2v, bgrp{ibgrp}(:,1:2), 'rows');
     bemark(ia) = ibgrp;
 end
 
@@ -114,6 +132,13 @@ mesh.tri = tri;
 mesh.bgrp = bgrp;
 mesh.lref_edge = lref_edge;
 
+% append p=2 nodes and bgrp structure if needed
+if p == 2
+    mesh = add_quadratic_nodes(mesh);
+end
+if init_bgrp
+    mesh = make_bgrp(mesh);
+end
 
 end
 

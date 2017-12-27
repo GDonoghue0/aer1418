@@ -4,22 +4,24 @@ function mesh = refine_uniform(mesh)
 %   mesh: mesh structure
 % OUTPUT
 %   mesh: mesh structure; mesh is uniformely refined
-coord = mesh.coord;
-tri = mesh.tri;
-nv = max(max(tri(:,1:3)));
 
-switch size(tri,2)
-    case 3
-        p = 1;
-    case 6
-        p = 2;
-        % we strip p=2 nodes
-        mesh.tri = mesh.tri(:,1:3);
-        mesh.coord = mesh.coord(1:nv,:);
-    otherwise
-        error('unsupported mesh type');
+p = size(mesh.tri,2)/3;
+coord = mesh.coord;
+tri = mesh.tri(:,1:3);
+bgrp = mesh.bgrp;
+
+% strip p=2 nodes
+nlist = unique(tri(:)); % list of nodes to be kept
+nmap = -ones(size(mesh.coord,1),1);
+nmap(nlist) = 1:length(nlist); % mapping from old indices to new indices
+coord = coord(nlist,:);
+tri = nmap(tri);
+for ibgrp = 1:length(bgrp)
+    bgrp{ibgrp}(:,1:2) = nmap(bgrp{ibgrp}(:,1:2));
 end
-if size(mesh.bgrp{1},2) > 2
+nv = length(nlist); % number of vertices
+
+if size(bgrp{1},2) > 2
     init_bgrp = true;
 else
     init_bgrp = false;
@@ -44,14 +46,14 @@ xe = reshape(mean(reshape(coord(edge(:),:),[ne,2,2]),2),[ne,2]);
 coord = [coord; xe];
 
 % update boundary groups
-bgrp = cell(size(mesh.bgrp));
-for ibgrp = 1:length(mesh.bgrp)
-    bvert = sort(mesh.bgrp{ibgrp}(:,[1,2]),2);
+for ibgrp = 1:length(bgrp)
+    bvert = sort(bgrp{ibgrp}(:,[1,2]),2);
     [bvert,ib] = intersect(edge,bvert,'rows'); % ib is the edge number
     bgrp{ibgrp} = [bvert(:,1), nv+ib
                    nv+ib, bvert(:,2)];
 end
 
+% construct the mesh structure
 mesh.tri = tri;
 mesh.coord = coord;
 mesh.bgrp = bgrp;

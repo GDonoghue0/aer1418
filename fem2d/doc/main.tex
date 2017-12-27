@@ -115,6 +115,17 @@ ans =
      7     5     1     2
 \end{verbatim}
 \end{itemize}
+We now provide a list functions.
+\begin{itemize}
+\item \texttt{make\_square\_mesh}, \texttt{make\_circle\_mesh}, etc. Create a mesh of the given shape.
+\item \texttt{make\_bgrp}. Append the \texttt{.bgrp} field with the boundary element information. 
+\item \texttt{add\_quadratic\_nodes}.  Add quadratic nodes to the mesh structure; i.e., converts $p=1$ mesh to $p=2$ mesh.  Both the \texttt{.coord} and \texttt{.tri} fields are modified by the function.
+\item \texttt{nodes\_on\_boundary}.  Identify nodes on a given set of boundary groups.  The function is often used to impose Dirichlet boundary conditions.
+\item \texttt{refine\_uniform}. Uniformly refine all elements.
+\item \texttt{refine\_mesh\_nvb}. Refine marked elements.
+\item \texttt{plot\_mesh}.  Visualize a mesh.
+\item \texttt{plot\_field}. Visualize a field.
+\end{itemize}
 
 \section{The \texttt{ref} structure}
 The \texttt{ref} structure contains information about the reference element.  We use the $p=1$ reference element with $p_{\rm quad} = 4$ quadrature rule to illustrate the construction.  The \texttt{ref} structure can be divided into multiple functional groups; we will describe each group separately.
@@ -286,6 +297,14 @@ ans(:,:,2) =
      3     1     2
      2     3     1
 \end{verbatim}
+\end{itemize}
+We now provide a list of functions.
+\begin{itemize}
+\item \texttt{interp\_nodes\_\{tri,line\}}.  Returns Lagrange interpolation nodes.  Used to fill the \texttt{.xint} field of the \texttt{ref} structure.
+\item \texttt{quad\_\{tri,line\}}.  Returns quadrature points and weights.  Used to fill the \texttt{.xq}, \texttt{.wq}, \texttt{.xq1d}, and \texttt{.wq1d} fields of the \texttt{ref} structure.
+\item \texttt{monomial\_\{tri,line\}}.  Evaluates the shape function values and gradients associated with monomial basis.  Provides basis function from which the Lagrange shape functions are generated using \texttt{shape\_\{tri,line\}}; the function is rarely used by its own.
+\item \texttt{shape\_\{tri,line\}}.  Evaluates the shape function values and gradients associated with Lagrange basis.  Used to fill the \texttt{.shp}, \texttt{.shpx}, \texttt{.shp1d}, and \texttt{.shpx1d} fields of the \texttt{ref} structure.
+\item \texttt{make\_ref\_tri}.  A high-level function that fills in all the fields of the \texttt{ref} structure.
 \end{itemize}
 \end{document}
 
