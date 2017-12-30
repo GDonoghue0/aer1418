@@ -17,7 +17,7 @@ else
     nref = 4;
 end
 
-colm = [1,1,1]; % mesh color
+colm = 'none'; % mesh color
 cole = [0,0,0]; % edge color
 
 % plot meshes
@@ -55,5 +55,15 @@ if isfield(opt,'number_elems') && (opt.number_elems ~= false)
     set(hte,'fontsize',16,'edgecolor','k','backgroundcolor','w','horizontalalignment','center','verticalalignment','middle');
 end
 
+% mark origin
+if isfield(opt,'mark_origin') && (opt.mark_origin ~= false)
+    a = 0.3;
+    tri = mesh.tri(:,1:3);
+    ntri = size(tri,1);
+    xtri = reshape(mean(reshape(mesh.coord(tri(:),:),[size(tri),2]),2),[ntri,2]);
+    xrv = a*xtri + (1-a)*mesh.coord(tri(:,1),:);
+    hrv = plot(xrv(:,1),xrv(:,2),'ok');
+    set(hrv,'markersize',8,'markerfacecolor','k');
+end
 end
 

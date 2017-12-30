@@ -22,5 +22,3 @@ shpx(:,:,1) = psix(:,:,1)/inv_coeff;
 shpx(:,:,2) = psix(:,:,2)/inv_coeff;
 
 end
-
-

@@ -10,7 +10,7 @@ We first introduce a \emph{triangulation} of $\Omega \subset \RR^d$.  A triangul
 \begin{equation*}
   \calT_h \equiv \{ K_i \}_{i=1}^{n_e}
 \end{equation*}
-is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of the closure of the elements cover the domain: $\cup_{i=1}^{n_e} \overline K_i = \overline \Omega$.   (We consider the closure of the elements because we consider each element to be open.) An example of triangulation of a square domain $\Omega$ is shown in Figure~\ref{fig:fe_mesh_p1}. The triangulation comprise $n_e = 16$ triangular elements, which are delineated by $n_v = 15$ vertices.  The subscript $h$ of the triangulation $\calT_h$ signifies the maximum diameter of the elements in the triangulation; specifically, $h \equiv \max_{i} \text{diam}(K_i)$, where $\text{diam}(K_i)$ is the diameter of the smallest ball that inscribes the element $K_i$.  Intuitively (as we will see more formally), the finite element spaces associated with a sequence of triangulations get finer as $h$ decreases.  In general, a triangulation comprises line segments in one dimension, triangles or quadrilaterals in two dimension, and tetrahedrons or hexahedrons in three dimensions.
+is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of the closure of the elements cover the domain: $\cup_{i=1}^{n_e} \overline K_i = \overline \Omega$.   (We consider the closure of the elements because we consider each element to be open.) An example of triangulation of a square domain $\Omega$ is shown in Figure~\ref{fig:fe_mesh_p1}. The triangulation comprise $n_e = 9$ triangular elements, which are delineated by $n_v = 9$ vertices.  The subscript $h$ of the triangulation $\calT_h$ signifies the maximum diameter of the elements in the triangulation; specifically, $h \equiv \max_{i} \text{diam}(K_i)$, where $\text{diam}(K_i)$ is the diameter of the smallest ball that inscribes the element $K_i$.  Intuitively (and as we will see more formally), the finite element spaces associated with a sequence of triangulations get richer as $h$ decreases.  In general, a triangulation comprises line segments in one dimension, triangles or quadrilaterals in two dimension, and tetrahedrons or hexahedrons in three dimensions.
 
 
 \begin{figure}
@@ -22,7 +22,7 @@ is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that union of th
   \label{fig:fe_mesh_p1}
 \end{figure}
 
-While mathematically a triangulation is simply a collection of non-overlapping elements, we need a convenient means to represent the triangulation on a computer.  One approach is to store a table of \emph{node coordinates} and \emph{element-node connectivity}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, element 7 is delineated by the nodes 7, 8, and 11; the coordinate table then indicates that the coordinates of these three nodes are $(0.33,0.66)$, $(0.43,0.31)$, and $(0.68,0.58)$, respectively.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in an array form.
+While mathematically a triangulation is simply a collection of non-overlapping elements, we need a convenient means to represent the triangulation on a computer.  One approach is to store tables of \emph{node coordinates} and \emph{element-node connectivities}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, element 5 is delineated by the nodes 6, 5, and 3; the coordinate table then indicates that the coordinates of these three nodes are $(0.28,-0.07)$, $(-0.21,0.98)$, and $(-0.29,0.04)$, respectively.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in an array form.
 
 \begin{table}
   \centering
@@ -30,21 +30,15 @@ While mathematically a triangulation is simply a collection of non-overlapping e
     \begin{tabular}{c|cc}
       node & $x_1$ & $x_2$ \\
       \hline
-      $1$ & $0.00$ & $0.67$ \\ 
-      $2$ & $0.00$ & $0.00$ \\ 
-      $3$ & $0.00$ & $1.00$ \\ 
-      $4$ & $0.00$ & $0.34$ \\ 
-      $5$ & $0.32$ & $0.00$ \\ 
-      $6$ & $0.33$ & $1.00$ \\ 
-      $7$ & $0.33$ & $0.66$ \\ 
-      $8$ & $0.43$ & $0.31$ \\ 
-      $9$ & $0.66$ & $1.00$ \\ 
-      $10$ & $0.68$ & $0.00$ \\ 
-      $11$ & $0.68$ & $0.58$ \\ 
-      $12$ & $1.00$ & $0.68$ \\ 
-      $13$ & $1.00$ & $0.33$ \\ 
-      $14$ & $1.00$ & $0.00$ \\ 
-      $15$ & $1.00$ & $1.00$ \\  
+      $1$ & $-0.89$ & $\hphantom{-}0.45$ \\ 
+      $2$ & $-0.89$ & $-0.46$ \\ 
+      $3$ & $-0.29$ & $\hphantom{-}0.04$ \\ 
+      $4$ & $-0.21$ & $-0.98$ \\ 
+      $5$ & $-0.21$ & $\hphantom{-}0.98$ \\ 
+      $6$ & $\hphantom{-}0.28$ & $-0.07$ \\ 
+      $7$ & $\hphantom{-}0.60$ & $\hphantom{-}0.80$ \\ 
+      $8$ & $\hphantom{-}0.61$ & $-0.79$ \\ 
+      $9$ & $\hphantom{-}1.00$ & $\hphantom{-}0.02$ \\ 
     \end{tabular}
     \label{tb:fe_mesh_p1_coord}
   }
@@ -52,32 +46,31 @@ While mathematically a triangulation is simply a collection of non-overlapping e
     \begin{tabular}{c|ccc}
       element & node 1 & node 2 & node 3 \\
       \hline
-      $1$ & $8$ & $13$ & $11$ \\ 
-      $2$ & $11$ & $13$ & $12$ \\ 
-      $3$ & $15$ & $9$ & $12$ \\ 
-      $4$ & $12$ & $9$ & $11$ \\ 
-      $5$ & $2$ & $5$ & $4$ \\ 
-      $6$ & $4$ & $5$ & $8$ \\ 
-      $7$ & $7$ & $8$ & $11$ \\ 
-      $8$ & $11$ & $9$ & $7$ \\ 
-      $9$ & $1$ & $4$ & $7$ \\ 
-      $10$ & $7$ & $4$ & $8$ \\ 
-      $11$ & $8$ & $5$ & $10$ \\ 
-      $12$ & $14$ & $13$ & $10$ \\ 
-      $13$ & $13$ & $8$ & $10$ \\ 
-      $14$ & $6$ & $7$ & $9$ \\ 
-      $15$ & $6$ & $3$ & $1$ \\ 
-      $16$ & $1$ & $7$ & $6$ \\ 
+      $1$ & $9$ & $6$ & $8$ \\ 
+      $2$ & $8$ & $6$ & $4$ \\ 
+      $3$ & $4$ & $6$ & $3$ \\ 
+      $4$ & $3$ & $5$ & $1$ \\ 
+      $5$ & $6$ & $5$ & $3$ \\ 
+      $6$ & $7$ & $6$ & $9$ \\ 
+      $7$ & $7$ & $5$ & $6$ \\ 
+      $8$ & $2$ & $3$ & $1$ \\ 
+      $9$ & $4$ & $3$ & $2$ \\ 
     \end{tabular}
     \label{tb:fe_mesh_p1_tri}
   }
-  \caption{Node coordinate and connectivity table.}
+  \caption{Node coordinate and connectivity table for mesh shown in Figure~\ref{fig:fe_mesh_p1}.}
   \label{tb:fe_mesh_p1}
 \end{table}
 
-The task of generating a triangulation for a given domain is called \emph{mesh generation} and a program that carries out the task is called a \emph{mesh generator} or \emph{meshers}.  Mesh generation is a non-trivial task.  In fact, the development of algorithms that can robustly and automatically generate high-quality triangulation for complex geometries in three dimensions is an area of ongoing research.  Nevertheless, because mesh generation is essential for any finite element discretization, there is a large number of commercial and open-source meshers.  Here we name a few user-friendly, open-source meshers. The \texttt{triangle} is a mesh generator developed by Richard Shewchuk which creates two-dimensional meshes with a guaranteed quality certificate (in terms of the minimum angle). The \texttt{tetgen} is a popular open-source three-dimensional mesher.  The \texttt{distmesh} is a \textsc{Matlab} mesh generator developed by Per-Olof Persson, which is particularly user friendly.  The mesh shown in Figure~\ref{fig:fe_Mesh_p1} was in fact generated by \texttt{distmesh}.  We will extensively use \texttt{distmesh} to generate meshes in this course due to its ease of use.
+The task of generating a triangulation for a given domain is called \emph{mesh generation} and a program that carries out the task is called a \emph{mesh generator} or \emph{mesher}.  Mesh generation is a non-trivial task.  In fact, the development of algorithms that can robustly and automatically generate high-quality triangulation for complex geometries in three dimensions is an area of ongoing research.  Nevertheless, because mesh generation is essential for any finite element discretization, there is a large number of commercial and open-source meshers.  Here we name a few user-friendly, open-source meshers:
+\begin{itemize}
+\item \texttt{triangle}. A robust two-dimensional mesher written in C that generates meshes with a guaranteed quality certificate in terms of the minimal angle.
+\item \texttt{tetgen}. A popular three-dimensional mesher written in C.
+\item \texttt{distmesh}.  A user-friendly mesher written in \textsc{Matlab} for implicit domain geometries represented by level sets. 
+\end{itemize}
+The mesh shown in Figure~\ref{fig:fe_mesh_p1} was in fact generated by \texttt{distmesh}.  We will extensively use \texttt{distmesh} to generate meshes in this course due to its ease of use.
 
-\section{Linear Lagrange finite element space}
+\section{Linear Lagrange finite element}
 \label{sec:fe_lin_tri}
 We now consider the construction of a piecewise linear polynomial space associated with the triangulation $\calT_h$. We recall that our variational (or weak) formulation requires that the finite element space is a subset of the function space for the exact PDE, which, for second-order elliptic equations, is some $\calV$ which is a subset of $H^1(\Omega)$. Since our finite element space $\calV_h$ is piecewise polynomial, the continuity across element boundaries is the necessary and sufficient condition for $\calV_h \subset \calV$.  Hence, our goal is to devise a systematic procedure to represent any functions in
 \begin{equation}
@@ -92,11 +85,9 @@ where $C^0(\overline \Omega)$ is the space of continuous functions over $\overli
   \label{fig:fe_fun_p1}
 \end{figure}
 
-We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}, such as the one shown in Figure~\ref{fig:fe_fun_p1}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely describe any function in $\calV_h$.  While the choice of global degrees of freedom is not unique, one convenient choice is the value of the function at the nodes of the triangulation~$\calT_h$.  For instance, the piecewise linear function shown in Figure~\ref{fig:fe_fun_p1} can be described uniquely by the values that the function takes at 16 nodes of the triangulation~$\calT_h$ shown in Figure~\ref{fig:fe_mesh_p1}.  This may be intuitively obvious, 
+We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}, such as the one shown in Figure~\ref{fig:fe_fun_p1}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely describe any function in $\calV_h$.  While the choice of global degrees of freedom is not unique, one convenient choice is the value of the function at the nodes of the triangulation~$\calT_h$.  For instance, the piecewise linear function shown in Figure~\ref{fig:fe_fun_p1} can be described uniquely by the values that the function takes at 9 nodes of the triangulation~$\calT_h$ shown in Figure~\ref{fig:fe_mesh_p1}.  %This may be intuitively obvious, 
 
-
-
-Our approach to construct the piecewise polynomial space is to first define a polynomial space on a \emph{reference element} (or a \emph{canonical element}) and then to map the polynomial functions to the actual elements that comprise the triangulation.  As such, we first introduce the \emph{reference triangle} $\tilde K$.  While the definition of a reference triangle is not universal, our reference triangle is shown in Figure~\ref{fig:fe_ref_tri}.  The triangle is a right triangle delineated by three vertices
+As we have seen in Lecture~\ref{ch:pos1d}, the computation of a finite element solution requires a few common tasks on the functions in $\calV_h$, such as the evaluation of the function values, the valuation of the gradient values, and the integration of the functions.  Our approach to construct the piecewise polynomial space is to first define a polynomial space on a \emph{reference element} (or a \emph{canonical element}) and then to map the polynomial functions to the actual elements that comprise the triangulation.  As such, we first introduce the \emph{reference triangle} $\tilde K$.  While the definition of a reference triangle is not universal, our reference triangle is shown in Figure~\ref{fig:fe_ref_tri}.  The triangle is a right triangle delineated by three vertices
 \begin{equation*}
   v^1 \equiv (0,0), \quad v^2 \equiv (1,0), \quad \text{and} \quad v^3 \equiv (0,1).
 \end{equation*}
@@ -239,7 +230,7 @@ Before we introduce other finite elements, we use the linear Lagrange element as
 \end{enumerate}
 
 \section{Isoparametric mapping}
-In Section~\ref{sec:fe_lin_tri}, we introduced a linear finite element associated with a reference triangle.  We now wish to map the finite element to the physical elements that constitute the triangulation $\calT_h$.  To this end, we introduce the procedure based on \emph{isoparametric mapping}.
+In Section~\ref{sec:fe_lin_tri}, we introduced a linear finite element associated with a reference triangle.  We now wish to map the finite element to a physical element that constitutes the triangulation $\calT_h$.  To this end, we introduce the procedure based on \emph{isoparametric mapping}.
 
 \begin{figure}
   \centering
@@ -464,6 +455,8 @@ where $I_{n_s}$ is the $n_s \times n_s$ identity matrix.
 \begin{figure}
  \centering
  \includegraphics[width=0.4\textwidth]{fe_mesh_p2}
+ \caption{$p=2$ mesh.}
+ \label{fig:fe_mesh_p2}
 \end{figure}
 \begin{table}
   \centering
@@ -471,75 +464,50 @@ where $I_{n_s}$ is the $n_s \times n_s$ identity matrix.
     \begin{tabular}{c|cc}
       node & $x_1$ & $x_2$ \\
       \hline
-      $1$ & $0.00$ & $0.67$ \\ 
-      $2$ & $0.00$ & $0.00$ \\ 
-      $3$ & $0.00$ & $1.00$ \\ 
-      $4$ & $0.00$ & $0.34$ \\ 
-      $5$ & $0.32$ & $0.00$ \\ 
-      $6$ & $0.33$ & $1.00$ \\ 
-      $7$ & $0.33$ & $0.66$ \\ 
-      $8$ & $0.43$ & $0.31$ \\ 
-      $9$ & $0.66$ & $1.00$ \\ 
-      $10$ & $0.68$ & $0.00$ \\ 
-      $11$ & $0.68$ & $0.58$ \\ 
-      $12$ & $1.00$ & $0.68$ \\ 
-      $13$ & $1.00$ & $0.33$ \\ 
-      $14$ & $1.00$ & $0.00$ \\ 
-      $15$ & $1.00$ & $1.00$ \\ 
-      $16$ & $0.00$ & $0.84$ \\ 
-      $17$ & $0.00$ & $0.50$ \\ 
-      $18$ & $0.17$ & $0.84$ \\ 
-      $19$ & $0.17$ & $0.66$ \\ 
-      $20$ & $0.00$ & $0.17$ \\ 
-      $21$ & $0.16$ & $0.00$ \\ 
-      $22$ & $0.17$ & $1.00$ \\ 
-      $23$ & $0.16$ & $0.17$ \\ 
-      $24$ & $0.17$ & $0.50$ \\ 
-      $25$ & $0.22$ & $0.32$ \\ 
-      $26$ & $0.37$ & $0.16$ \\ 
-      $27$ & $0.50$ & $0.00$ \\ 
-      $28$ & $0.33$ & $0.83$ \\ 
-      $29$ & $0.50$ & $1.00$ \\ 
-      $30$ & $0.38$ & $0.48$ \\ 
-      $31$ & $0.50$ & $0.83$ \\ 
-      $32$ & $0.51$ & $0.62$ \\ 
-      $33$ & $0.55$ & $0.16$ \\ 
-      $34$ & $0.56$ & $0.45$ \\ 
-      $35$ & $0.72$ & $0.32$ \\ 
-      $36$ & $0.67$ & $0.79$ \\ 
-      $37$ & $0.83$ & $0.84$ \\ 
-      $38$ & $0.83$ & $1.00$ \\ 
-      $39$ & $0.84$ & $0.16$ \\ 
-      $40$ & $0.84$ & $0.00$ \\ 
-      $41$ & $0.84$ & $0.63$ \\ 
-      $42$ & $0.84$ & $0.45$ \\ 
-      $43$ & $1.00$ & $0.50$ \\ 
-      $44$ & $1.00$ & $0.84$ \\ 
-      $45$ & $1.00$ & $0.16$ \\  
+$1$ & $-0.89$ & $\hphantom{-}0.45$ \\ 
+$2$ & $-0.89$ & $-0.46$ \\ 
+$3$ & $-0.29$ & $\hphantom{-}0.04$ \\ 
+$4$ & $-0.21$ & $-0.98$ \\ 
+$5$ & $-0.21$ & $\hphantom{-}0.98$ \\ 
+$6$ & $\hphantom{-}0.28$ & $-0.07$ \\ 
+$7$ & $\hphantom{-}0.60$ & $\hphantom{-}0.80$ \\ 
+$8$ & $\hphantom{-}0.61$ & $-0.79$ \\ 
+$9$ & $1.00$ & $\hphantom{-}0.02$ \\ 
+$10$ & $-1.00$ & $-0.01$ \\ 
+$11$ & $-0.59$ & $\hphantom{-}0.25$ \\ 
+$12$ & $-0.61$ & $\hphantom{-}0.79$ \\ 
+$13$ & $-0.59$ & $-0.21$ \\ 
+$14$ & $-0.61$ & $-0.79$ \\ 
+$15$ & $-0.25$ & $-0.47$ \\ 
+$16$ & $-0.25$ & $\hphantom{-}0.51$ \\ 
+$17$ & $-0.01$ & $-0.01$ \\ 
+$18$ & $\hphantom{-}0.03$ & $-0.52$ \\ 
+$19$ & $\hphantom{-}0.22$ & $-0.98$ \\ 
+$20$ & $\hphantom{-}0.03$ & $\hphantom{-}0.46$ \\ 
+$21$ & $\hphantom{-}0.22$ & $\hphantom{-}0.98$ \\ 
+$22$ & $\hphantom{-}0.44$ & $\hphantom{-}0.36$ \\ 
+$23$ & $\hphantom{-}0.44$ & $-0.43$ \\ 
+$24$ & $\hphantom{-}0.64$ & $-0.02$ \\ 
+$25$ & $\hphantom{-}0.89$ & $\hphantom{-}0.46$ \\ 
+$26$ & $\hphantom{-}0.90$ & $-0.43$ \\   
     \end{tabular}
   }
   \subfigure[connectivity]{
     \begin{tabular}{c|cccccc}
-      element & node 1 & node 2 & node 3 \\
+      element & node 1 & node 2 & node 3 & node 4 & node 5 & node 6\\
       \hline
-      $1$ & $8$ & $13$ & $11$ & $42$ & $34$ & $35$ \\ 
-      $2$ & $11$ & $13$ & $12$ & $43$ & $41$ & $42$ \\ 
-      $3$ & $15$ & $9$ & $12$ & $37$ & $44$ & $38$ \\ 
-      $4$ & $12$ & $9$ & $11$ & $36$ & $41$ & $37$ \\ 
-      $5$ & $2$ & $5$ & $4$ & $23$ & $20$ & $21$ \\ 
-      $6$ & $4$ & $5$ & $8$ & $26$ & $25$ & $23$ \\ 
-      $7$ & $7$ & $8$ & $11$ & $34$ & $32$ & $30$ \\ 
-      $8$ & $11$ & $9$ & $7$ & $31$ & $32$ & $36$ \\ 
-      $9$ & $1$ & $4$ & $7$ & $24$ & $19$ & $17$ \\ 
-      $10$ & $7$ & $4$ & $8$ & $25$ & $30$ & $24$ \\ 
-      $11$ & $8$ & $5$ & $10$ & $27$ & $33$ & $26$ \\ 
-      $12$ & $14$ & $13$ & $10$ & $39$ & $40$ & $45$ \\ 
-      $13$ & $13$ & $8$ & $10$ & $33$ & $39$ & $35$ \\ 
-      $14$ & $6$ & $7$ & $9$ & $31$ & $29$ & $28$ \\ 
-      $15$ & $6$ & $3$ & $1$ & $16$ & $18$ & $22$ \\ 
-      $16$ & $1$ & $7$ & $6$ & $28$ & $18$ & $19$ \\
+$1$ & $9$ & $6$ & $8$ & $23$ & $26$ & $24$ \\ 
+$2$ & $8$ & $6$ & $4$ & $18$ & $19$ & $23$ \\ 
+$3$ & $4$ & $6$ & $3$ & $17$ & $15$ & $18$ \\ 
+$4$ & $3$ & $5$ & $1$ & $12$ & $11$ & $16$ \\ 
+$5$ & $6$ & $5$ & $3$ & $16$ & $17$ & $20$ \\ 
+$6$ & $7$ & $6$ & $9$ & $24$ & $25$ & $22$ \\ 
+$7$ & $7$ & $5$ & $6$ & $20$ & $22$ & $21$ \\ 
+$8$ & $2$ & $3$ & $1$ & $11$ & $10$ & $13$ \\ 
+$9$ & $4$ & $3$ & $2$ & $13$ & $14$ & $15$ \\ 
     \end{tabular}
   }
+  \caption{Node coordinate and connectivity table for $p=2$ mesh shown in Figure~\ref{fig:fe_mesh_p2}}
 \end{table}
 
 

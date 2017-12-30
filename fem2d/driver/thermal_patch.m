@@ -1,29 +1,30 @@
-function thermal_fin
-% THERMAL_FIN is a driver file for the thermal fin problem
-%   The driver file demonstrate the following ideas: (i) generation of a
-%   relatively complex geometry using distmesh; (ii) treatment of
-%   homogeneous Dirichlet, inhomogeneous Neumann, and Robin boundary
-%   conditions; (iii) evaluation of linear functional output
+function thermal_patch
+% THERMAL_PATCH is a driver file for the thermal patch problem
+%   The driver file demonstrates the following ideas: (i) generation of a
+%   mesh with an internal boundary; (ii) use of tri_mark to specify
+%   element-dependent thermal conductivity and source function
 
 % discretization parameters
 dim = 2;
-h = 0.5;
+h = 0.1;
 p = 2;
 pquad = 2*p;
 
 % Biot number for Robin boundary condition
 Bi = 0.1;
 
+% thermal conductivity for tri_mark == 1 and tri_mark == 2
+kappa = [100,1];
+
 % make reference element
 ref = make_ref_tri(p,pquad);
 
 % make mesh
-mesh = make_thermal_fin_mesh(h);
+mesh = make_thermal_patch_mesh(h);
 if p == 2
     mesh = add_quadratic_nodes(mesh);
-    endedi
+end
 mesh = make_bgrp(mesh);
-mesh = refine_uniform(mesh); 
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);
@@ -56,7 +57,7 @@ for elem = 1:nelem
     wqJ = ref.wq.*detJq;
     
     % compute basis
-    %phiq = ref.shp;
+    phiq = ref.shp;
     phixq = zeros(nq,nshp,dim);
     for j = 1:dim
         for k = 1:dim
@@ -64,20 +65,25 @@ for elem = 1:nelem
         end
     end
     
+    % get triangle marker dependent information
+    tmark = mesh.tri_mark(elem);
+    f_source = 1.0*(tmark == 1); % source function
+    kap = kappa(tmark); % thermal conductivity
+
     % compute stiffness matrix
     aaloc = zeros(nshp,nshp);
     for i = 1:dim
-        aaloc = aaloc + phixq(:,:,i)'*diag(wqJ)*phixq(:,:,i);
+        aaloc = aaloc + phixq(:,:,i)'*diag(wqJ.*kap)*phixq(:,:,i);
     end
     
-    % compute load vector
-    %ffloc = phiq'*(wqJ.*ffun(xq));
+    % compute load vector; heat is associated with tri_mark = 1
+    ffloc = phiq'*(wqJ.*f_source);
  
     % insert to global matrix
     amat(:,:,elem) = aaloc;
     imat(:,:,elem) = repmat(tril,[1,nshp]);
     jmat(:,:,elem) = repmat(tril',[nshp,1]);
-    %fvec(:,elem) = ffloc;
+    fvec(:,elem) = ffloc;
     ivec(:,elem) = tril;
 end
 
@@ -101,16 +107,9 @@ for bgrp = 1:length(mesh.bgrp)
         % compute basis
         phiq = ref.shp1d;
         
-        % root inhomogeneous Neumann condition
-        if (bgrp == 1)
-            ffloc = phiq'*(wqJ.*1.0);
-            fvec(lnode,elem) = fvec(lnode,elem) + ffloc;
-        end
         % ambient Robin condition
-        if (bgrp == 2)
-            aaloc = Bi*phiq'*diag(wqJ)*phiq;
-            amat(lnode,lnode,elem) = amat(lnode,lnode,elem) + aaloc;
-        end
+        aaloc = Bi*phiq'*diag(wqJ)*phiq;
+        amat(lnode,lnode,elem) = amat(lnode,lnode,elem) + aaloc;
     end
 end
 
@@ -132,16 +131,10 @@ figure(1), clf,
 plot_field(mesh,ref,U,struct('edgecolor',[0.5,0.5,0.5]));
 axis equal;
 
-% compute output (average temprature at root)
-strue = 1.407815193325423e+00; % using h = 0.05
-s = F'*U;
-serr = strue - s;
-fprintf('output = %.6e\noutput error = %.2e\n',s,serr);
-
 end
 
-function mesh = make_thermal_fin_mesh(h)
-% MAKE_THERMAL_FIN_MESH creates a thermal fin mesh
+function mesh = make_thermal_patch_mesh(h)
+% MAKE_THERMAL_PATCH_MESH creates a thermal patch mesh
 % INPUT
 %   h: approximate element diameter
 % OUTPUT
@@ -151,55 +144,63 @@ function mesh = make_thermal_fin_mesh(h)
 %     1: root boundary
 %     2: all other boundaries
 
-w = 1.0; % width of the conductor
-wf = 0.5; % width of a fin
-s = 0.5; % separation between fins
-l = 3.0; % length of each fin
-nfins = 3; % number of fin pairs
+% define the internal boundary
+% we introduce the internal boundary by forcing internal node locations.
+% this approach is not entirely robust...
+lin = 0.6;
+nln = ceil(lin/h)+1;
+ll = linspace(0,lin,nln)';
+oo = ones(1,nln)';
+inodes = [0*oo, ll
+          lin*oo, ll
+          ll, 0*oo
+          ll, lin*oo];
+in0 = (1-lin)/2;
+inodes = bsxfun(@plus,inodes,[in0, in0]);
 
-% basic fin structure to be repeated
-pv0 = [w/2, 0
-       w/2, s
-       w/2+l, s
-       w/2+l, s+wf];
-
-% repeat
-pv = zeros(4*nfins,2);
-for i = 1:nfins
-    pv((1:4)+4*(i-1),:) = [pv0(:,1),pv0(:,2)+(i-1)*(wf+s)];
-end
-   
-% mirror and close
-pv = [pv; flipud([-pv(:,1),pv(:,2)])];
-pv = [pv; pv(1,:)];
-bbox = [min(pv(:,1)),min(pv(:,2)); max(pv(:,1)),max(pv(:,2))];
-
-% distmesh call
+% generate mesh with fixed internal nodes
 figh = figure;
-[coord,tri]=distmesh2d(@dpoly,@huniform,h,bbox,pv,pv);
+fd=@(p) drectangle(p,0,1,0,1);
+bbox = [0,0;1,1];
+fnodes = [0,0;0,1;1,0;1,1];
+fnodes = [fnodes; inodes];
+[coord,tri]=distmesh2d(fd,@huniform,h,bbox,fnodes);
 close(figh);
 
 mesh.coord = coord;
 mesh.tri = tri;
 
+% introduce triangle marker
+ntri = size(mesh.tri,1);
+xt = reshape(mean(reshape(coord(tri,:),[size(tri),2]),2),[ntri,2]);
+itri = (xt(:,1) > in0) & (xt(:,1) < in0+lin) & (xt(:,2) > in0) & (xt(:,2) < in0+lin);
+mesh.tri_mark = itri + 2*(~itri);
+
 % create boundary edge groups
 edge = [tri(:,[2,3])
         tri(:,[3,1])
         tri(:,[1,2])];
-% find boundary edges by finding edges that occur only once
-[~,ia,ie] = unique(sort(edge,2),'rows'); 
-ibedge = histcounts(ie,(1:max(ie)+1)-0.5)==1;
-edge = edge(ia(ibedge),:);
+tol = 1e-6;
 
 % mid edge coordinate
 xe = reshape(mean(reshape(coord(edge(:),:),[size(edge),2]),2),size(edge));
 
-% root
-tol = 1e-4;
-ii = abs(xe(:,2)-0.0) < tol;
-mesh.bgrp{1} = edge(ii,:);
+% left
+ii = abs(xe(:,1) - 0.0) < tol;
+mesh.bgrp{1} = sortrows(edge(ii,:),1);
 
-% elsewhere
-mesh.bgrp{2} = edge(~ii,:);
+% right
+ii = abs(xe(:,1) - 1.0) < tol;
+mesh.bgrp{2} = sortrows(edge(ii,:),1);
+
+% bottom 
+ii = abs(xe(:,2) - 0.0) < tol;
+mesh.bgrp{3} = sortrows(edge(ii,:),1);
+
+% top
+ii = abs(xe(:,2) - 1.0) < tol;
+mesh.bgrp{4} = sortrows(edge(ii,:),1);
+
+
 
 end
