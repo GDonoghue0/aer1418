@@ -307,7 +307,7 @@ We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}
 \end{align*}
 Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $\hat A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm, which is a form of Gaussian elimination, in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to the FE variational formulation~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) is given by the representation~\eqref{eq:pos1d_uh_rep}.
 
-\section{An error estimate: optimality and polynomial approximation}
+\section{An error estimate: optimality}
 We now assess how accurately our finite element solution $u_h \in \calV_h$ to~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:pos1d_var} (or equivalently~\eqref{eq:pos1d_min}).  To this end, we need to first define a norm with which we can measure the ``closeness'' of the approximation. In particular, we introduce the \emph{energy norm} associated with the model problem,
 \begin{equation*}
   \enorm{v} \equiv \sqrt{a(v,v)}  = \left( \int_{\Omega} \left( \dd{v}{x} \right)^2 dx \right)^{1/2} \quad \forall v \in \calV.

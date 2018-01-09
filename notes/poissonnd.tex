@@ -429,7 +429,7 @@ We have so far considered the variational and minimization formulation of Poisso
   \pp{u}{n} &= g \quad \text{on } \Gamma_N \notag \\
   \pp{u}{n}+ k u &= q \quad \text{on } \Gamma_R, \notag
 \end{align}
-where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  We note that for the second-order PDE to be \emph{elliptic} we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
+where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
 \begin{equation*}
   \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
 \end{equation*}
@@ -498,6 +498,134 @@ With the variational formulation~\eqref{eq:posnd_gen_weak}, unlike with the stro
 %% \end{equation*}
 %% which is the Dirichlet boundary condition on $\Gamma_D$.
 
+\section{Well-posedness of the weak formulation}
+We now address a fundamental question: what conditions should a weak formulation satisfy to guarantee the existence \emph{and} uniqueness of the solution?  We recall that, in general, a weak formulation is defined by a test space $\calV$, trial space $\calV_D \equiv u_D + \calV$, bilinear form $a(\cdot,\cdot)$, and linear form $\ell(\cdot)$; as such, we wish to identify conditions that these ingredients must satisfy to ensure the existence and uniqueness of the solution.
+
+We first provide a few definitions that characterize a linear form and bilinear form.
+\begin{definition}[dual norm and continuity]
+  The dual norm of a linear functional $\ell \in \calV'$ is given by
+  \begin{equation*}
+    \| \ell \|_{\calV'} \equiv \sup_{v \in \calV} \frac{|\ell(v)|}{\| v \|_\calV}.
+  \end{equation*}
+  A linear functional is said to be \emph{continuous} if $\| \ell \|_{\calV'} < \infty$.
+\end{definition}
+\begin{definition}[continuity]
+  \label{def:th_continuity}
+  A bilinear form $a: \calV \times \calV \to \RR$ is said to be continuous on $\calV$ (or $\calV$-continuous) if $\exists \gamma < \infty$ such that 
+  \begin{equation*}
+    a(w,v) \leq \gamma \| w \|_\calV \| v \|_\calV \quad \forall w,v \in \calV,
+  \end{equation*}
+\end{definition}
+\begin{definition}[coercivity]
+  \label{def:th_coercivity}
+  A biilnear form $a: \calV \times \calV \to \RR$ is said to be coercive on $\calV$ (or $\calV$-coercive) if $\exists \alpha > 0$ such that 
+  \begin{equation*}
+    a(v,v) \geq \alpha \| v \|_\calV^2 \quad \forall v \in \calV.
+  \end{equation*}
+\end{definition}
+The following theorem provides an answer to the question regarding the existence and uniqueness of a weak solution.
+\begin{theorem}[Lax-Milgram]
+  \label{thm:lax_milgram}
+  Given a Hilbert space $\calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV$, there exists a unique $u \in \calV$ such that
+  \begin{equation}
+    a(u,v) = \ell(v) \quad \forall v \in \calV.
+    \label{eq:posnd_lax_milgram}
+  \end{equation}
+  \begin{proof}
+    The proof of existence is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+
+    The proof of uniqueness is as follows. Suppose we have two solutions $u_1 \in \calV$ and $u_2 \in \calV$ that are distinct ($u_1 \neq u_2$) and satisfy~\eqref{eq:posnd_lax_milgram}: i.e., $a(u_1,v) = \ell(v)$, $\forall v \in \calV$, and $a(u_2,v) = \ell(v)$, $\forall v \in \calV$. The subtraction of the two equations yields $a(u_1,v) - a(u_2,v) = 0$, $\forall v \in \calV$.  We then invoke bilinearity to obtain $a(u_1 - u_2,v) = 0$, $\forall v \in \calV$. We then choose $v = u_1 - u_2$, which yields $a(u_1 - u_2, u_1 - u_2) = 0$.  The coercivity of the bilinear form implies that $a(u_1 - u_2, u_1 - u_2) \geq \alpha \| u_1 - u_2 \|^2_\calV$; since the left hand side is $0$, we obtain $\| u_1 - u_2 \|^2_\calV = 0$.  Hence, we arrive at the contradiction $u_1 = u_2$.  If two solutions satisfy~\eqref{eq:posnd_lax_milgram}, then they must be the same; the solution to~\eqref{eq:posnd_lax_milgram} is unique.
+  \end{proof}
+\end{theorem}
+The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result. 
+
+The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  %The following proposition often facilitates the verification of these properties.
+For many bilinear forms associated with boundary value problems, the continuity can be relatively easily verified using the Cauchy-Schwarz inequality.  On the other hand, the verification of the coercivity often requires the following additional result.
+\begin{proposition}
+  \label{prop:th_poincare_gen}
+  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball, and suppose $\Gamma_D \subset \partial \Omega$ is closed and $\Gamma_D \neq \emptyset$.  Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
+  \begin{equation*}
+    %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+    \| v \|_{L^2(\Omega)} \leq C_{\Omega,\Gamma_D} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+  \end{equation*}
+    \begin{proof}
+      The proof is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+    \end{proof}
+\end{proposition}
+The proposition allows us to bound the $L^2$ norm of a function by the $H^1$ \emph{semi}-norm of the function, provided that the function vanishes over a part of the boundary.  In other words, the proposition bounds the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a part of the boundary.
+The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
+\begin{proposition}[Poincar\'e's inequality]
+  \label{prop:poincare}
+  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball. Then, there exists a constant $C_\Omega$ that depends on only $\Omega$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\Omega)} \leq C_\Omega | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
+  \end{equation*}
+\end{proposition}
+
+The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on data $\ell(\cdot)$.
+\begin{proposition}[stability]
+  Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied. Then, the solution satisfies
+  \begin{equation*}
+    \| u \|_\calV \leq \frac{1}{\alpha} \| \ell \|_{\calV'},
+  \end{equation*}
+  where $\alpha$ is the coercivity constant.
+  \begin{proof}
+    The proof is trivial for $\| u \|_\calV = 0$. For $\| u \|_\calV \neq 0$, we appeal to the coercivity of the bilinear form and the continuity of the linear form:
+    \begin{equation*}
+      \alpha \| u \|_\calV^2 \leq a(u,u) = \ell(u) \leq \| \ell \|_{\calV'} \| u \|_\calV.
+    \end{equation*}
+    The division by $\| u \|_\calV \neq 0$ yields the desired result.
+  \end{proof}
+\end{proposition}
+\begin{corollary}
+  Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied.  In addition, consider two linear forms $\ell_1(\cdot)$ and $\ell_2(\cdot)$, and the associated solutions $u_1$ and $u_2$.  Then, the difference in the solutions, $u_1 - u_2$, is bounded by the difference in the data, $\ell_1 - \ell_2$:
+  \begin{equation*}
+    \| u_1 - u_2 \|_\calV \leq \frac{1}{\alpha} \| \ell_1 - \ell_2 \|_{\calV'}.
+  \end{equation*}
+\end{corollary}
+The stability result shows that the energy norm of the solution $u$ is bounded by the dual norm of the data $\ell$.  The closely related result in the corollary can be interpreted to mean that a small disturbance in the data $\ell$ results in a small perturbation in the solution $u$.
+
+\section{Example: well-posedness of a Poisson problem}
+We now demonstrate the application of the Lax-Milgram theorem to prove that the following Poisson problem has a unique solution: find $u \in \calV \equiv H^1_0(\Omega)$ such that
+\begin{equation*}
+  a(u,v) = \ell(v) \quad \forall v \in \calV,
+\end{equation*}
+where
+\begin{align*}
+  a(w,v) &= \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV, \\
+  \ell(v) &= \int_\Omega v f dx \quad \forall v \in \calV,
+\end{align*}
+for $f \in L^2(\Omega)$.  The space $\calV$ is endowed with the standard $H^1(\Omega)$ inner product and norm; i.e., $(\cdot,\cdot)_\calV \equiv (\cdot,\cdot)_{H^1(\Omega)}$ and $\| \cdot \|_\calV \equiv \| \cdot \|_{H^1(\Omega)}$.
+
+We first show that the bilinear form is continuous: $\forall w,v \in \calV$, 
+\begin{equation*}
+  a(w,v)
+  =
+  \int_\Omega \nabla v \cdot \nabla w dx
+  \leq
+  \| \nabla v \|_{L^2(\Omega)} \| \nabla w \|_{L^2(\Omega)}
+  =
+  | v |_{H^1(\Omega)} | w |_{H^1(\Omega)}
+  \leq
+  \| v \|_{H^1(\Omega)} \| w \|_{H^1(\Omega)};
+\end{equation*}
+here, the first inequality follows from Cauchy-Schwarz, and the last inequality follows from $| v |_{H^1(\Omega)}^2 \leq | v |_{H^1(\Omega)}^2 + \| v \|_{L^2(\Omega)}^2 \equiv \| v \|_{H^1(\Omega)}^2$.  Hence, the bilinear form is continuous with the continuity constant of unity.
+We next show that the bilinear form is coercive: $\forall v \in \calV$,
+\begin{equation*}
+  \| v \|^2_{H^1(\Omega)} = | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Omega)}
+  \leq | v |^2_{H^1(\Omega)} + C_{\Omega}^2 | v |^2_{H^1(\Omega)}
+  = (1 + C_{\Omega}^2) a(v,v),
+\end{equation*}
+where $C_{\Omega}$ is the constant of the Poincar\'e equality, Proposition~\ref{prop:poincare}, for the given domain $\Omega$.  It follows that $(1+C_\Omega^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$. Hence, the bilinear from is coercive the coercivity constant of $(1 + C_\Omega^2)^{-1}$.  We finally show that the linear form is continuous: $\forall v \in \calV$, 
+\begin{equation*}
+  \| \ell \|_{\calV'} \equiv \sup_{v \in \calV}
+  \frac{|\int_\Omega v f dx|}{\| v \|_{H^1(\Omega)}}
+  \leq \sup_{v \in \calV} \frac{\| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
+  \leq \sup_{v \in \calV} \frac{\| v \|_{H^1(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
+  \leq\| f \|_{L^2(\Omega)} < \infty;
+\end{equation*}
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a solution and it is unique.
+
 \section{Summary}
 We summarize key points of this lecture:
 \begin{enumerate}
@@ -507,7 +635,8 @@ We summarize key points of this lecture:
 \item The $d$-dimensional Poisson equation can be cast in the strong, minimization, or variational (or weak) form.
 \item A Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
 \item Inhomogeneous Dirichlet boundary conditions are imposed strongly by an affine (and not linear) trial space.
-\item The eeighted residual method can be used to derive a variational form from a strong form and vice versa. 
+\item The Lax-Milgram theorem shows the existence \emph{and} uniqueness of a solution for a weak formulation with a coercive and continuous bilinear from and a continuous linear form.
+%\item The eeighted residual method can be used to derive a variational form from a strong form and vice versa. 
 \end{enumerate}
 
 
