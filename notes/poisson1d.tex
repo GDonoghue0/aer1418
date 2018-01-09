@@ -240,7 +240,7 @@ for some $\hat u_h \in \RR^N$ and $\hat v \in \RR^N$, and consider the following
   \sum_{i=1}^N \hat v_i \ell(\phi_i) = 0 \quad \forall \hat v \in \RR^N.
   \label{eq:pos1d_fe_disc_step_1}
 \end{equation}
-Here, we have appealed to the bilinearity and linearity of $a(\cdot,\cdot)$ and $\ell(\cdot)$, respectively. We then note that in~\eqref{eq:pos1d_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement holds $\hat v \in \{e_i \}_{i=1}^N$, where $\{e_i\}_{i=1}^N$ is the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:pos1d_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
+Here, we have appealed to the bilinearity and linearity of $a(\cdot,\cdot)$ and $\ell(\cdot)$, respectively. We then note that in~\eqref{eq:pos1d_fe_disc_step_1} we can replace the condition $\forall \hat v \in \RR^N$ with an equivalent condition that the statement holds for $\hat v \in \{e_i \}_{i=1}^N$, where $\{e_i\}_{i=1}^N$ is the canonical basis of $\RR^N$ (i.e.~$e_i \in \RR^N$ has $1$ in the $i$-th entry and $0$ elesewhere). Then, we can restate~\eqref{eq:pos1d_fe_disc_step_1} as follows: find $\hat u_h \in \RR^N$ such that
 \begin{equation}
   \sum_{j=1}^N a(\phi_j,\phi_i) \hat u_{h,j} = \ell(\phi_i) \quad  \forall i = 1,\dots,N.
   \label{eq:pos1d_sys}
@@ -252,20 +252,20 @@ We can also rewrite the linear system in the matrix form:
   \vdots & \ddots & \vdots \\
   a(\phi_1,\phi_N) & \cdots & a(\phi_N,\phi_N) \\
   \emat
-  }_{A_h \in \RR^{N \times N}}
+  }_{\hat A_h \in \RR^{N \times N}}
   \underbrace{ \bmat{c} \hat u_{h,1}  \\ \vdots \\ \hat u_{h,N} \emat }_{\hat u_h \in \RR^N}
   =
   \underbrace{ \bmat{c} \ell(\phi_1) \\ \vdots \\ \ell(\phi_N) \emat }_{\hat f_h \in \RR^N},
 \end{equation*}
 or, more concisely,
 \begin{equation*}
-  A_h \hat u_h = f_h.
+  \hat A_h \hat u_h = f_h.
 \end{equation*}
-The matrix $A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.% The linear system is in fact \emph{symmetric positive definite} (SPD) and hence has a unique solution.
+The matrix $\hat A_h$ is called the \emph{stiffness matrix} and the vector $f_h$ is called the \emph{load vector}.% The linear system is in fact \emph{symmetric positive definite} (SPD) and hence has a unique solution.
 
-%\section{Solution of $A_h \hat u_h = f_h$}
+%\section{Solution of $\hat A_h \hat u_h = f_h$}
 
-We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We consider four distinct parts of the matrix: the main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
+We now take a closer look at the matrix $\hat A_h \in \RR^{N \times N}$ associated with our particular choice of the basis $\{\phi_i\}_{i=1}^N$.  We consider four distinct parts of the matrix: the main diagonal, superdiagonal, subdiagonal, and all other entries.  The diagonal entries are given by 
 \begin{equation*}
   a(\phi_i,\phi_i) = \int_{x_{i-1}}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_i}{x} dx
   = \int_{x_{i-1}}^{x_{i}} \left( \frac{1}{h_i} \right)^2 dx +
@@ -274,27 +274,27 @@ We now take a closer look at the matrix $A_h \in \RR^{N \times N}$ associated wi
 \end{equation*}
 The superdiagonal entries are given by
 \begin{equation*}
-  a(\phi_i,\phi_{i+1}) =
-  \int_{x_i}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_{i+1}}{x} dx
-  = \int_{x_i}^{x_{i+1}} \left( - \frac{1}{h_i} \right) \left( \frac{1}{h_i} \right) dx
-  = - \frac{1}{h_i}, \quad i = 1,\dots,N-1.
+  a(\phi_{i+1},\phi_i) =
+  \int_{x_i}^{x_{i+1}} \dd{\phi_{i+1}}{x} \dd{\phi_i}{x} dx
+  = \int_{x_i}^{x_{i+1}}  \left( \frac{1}{h_{i+1}} \right) \left( - \frac{1}{h_{i+1}} \right) dx
+  = - \frac{1}{h_{i+1}}, \quad i = 1,\dots,N-1.
 \end{equation*}
 The subdiagonal entries are given by
 \begin{equation*}
-  a(\phi_{i+1},\phi_i) =
-  \int_{x_i}^{x_{i+1}} \dd{\phi_{i+1}}{x} \dd{\phi_i}{x} dx
-  = \int_{x_i}^{x_{i+1}}  \left( \frac{1}{h_i} \right) \left( - \frac{1}{h_i} \right) dx
-  = - \frac{1}{h_i}, \quad i = 1,\dots,N-1.
+    a(\phi_i,\phi_{i+1}) =
+  \int_{x_i}^{x_{i+1}} \dd{\phi_i}{x} \dd{\phi_{i+1}}{x} dx
+  = \int_{x_i}^{x_{i+1}} \left( - \frac{1}{h_{i+1}} \right) \left( \frac{1}{h_{i+1}} \right) dx
+  = - \frac{1}{h_{i+1}}, \quad i = 1,\dots,N-1.
 \end{equation*}
 All other entries are zero because $\phi_i$ and $\phi_j$ do not overlap for $|i -j| > 1$.
 
 We now consider the simple case of equispaced nodes so that $h_i = h$, $\forall i = 1,\dots,N$.  The associated stiffness matrix is
 \begin{equation*}
-  A_h = \frac{1}{h} \bmat{ccccc} 2 & -1 \\ -1 & 2 & -1 \\ & \ddots & \ddots & \ddots \\ & &-1 & 2 & -1 \\ &&& -1 & 2 \emat.
+  \hat A_h = \frac{1}{h} \bmat{ccccc} 2 & -1 \\ -1 & 2 & -1 \\ & \ddots & \ddots & \ddots \\ & &-1 & 2 & -1 \\ &&& -1 & 2 \emat.
 \end{equation*}
 We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}.  Moreover, this matrix is symmetric positive definite.  The symmetry is obvious from inspection; the positive definiteness follows from 
 \begin{align*}
-  \hat v^T A_h \hat v
+  \hat v^T \hat A_h \hat v
   &=
   \frac{1}{h} \left(
   2\sum_{i=1}^N \hat v_i^2 - 2\sum_{i=1}^{N-1} \hat v_i\hat v_{i+1} 
@@ -305,14 +305,16 @@ We observe that the matrix is \emph{sparse} and in particular \emph{tridiagonal}
   \right)
   > 0 \quad \forall \hat v \neq 0.
 \end{align*}
-Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm, which is a form of Gaussian elimination, in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to the FE variational formulation~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) is given by the representation~\eqref{eq:pos1d_uh_rep}.
+Hence the solution exists and is unique.  The storage requirement for the tridiagonal system is $\calO(N)$, and the solution to $\hat A_h \hat u_h = f_h$ can be obtained using the Thomas algorithm, which is a form of Gaussian elimination, in $\calO(N)$ floating point operations.  Given the solution  $\hat u_h \in \RR^N$ to the linear system, our finite element solution $u_h \in \calV_h$ to the FE variational formulation~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) is given by the representation~\eqref{eq:pos1d_uh_rep}.
 
 \section{An error estimate: optimality and polynomial approximation}
 We now assess how accurately our finite element solution $u_h \in \calV_h$ to~\eqref{eq:pos1d_var_fe} (or equivalently~\eqref{eq:pos1d_min_fe}) approximates the solution $u \in \calV$ to~\eqref{eq:pos1d_var} (or equivalently~\eqref{eq:pos1d_min}).  To this end, we need to first define a norm with which we can measure the ``closeness'' of the approximation. In particular, we introduce the \emph{energy norm} associated with the model problem,
 \begin{equation*}
   \enorm{v} \equiv \sqrt{a(v,v)}  = \left( \int_{\Omega} \left( \dd{v}{x} \right)^2 dx \right)^{1/2} \quad \forall v \in \calV.
 \end{equation*}
-Because $\enorm{ \cdot }$ is the induced norm associated with an inner product $a(\cdot,\cdot)$ over $\calV$, it is indeed a proper norm that satisfies i) scalability, ii) triangle inequality, and iii) positivity.  
+We here omit the proof, but we can readily show that $a(\cdot,\cdot)$ is an inner product in $\calV$, and $\enorm{\cdot}$ is the associated induced norm.  As a consequence, the energy norm of the error $\enorm{u - u_h}$ is 0 if and only if $u - u_h = 0$.
+%We can readily show that $\enorm{\cdot}$ is a proper norm in $\calV$.  
+%Because $\enorm{ \cdot }$ is the induced norm associated with an inner product $a(\cdot,\cdot)$ over $\calV$, it is indeed a proper norm that satisfies i) scalability, ii) triangle inequality, and iii) positivity.  
 
 We next state a key ingredient of the FE error estimate: \emph{Galerkin orthogonality}: since $\ell(v) = a(u,v)$, $\forall v \in \calV$, the FE variational statement~\eqref{eq:pos1d_var_fe} implies
 \begin{equation*}
@@ -322,14 +324,18 @@ the relationship is called Galerkin orthogonality because it states that the err
 \begin{align*}
   \enorm{u-u_h}^2
   &=
-  a(u-u_h, u-w_h) + \underbrace{ a(u-u_h,w_h - u_h) }_{= 0 \text{ by Galerkin orthogonality}}
+  a(u-u_h, u-u_h) & \text{(definition of $\enorm{\cdot}$)}
   \\
   &=
-  a(u-u_h, u - w_h)% & \text{(Galerkin orthogonality)}
+  a(u-u_h, u-w_h) + \cancel{ a(u-u_h,w_h - u_h) }
+  & \text{(Galerkin orthogonality)}
+  \\
+  &=
+  a(u-u_h, u - w_h) 
   \\
   &\leq  \enorm{u - u_h} \enorm{u - w_h}. & \text{(Cauchy-Schwarz inequality)}.
 \end{align*}
-It follows that
+We divide both sides by $\enorm{u - u_h}$ to obtain
 \begin{equation}
   \enorm{u - u_h} \leq \enorm{u - w_h} \quad \forall w_h \in \calV_h,
   \label{eq:pos1d_fe_opt}
@@ -342,8 +348,9 @@ We observe that the FE approximation $u_h \in \calV_h$ is \emph{optimal} in the 
 
 As the optimality statement~\eqref{eq:pos1d_fe_opt} holds for any $w_h \in \calV_h$, we can set $w_h = \calI_h u = \sum_{i=1}^N u(x_i) \phi_i$, the polynomial interpolant associated with our Lagrange basis functions.  It can be shown that for any $v \in \calV$ the following interpolation error bounds hold:
 \begin{align*}
-  \enorm{v - \calI_h v} &\leq \frac{1}{8} h^2 \max_{x \in \Omega} |v''(x)| \\
-  \enorm{\dd{v}{x} - \dd{(\calI_h u)}{x}} &\leq h \max_{x \in \Omega} |v''(x)| .
+%  \enorm{v - \calI_h v} &\leq \frac{1}{8} h^2 \max_{x \in \Omega} |v''(x)| \\
+  %  \enorm{\dd{v}{x} - \dd{(\calI_h u)}{x}} &\leq h \max_{x \in \Omega} |v''(x)| .
+  \enorm{ v - \calI_h v } \leq h \max_{x \in \Omega} |v''(x) |.
 \end{align*}
 (We will later derive the bounds in a more formal setting.) We hence arrive at the following FE error bound in terms of the discretization parameter $h$:
 \begin{equation*}
