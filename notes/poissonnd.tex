@@ -639,28 +639,44 @@ The following theorem provides an answer to the question regarding the existence
 \end{theorem}
 The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result. 
 
-The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  %The following proposition often facilitates the verification of these properties.
-For many bilinear forms associated with boundary value problems, the continuity can be relatively easily verified using the Cauchy-Schwarz inequality.  On the other hand, the verification of the coercivity often requires the following additional result.
-\begin{proposition}
-  \label{prop:th_poincare_gen}
-  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball, and suppose $\Gamma_D \subset \partial \Omega$ is closed and $\Gamma_D \neq \emptyset$.  Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
+The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Friedrichs inequality.
+\begin{proposition}[Friedrichs inequality]
+  \label{prop:posnd_friedrichs}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq \emptyset$. Then, there exists a constant $C_{\Omega, \Gamma}$ that only depends on $\Omega$ and $\Gamma$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\Omega)}^2 \leq C_{\Omega,\Gamma} ( | u |^2_{H^1(\Omega)} + \| u \|^2_{L^2(\Gamma)} )  \quad \forall v \in H^1(\Omega).
+  \end{equation*}
+  \begin{proof}
+    The proof of the theorem is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+  \end{proof}
+\end{proposition}
+\begin{corollary}
+  \label{cor:posnd_friedrichs_1}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq 0$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
   \begin{equation*}
     %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
     \| v \|_{L^2(\Omega)} \leq C_{\Omega,\Gamma_D} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
   \end{equation*}
-    \begin{proof}
-      The proof is beyond the scope of this course.  We refer to Brenner and Scott (2008).
-    \end{proof}
-\end{proposition}
-The proposition allows us to bound the $L^2$ norm of a function by the $H^1$ \emph{semi}-norm of the function, provided that the function vanishes over a part of the boundary.  In other words, the proposition bounds the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a part of the boundary.
-The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
-\begin{proposition}[Poincar\'e's inequality]
-  \label{prop:poincare}
-  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball. Then, there exists a constant $C_\Omega$ that depends on only $\Omega$ such that
+\end{corollary}
+\begin{corollary}
+  \label{cor:posnd_friedrichs_2}
+  Let $\Omega \in \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_\Omega$ that depends on only $\Omega$ such that
   \begin{equation*}
     \| v \|_{L^2(\Omega)} \leq C_\Omega | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
   \end{equation*}
+\end{corollary}
+Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specialization of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
+%The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
+
+For many bilinear forms associated with boundary value problems, the verification of continuity relies on the trace inequality.
+\begin{proposition}[trace inequality]
+  \label{prop:posnd_trace_ineq}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\Omega}$ that depends only on $\Omega$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\partial \Omega)} \leq C_{\Omega} \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega).
+  \end{equation*}
 \end{proposition}
+The trace inequality is particularly useful when we wish to show continuity of a linear or bilinear form which involves integration over (a part of) the boundary.
 
 The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on data $\ell(\cdot)$.
 \begin{proposition}[stability]
@@ -686,16 +702,16 @@ The Lax-Milgram theorem concerns with the existence and uniqueness of a weak sol
 The stability result shows that the energy norm of the solution $u$ is bounded by the dual norm of the data $\ell$.  The closely related result in the corollary can be interpreted to mean that a small disturbance in the data $\ell$ results in a small perturbation in the solution $u$.
 
 \section{Example: well-posedness of a Poisson problem}
-We now demonstrate the application of the Lax-Milgram theorem to prove that the following Poisson problem has a unique solution: find $u \in \calV \equiv H^1_0(\Omega)$ such that
+We now demonstrate the application of the Lax-Milgram theorem to prove that the mixed Poisson problem considered in Section~\ref{sec:posnd_mixed} is wellposed.  The problem is reproduced here for convenience.  Let $\Omega \subset \RR^d$ be a Lipschitz domain, $\Gamma_D$ and $\Gamma_N$ be Dirichlet and Neumann boundaries such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N$ and $\Gamma_D \neq \emptyset$, and $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Find $u \in \calV \equiv H^1_0(\Omega)$ such that
 \begin{equation*}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
 \end{equation*}
 where
 \begin{align*}
   a(w,v) &= \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV, \\
-  \ell(v) &= \int_\Omega v f dx \quad \forall v \in \calV,
+  \ell(v) &= \int_\Omega v f dx + \int_{\Gamma_N} v g ds \quad \forall v \in \calV
 \end{align*}
-for $f \in L^2(\Omega)$.  The space $\calV$ is endowed with the standard $H^1(\Omega)$ inner product and norm; i.e., $(\cdot,\cdot)_\calV \equiv (\cdot,\cdot)_{H^1(\Omega)}$ and $\| \cdot \|_\calV \equiv \| \cdot \|_{H^1(\Omega)}$.
+for $f \in L^2(\Omega)$ and $g \in L^2(\Gamma_N)$.  The space $\calV$ is endowed with the standard $H^1(\Omega)$ inner product and norm; i.e., $(\cdot,\cdot)_\calV \equiv (\cdot,\cdot)_{H^1(\Omega)}$ and $\| \cdot \|_\calV \equiv \| \cdot \|_{H^1(\Omega)}$.
 
 We first show that the bilinear form is continuous: $\forall w,v \in \calV$, 
 \begin{equation*}
@@ -709,22 +725,32 @@ We first show that the bilinear form is continuous: $\forall w,v \in \calV$,
   \leq
   \| v \|_{H^1(\Omega)} \| w \|_{H^1(\Omega)};
 \end{equation*}
-here, the first inequality follows from Cauchy-Schwarz, and the last inequality follows from $| v |_{H^1(\Omega)}^2 \leq | v |_{H^1(\Omega)}^2 + \| v \|_{L^2(\Omega)}^2 \equiv \| v \|_{H^1(\Omega)}^2$.  Hence, the bilinear form is continuous with the continuity constant of unity.
+here, the first inequality follows from Cauchy-Schwarz, and the last inequality follows from $| v |_{H^1(\Omega)}^2 \leq | v |_{H^1(\Omega)}^2 + \| v \|_{L^2(\Omega)}^2 \equiv \| v \|_{H^1(\Omega)}^2$.  Hence, the bilinear form is continuous with the continuity constant $C = 1$.
 We next show that the bilinear form is coercive: $\forall v \in \calV$,
 \begin{equation*}
   \| v \|^2_{H^1(\Omega)} = | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Omega)}
   \leq | v |^2_{H^1(\Omega)} + C_{\Omega}^2 | v |^2_{H^1(\Omega)}
   = (1 + C_{\Omega}^2) a(v,v),
 \end{equation*}
-where $C_{\Omega}$ is the constant of the Poincar\'e equality, Proposition~\ref{prop:poincare}, for the given domain $\Omega$.  It follows that $(1+C_\Omega^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$. Hence, the bilinear from is coercive the coercivity constant of $(1 + C_\Omega^2)^{-1}$.  We finally show that the linear form is continuous: $\forall v \in \calV$, 
-\begin{equation*}
-  \| \ell \|_{\calV'} \equiv \sup_{v \in \calV}
+where $C_{\Omega}$ is the constant associated with the (corollary of the) Friedrichs inequality, Corollary~\ref{cor:posnd_friedrichs_1}.  It follows that $(1+C_\Omega^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$.  Hence, the bilinear from is coercive with the coercivity constant  $\alpha = (1 + C_\Omega^2)^{-1}$.  We now show that the volume source term of the linear form is continuous:
+\begin{align*}
+  \| \int_{\Omega} \cdot\,f dx \|_{\calV'}
+  &\equiv \sup_{v \in \calV}
   \frac{|\int_\Omega v f dx|}{\| v \|_{H^1(\Omega)}}
   \leq \sup_{v \in \calV} \frac{\| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
-  \leq \sup_{v \in \calV} \frac{\| v \|_{H^1(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
-  \leq\| f \|_{L^2(\Omega)} < \infty;
-\end{equation*}
-here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a solution and it is unique.
+  \leq\| f \|_{L^2(\Omega)} + C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
+\end{align*}
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$.  We finally show that the Neumann boundary term of the linear form is continuous:
+\begin{align*}
+  \| \int_{\Gamma_N} \cdot\,g ds \|_{\calV'}
+  &\equiv \sup_{v \in \calV}
+  \frac{|\int_{\Gamma_N} v g ds|}{\| v \|_{H^1(\Omega)}}
+  \leq \sup_{v \in \calV} \frac{ \| v \|_{L^2(\Gamma_N)} \| g \|_{L^2(\Gamma_N)}}{\| v \|_{H^1(\Omega)}}
+  \leq \sup_{v \in \calV} \frac{C_{\Omega} \| v \|_{H^1(\Omega)} \| g \|_{L^2(\Gamma_N)} }{\| v \|_{H^1(\Omega)}}
+  \\
+  &\leq C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
+\end{align*}
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from the trace inequality, Proposition~\ref{prop:posnd_trace_ineq}. Since both the volume and Neumann-boundary terms are continuous, the linear form $\ell(\cdot)$ is continuous.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a unique solution.
 
 \section{Minimization formulation}
 We now obtain the minimization formulation for boundary value problems under two assumptions on the bilinear form $a(\cdot,\cdot)$:
@@ -799,7 +825,7 @@ We summarize key points of this lecture:
 \item A Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
 \item Inhomogeneous Dirichlet boundary conditions are imposed strongly by an affine (and not linear) trial space.
 \item The Lax-Milgram theorem shows the existence \emph{and} uniqueness of a solution for a weak formulation with a coercive and continuous bilinear from and a continuous linear form.
-\item The verification of coercivity and continuity of a bilinear form often relies on a Poincare-type inequality and trace inequality, respectively.
+\item The verification of coercivity and continuity of a bilinear form often relies on a Friedrichs-type inequality and trace inequality, respectively.
 \item If a variational formulation is given by a symmetric, coercive bilinear form, then it has a minimization formulation.
 \end{enumerate}
 
