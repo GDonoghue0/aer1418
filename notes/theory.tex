@@ -7,59 +7,6 @@ In the previous lecture, we introduced a variational formulation and the associa
 
 
 
-\section{Well-posedness of the weak form}
-
-\begin{definition}[dual norm and continuity]
-  The dual norm of a linear functional $\ell \in \calV'$ is defined as
-  \begin{equation*}
-    \| \ell \|_{\calV'} \equiv \sup_{v \in \calV} \frac{|\ell(v)|}{\| v \|_\calV}.
-  \end{equation*}
-  A linear function is said to be \emph{continuous} if $\| \ell \|_{\calV'} \leq \infty$.
-\end{definition}
-
-\begin{definition}[continuity]
-  \label{def:th_continuity}
-  A bilinear form $a: \calV \times \calV \to \RR$ is said to be continuous on $\calV$ (or $\calV$-continuous) if $\exists \gamma < \infty$ such that 
-  \begin{equation*}
-    a(w,v) \leq \gamma \| w \|_\calV \| v \|_\calV \quad \forall w,v \in \calV,
-  \end{equation*}
-\end{definition}
-
-\begin{definition}[coercivity]
-  \label{def:th_coercivity}
-  A biilnear form $a: \calV \times \calV \to \RR$ is said to be coercive on $\calV$ (or $\calV$-coercive) if $\exists \alpha > 0$ such that 
-  \begin{equation*}
-    a(v,v) \geq \alpha \| v \|_\calV^2 \quad \forall v \in \calV.
-  \end{equation*}
-\end{definition}
-
-\begin{theorem}[Lax-Milgram]
-  Given a Hilbert space $\calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV$, there exists a unique $u \in \calV$ such that
-  \begin{equation*}
-    a(u,v) = \ell(v) \quad \forall v \in \calV.
-  \end{equation*}
-  \begin{proof}
-    The proof is beyond the scope of this course.  We refer to Brenner and Scott.
-  \end{proof}
-\end{theorem}
-
-\section{Coercivity of variational problems}
-
-\begin{proposition}
-  \label{prop:th_poincare_gen}
-  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball, and suppose $\Gamma_D \subset \partial \Omega$ is closed and $\Gamma_D \neq \empty$.  Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C$ that depends only on $\Omega$ and $\Gamma_D$ such that
-  \begin{equation*}
-    \| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
-  \end{equation*}
-\end{proposition}
-The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
-\begin{proposition}[Poincar\'e's inequality]
-  Let $\Omega \in \RR^d$ be a finite union of domains that are star-shaped with respect to a ball. Let $\calV \equiv H^1_0(\Omega)$. Then, there exists a constant $C$ that depends on only $\Omega$ such that
-  \begin{equation*}
-    \| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
-  \end{equation*}
-\end{proposition}
-
 
 \section{Finite element error: energy norm}
 In this section and the following sections, we analyze the error in the finite element solution in various norms. By way of preliminaries, we define conditions that are referenced throughout our analysis:
