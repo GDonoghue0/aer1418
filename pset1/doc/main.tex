@@ -1,0 +1,105 @@
+\documentclass[preprint,11pt]{article}
+%\documentclass{elsart3-1}
+
+\usepackage{amsthm,amsmath,amssymb,amsfonts,amscd,amsbsy}%,latexsym,epsfig,subfig}
+%\usepackage{graphicx,psfrag,verbatim,wasysym}
+\usepackage{graphicx}
+\usepackage[ruled,noline,linesnumbered]{algorithm2e}
+%\usepackage{bm}
+\usepackage[tight]{subfigure}
+\usepackage{fullpage}
+\usepackage{color}
+%\usepackage{setspace}
+%\usepackage[tight]{subfigure}
+%\usepackage{listings}
+\usepackage{enumerate}
+\newcommand{\doi}[1]{\textsc{doi:} \textsf{#1}\xspace}
+
+\DeclareGraphicsExtensions{.jpg,.png,.pdf}
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+%\setlength{\parindent}{0em}
+\setlength{\parskip}{0em}
+
+\include{commands}
+
+%\renewcommand{\theenumi}{(\alph{enumi})}
+% 
+%
+%
+
+\begin{document}
+
+\noindent\begin{Large}\textbf{AER1418 Problem Set 1}\end{Large} \hfill Due Tuesday, 6 February 2018, at 14:00.
+
+\vspace{1em}
+\noindent A hard copy of the problem set is due in class at the specified time.  %For problems that require coding, please turn in a hard copy of the program listings and also upload the code to the Portal to facilitate the grading process.
+Please adhere to the collaboration policy: the final write up must be prepared individually without consulting others. (See the syllabus for details.)
+
+\section*{Part 1. Formulation}
+We wish to understand the insulation characteristics of a jacket worn by a person walking outside in a cold, windy day.  In our simplified analysis, the person is a circle that acts as a heat source, and the jacket is a ring that surrounds the person. We wish to model the temperature distribution in the ring-shaped jacket and to evaluate the temperature on the inner surface, which contacts the person.
+
+A mathematical description of the problem is as follows.  All variables are nondimensionalized.  We introduce a two-dimensional annular domain
+\begin{equation*}
+  \Omega_{\rm annulus} \equiv \{ x \in \RR^2 \ | \ r_{\rm in} < \sqrt{x_1^2 + x_2^2} < r_{\rm out} \}
+\end{equation*}
+for $r_{\rm in} = 1$ and $r_{\rm out} = 2$. The associated inner and outer boundaries are
+\begin{align*}
+  \Gamma_{\rm in} &\equiv \{ x \in \RR^2 \ | \ \sqrt{x_1^2 + x_2^2} = r_{\rm in} \}, \\
+  \Gamma_{\rm out} &\equiv \{ x \in \RR^2 \ | \ \sqrt{x_1^2 + x_2^2} = r_{\rm out} \}.
+\end{align*}
+The steady-state temperature distribution inside the annulus is modeled by the (steady-state) heat equation
+\begin{equation*}
+  - \nabla \cdot (k \nabla u) = 0 \quad \text{in } \Omega_{\rm annulus} ,
+\end{equation*}
+where $k = 1$ is the thermal conductivity. The heat transfer at the inner wall $\Gamma_{\rm in}$ from the heat source is modeled by
+\begin{equation*}
+  - n \cdot (k \nabla u) = -g \quad \text{on } \Gamma_{\rm in},
+\end{equation*}
+where $n$ is the outward-pointing normal and $g = 1$. %; here, the negative flux indicates that the energy is transferred from the heat source to the annulus.
+The heat transfer at the outer wall $\Gamma_{\rm out}$ to the air is modeled by 
+\begin{equation*}
+  - n \cdot (k \nabla u) = B_{\rm out} (u - u_{\infty})  \quad \text{on } \Gamma_{\rm out},
+\end{equation*}
+where $B_{\rm out} > 0$ is the Biot number that characterizes the heat transfer to the surrounding air.  Without loss of generality, we set $u_{\infty} = 0$; i.e., the temperature $u$ is defined with respect to the ambient air temperature.
+
+Answer the following questions:
+\begin{enumerate}[(a)]
+\item Derive a variational form of the two-dimensional heat conduction problem.  Specifically, identify (i) the trial and test spaces, (ii) bilinear form, and (iii) linear form.
+\item The two-dimensional problem is axisymmetric. Reformulate the variational problem as a one-dimensional variational problem on the domain $\Omega \equiv (r_{\rm in}, r_{\rm out}) \subset \RR^1$.  Specifically, identify (i) the trial and test spaces, (ii) bilinear form, and (iii) linear form.
+
+  \emph{Note:} the integrand of the bilinear form should depend on the coordinate $x \in \Omega$.
+\end{enumerate}
+For the following questions, the variational problem, and the associated bilinear form and linear form, refer to those obtained in (b).
+\begin{enumerate}[(a)]
+  \setcounter{enumi}{2}
+\item Show that the bilinear form is coercive.
+\item Show that the bilinear form is continuous.
+\item Show that the linear form is continuous.
+\item Prove that the variational problem has a unique solution.
+\item Suppose the Biot number is zero: $B_{\rm out} = 0$.  Prove that the bilinear form is not coercive.  Does the problem have a unique solution?
+
+  \emph{Note:} to prove that the bilinear from is not coercive, you need only provide one function for which the coercivity condition is violated.
+\item State a minimization form of the variational problem.  Specifically, identify (i) the function space and (ii) energy functional.
+\end{enumerate}
+
+\section*{Part 2. Implementation}
+We now wish to develop a finite-element code that approximates the solution to the one-dimensional variational problem obtained in Part 1. The code should accept an arbitrary model parameter $B_{\rm out} > 0$ and an arbitrary discretization parameter $h > 0$.  
+\begin{enumerate}[(a)]
+\item Consider a hat-shaped piecewise-linear basis function delineated by points $a$, $b$, and $c$ with the support $(a,c)$ and the peak at $b$; note, $a < b < c$.  Evaluate the diagonal entry of the stiffness matrix associated with this basis function as a function of the coordinates $a$, $b$, and $c$.
+\item Evaluate all other entries of the stiffness matrix.  Introduce an appropriate set of points that delineates basis functions, and express entries as the coordinates of those points.
+\item Write a finite-element code that solves the heat conduction problem.
+\item Plot the finite-element solution $u_h$ for $B_{\rm out} = 1$ and a uniform mesh spacing of $h = 1/4$.  
+\item Consider the output $\ell^{o}(u) = u|_{x = r_{\rm in}}$. Show that
+  \begin{equation*}
+    \ell^o(u) - \ell^o(u_h) = a(e,e),
+  \end{equation*}
+  where $e \equiv u - u_h$ is the error in the finite element approximation $u_h$.  
+\item Solve the finite element problem on successively refined meshes. Report the reference value of the output obtained on the finest mesh $\ell^o(u_{h_{\rm fine}})$.  Plot the output error vs the grid spacing $h$ in log-log scale, and report the observed convergence rate.  Does the observed convergence rate match your expectation based on the theory?
+\item Execute the finite-element code for $B_{\rm out} = 0$.  %How does the code fail?
+  Does the observed behavior match your expectation?
+\end{enumerate}
+
+
+\end{document}
+
