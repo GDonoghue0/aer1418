@@ -609,6 +609,13 @@ We first provide a few definitions that characterize a linear form and bilinear 
   \end{equation*}
   A linear functional is said to be \emph{continuous} if $\| \ell \|_{\calV'} < \infty$.
 \end{definition}
+\begin{corollary}
+  If a linear form $\ell \in \calV'$ is continuous so that $\| \ell \|_{\calV}' < \infty$, then
+  \begin{equation*}
+    |\ell(v)| \leq \| \ell \|_{\calV'} \| v \|_\calV \quad \forall v \in \calV.
+  \end{equation*}
+  In other words, a linear form is continuous if $\exists c < \infty$ such that $| \ell(v) | \leq c \| v \|_\calV$, $\forall v \in \calV$.
+\end{corollary}
 \begin{definition}[continuity]
   \label{def:th_continuity}
   A bilinear form $a: \calV \times \calV \to \RR$ is said to be continuous on $\calV$ (or $\calV$-continuous) if $\exists \gamma < \infty$ such that 
@@ -639,12 +646,12 @@ The following theorem provides an answer to the question regarding the existence
 \end{theorem}
 The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result. 
 
-The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Friedrichs inequality.
-\begin{proposition}[Friedrichs inequality]
+The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Poincar\'e-Friedrichs inequality.
+\begin{proposition}[Poincar\'e-Friedrichs inequality]
   \label{prop:posnd_friedrichs}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq \emptyset$. Then, there exists a constant $C_{\Omega, \Gamma}$ that only depends on $\Omega$ and $\Gamma$ such that
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq \emptyset$. Then, there exists a constant $C_{\rm PF} < \infty$ that only depends on $\Omega$ and $\Gamma$ such that
   \begin{equation*}
-    \| v \|_{L^2(\Omega)}^2 \leq C_{\Omega,\Gamma} ( | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Gamma)} )  \quad \forall v \in H^1(\Omega).
+    \| v \|_{L^2(\Omega)}^2 \leq C_{\rm PF} ( | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Gamma)} )  \quad \forall v \in H^1(\Omega).
   \end{equation*}
   \begin{proof}
     The proof of the theorem is beyond the scope of this course.  We refer to Brenner and Scott (2008).
@@ -652,17 +659,17 @@ The proof of existence and uniqueness of a weak solution using the Lax-Milgram t
 \end{proposition}
 \begin{corollary}
   \label{cor:posnd_friedrichs_1}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma_D \subset \partial \Omega$ and $\Gamma_D \neq \emptyset$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma_D \subset \partial \Omega$ and $\Gamma_D \neq \emptyset$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\rm PF} < \infty$ that depends only on $\Omega$ and $\Gamma_D$ such that
   \begin{equation*}
     %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
-    \| v \|_{L^2(\Omega)} \leq C_{\Omega,\Gamma_D} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
   \end{equation*}
 \end{corollary}
 \begin{corollary}
   \label{cor:posnd_friedrichs_2}
-  Let $\Omega \in \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_\Omega$ that depends on only $\Omega$ such that
+  Let $\Omega \in \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm PF} < \infty$ that depends on only $\Omega$ such that
   \begin{equation*}
-    \| v \|_{L^2(\Omega)} \leq C_\Omega | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
+    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
   \end{equation*}
 \end{corollary}
 Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specializations of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
@@ -671,9 +678,9 @@ Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ nor
 For many bilinear forms associated with boundary value problems, the verification of continuity relies on the trace inequality.
 \begin{proposition}[trace inequality]
   \label{prop:posnd_trace_ineq}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\Omega}$ that depends only on $\Omega$ such that
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm tr} < \infty$ that depends only on $\Omega$ such that
   \begin{equation*}
-    \| v \|_{L^2(\partial \Omega)} \leq C_{\Omega} \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega).
+    \| v \|_{L^2(\partial \Omega)} \leq C_{\rm tr} \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega).
   \end{equation*}
 \end{proposition}
 The trace inequality is particularly useful when we wish to show continuity of a linear or bilinear form which involves integration over (a part of) the boundary.
@@ -729,16 +736,16 @@ here, the first inequality follows from Cauchy-Schwarz, and the last inequality 
 We next show that the bilinear form is coercive: $\forall v \in \calV$,
 \begin{equation*}
   \| v \|^2_{H^1(\Omega)} = | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Omega)}
-  \leq | v |^2_{H^1(\Omega)} + C_{\Omega}^2 | v |^2_{H^1(\Omega)}
-  = (1 + C_{\Omega}^2) a(v,v),
+  \leq | v |^2_{H^1(\Omega)} + C_{\rm PF}^2 | v |^2_{H^1(\Omega)}
+  = (1 + C_{\rm PF}^2) a(v,v),
 \end{equation*}
-where $C_{\Omega}$ is the constant associated with the (corollary of the) Friedrichs inequality, Corollary~\ref{cor:posnd_friedrichs_1}.  It follows that $(1+C_\Omega^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$.  Hence, the bilinear from is coercive with the coercivity constant  $\alpha = (1 + C_\Omega^2)^{-1}$.  We now show that the volume source term of the linear form is continuous:
+where $C_{\rm PF} < \infty$ is the constant associated with the (corollary of the) Poincar\'e-Friedrichs inequality, Corollary~\ref{cor:posnd_friedrichs_1}.  It follows that $(1+C_{\rm PF}^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$.  Hence, the bilinear from is coercive with the coercivity constant  $\alpha = (1 + C_{\rm PF}^2)^{-1}$.  We now show that the volume source term of the linear form is continuous:
 \begin{align*}
   \| \int_{\Omega} \cdot\,f dx \|_{\calV'}
   &\equiv \sup_{v \in \calV}
   \frac{|\int_\Omega v f dx|}{\| v \|_{H^1(\Omega)}}
   \leq \sup_{v \in \calV} \frac{\| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
-  \leq\| f \|_{L^2(\Omega)} + C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
+  \leq\| f \|_{L^2(\Omega)} < \infty; %+ C_{\rm tr}\| g \|_{L^2(\Omega)}< \infty;
 \end{align*}
 here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$.  We finally show that the Neumann boundary term of the linear form is continuous:
 \begin{align*}
@@ -825,7 +832,7 @@ We summarize key points of this lecture:
 \item A Dirichlet boundary condition is an essential boundary condition that is imposed strongly by the choice of the space.  Neumann and Robin boundary conditions are natural boundary conditions that are imposed weakly by the variational form.
 \item Inhomogeneous Dirichlet boundary conditions are imposed strongly by an affine (and not linear) trial space.
 \item The Lax-Milgram theorem shows the existence \emph{and} uniqueness of a solution for a weak formulation with a coercive and continuous bilinear from and a continuous linear form.
-\item The verification of coercivity and continuity of a bilinear form often relies on a Friedrichs-type inequality and trace inequality, respectively.
+\item The verification of coercivity and continuity of a bilinear form often relies on a Poincar\'e-Friedrichs-type inequality and trace inequality, respectively.
 \item If a variational formulation is given by a symmetric, coercive bilinear form, then it has a minimization formulation.
 \end{enumerate}
 
