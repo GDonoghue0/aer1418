@@ -88,7 +88,7 @@ A space $\calV$ is said to be \emph{complete} if any Cauchy sequence with respec
 
 \section{Sobolev spaces: $L^2(\Omega)$, $H^1(\Omega)$, and $H^1_0(\Omega)$}
 \label{sec:posnd_sobolev}
-We now introduce Hilbert spaces that are most commonly used in the weak formulation of PDEs. To begin, we characterize the domain $\Omega$ with which the function spaces are associated.
+We now introduce some of the Hilbert spaces that are most commonly used in the weak formulation of PDEs. To begin, we characterize the domain $\Omega$ with which the function spaces are associated.
 \begin{definition}[Lipschitz domain]
   A domain $\Omega \subset \RR^d$ is called a Lipschitz domain if its boundary $\partial \Omega$ is Lipschitz continuous: corners are permitted, but cusps are not.
 \end{definition}
@@ -105,7 +105,7 @@ We now introduce a space of square integrable functions on $\Omega \subset \RR^d
     L^2(\Omega) \equiv \{ w \ | \ \| w \|_{L^2(\Omega)} < \infty \}.
   \end{equation*}
 \end{definition}
-The $L^2(\Omega)$ space consists of functions that are square integrable over $\Omega$.  The space includes functions that are discontinuous and also unbounded.  Two functions in $L^2(\Omega)$ which differ over a set of measure zero are deemed equivalent. For instance, consider two functions on $\Omega \equiv (-1,1)$,
+The $L^2(\Omega)$ space contains functions that are square integrable over $\Omega$, including functions that are discontinuous and also unbounded.  For example, consider $x^{-1/4}$ over $\Omega \equiv (0,1)$; the function is unbounded at $x = 0$ but is square integrable and hence is in $L^2(\Omega)$.   Two functions in $L^2(\Omega)$ which differ over a set of measure zero --- any points in $\RR^1$, curves in $\RR^2$, and surfaces in $\RR^3$ --- are deemed equivalent. For instance, consider two functions on $\Omega \equiv (-1,1)$,
 \begin{equation*}
   f(x) \equiv \begin{cases}
     -1, \quad x \leq 0 \\
@@ -210,7 +210,7 @@ where $\partial \Omega$ denotes the boundary of $\Omega$.
 \end{definition}
 The $H^1_0(\Omega)$ space consists of a subset of $H^1(\Omega)$ functions that vanish on the boundary.  Note that $H^1_0(\Omega)$ for $\Omega \equiv (0,1) \subset \RR^1$ is precisely the space $\calV$ we used in Sections~\eqref{sec:pos1d_var}~and~\eqref{sec:pos1d_min} for the variational and minimization formulations, respectively, of the one-dimensional Poisson equation with the homogeneous Dirichlet boundary conditions.  By construction $H^1_0(\Omega) \subset H^1(\Omega)$ since the $H^1(\Omega)$ space contains functions that do not vanish on the boundary.
 
-We also introduce $H^1(\Omega)$ \emph{semi-norm}:
+We also introduce the $H^1(\Omega)$ \emph{semi-norm}:
 \begin{definition}[$H^1(\Omega)$ semi-norm]
   The $H^1(\Omega)$ semi-norm is denoted by $| \cdot |_{H^1(\Omega)}$ and is given by
   \begin{equation*}
@@ -222,7 +222,7 @@ We also introduce $H^1(\Omega)$ \emph{semi-norm}:
 %\end{remark}
 
 \section{Sobolev spaces: more general spaces}
-While we most frequently use Sobolev spaces $L^2(\Omega)$, $H^1(\Omega)$, and $H^1_0(\Omega)$ in weak formulations of second-order PDEs, more general Sobolev spaces are required for higher-order PDEs.  We here introduce these more general spaces for completeness.  As the results below can be considered a generalization of the particular results in Section~\ref{sec:posnd_sobolev}, we simply states the results.
+While we most frequently use Sobolev spaces $L^2(\Omega)$, $H^1(\Omega)$, and $H^1_0(\Omega)$ in weak formulations of second-order PDEs, more general Sobolev spaces are required for higher-order PDEs.  We here introduce these more general spaces for completeness.  As the results below can be considered a generalization of the particular results in Section~\ref{sec:posnd_sobolev}, we will simply state them.
 \begin{definition}[multi-dimensional derivative]
   Let $\alpha \equiv (\alpha_1, \dots, \alpha_d)$ be a $d$-dimensional multi-index of non-negative integers, and define its absolute value by $|\alpha| \equiv \alpha_1 + \cdots + \alpha_d$. The partial derivative operator $D^\alpha$ is given by 
   \begin{equation*}
@@ -289,7 +289,7 @@ We consider a Poisson equation in $\RR^d$ for $d \geq 1$.  To this end, we first
   - \Delta u &= f \quad \text{in } \Omega \label{eq:posnd_strong} \\
   u &= 0 \quad \text{on } \partial \Omega \notag.
 \end{align}
- Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.  The Poisson equation models, for instance, steady heat transfer: $u$ is the temperature field (relative to the ambient temperature), $f$ is the volume heat source, and the homogeneous Dirichlet boundary condition corresponds to the fixed-temperature condition.
+ Here, the Laplacian operator $\Delta$ satisfies $\Delta w \equiv \pp{^2w}{x^2_1} + \cdots + \pp{^2w}{x^2_d}$ for any $w$.  The Poisson equation models, for instance, steady heat transfer, where $u$ is the temperature field (relative to the ambient temperature), $f$ is the volume heat source, and the homogeneous Dirichlet boundary condition corresponds to the fixed-temperature condition.
 
 The variational formulation of~\eqref{eq:posnd_strong} requires an appropriate choice of a function space.  For homogeneous Dirichlet boundary condition, the appropriate Sobolev space is
 \begin{equation*}
@@ -526,14 +526,14 @@ We have so far considered the variational formulation of Poisson equations with 
   - \nabla \cdot (a \nabla u) + b \cdot \nabla u + c u &= f \quad \text{in } \Omega
   \notag \\
   u &= u_B \quad \text{on } \Gamma_D \label{eq:posnd_gen_strong} \\
-  \pp{u}{n} &= g \quad \text{on } \Gamma_N \notag \\
-  \pp{u}{n}+ k u &= q \quad \text{on } \Gamma_R, \notag
+  n \cdot a \nabla u &= g \quad \text{on } \Gamma_N \notag \\
+  n \cdot a \nabla u + k u &= q \quad \text{on } \Gamma_R, \notag
 \end{align}
-where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
+where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  Note that in general each coefficient is spatially varying and hence is a function of space; e.g., the diffusivity tensor evaluated at $x \in \Omega \subset \RR^d$ is in $\RR^{d \times d}$ and hence is denoted $a: \Omega \to \RR^{d \times d}$.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
 \begin{equation*}
   \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
 \end{equation*}
-Also note that in order for the differentiation $\nabla \cdot ( a \nabla u)$ for the \emph{strong formulation} \eqref{eq:posnd_gen_strong} to be well defined, the diffusivity field must satisfy certain smoothness conditions; we will soon see that this is not a requirement for the weak formulation.
+Also note that in order for the differentiation $\nabla \cdot ( a \nabla u)$ for the \emph{strong formulation} \eqref{eq:posnd_gen_strong} to be well defined, the diffusivity tensor field must satisfy certain smoothness conditions; we will soon see that this is not a requirement for the weak formulation.
 
 To obtain a variational form of~\eqref{eq:posnd_gen_strong}, we introduce spaces
 \begin{align*}
@@ -549,7 +549,7 @@ As discussed in Section~\ref{sec:posnd_inhomo_bc}, the Dirichlet boundary condit
   - \underbrace{\int_{\Gamma_N} v n \cdot a \nabla u ds}_{\text{(N)}}
   - \underbrace{\int_{\Gamma_R} v n \cdot a \nabla u ds}_{\text{(R)}}
 \end{align*}
-We now impose the boundary conditions.  The Dirichlet boundary condition is imposed strongly by the choice of the trial space $\calV_D$ and the test space $\calV$; the term (D) vanishes because $v|_{\Gamma_D} = 0$ for all $v \in \calV$.  The Neumann boundary condition $\pp{u}{n} = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
+We now impose the boundary conditions.  The Dirichlet boundary condition is imposed strongly by the choice of the trial space $\calV_D$ and the test space $\calV$; the term (D) vanishes because $v|_{\Gamma_D} = 0$ for all $v \in \calV$.  The Neumann boundary condition $n \cdot a \nabla u = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
 \begin{equation*}
   \int_\Omega (\nabla v \cdot a \nabla u  + v b \cdot \nabla u + c vu - vf) dx
   - \int_{\Gamma_N} v g ds - \int_{\Gamma_R} v (-ku + q) ds = 0
@@ -618,7 +618,7 @@ We first provide a few definitions that characterize a linear form and bilinear 
 \end{definition}
 \begin{definition}[coercivity]
   \label{def:th_coercivity}
-  A biilnear form $a: \calV \times \calV \to \RR$ is said to be coercive on $\calV$ (or $\calV$-coercive) if $\exists \alpha > 0$ such that 
+  A bilnear form $a: \calV \times \calV \to \RR$ is said to be coercive on $\calV$ (or $\calV$-coercive) if $\exists \alpha > 0$ such that 
   \begin{equation*}
     a(v,v) \geq \alpha \| v \|_\calV^2 \quad \forall v \in \calV.
   \end{equation*}
@@ -626,7 +626,7 @@ We first provide a few definitions that characterize a linear form and bilinear 
 The following theorem provides an answer to the question regarding the existence and uniqueness of a weak solution.
 \begin{theorem}[Lax-Milgram]
   \label{thm:lax_milgram}
-  Given a Hilbert space $\calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV$, there exists a unique $u \in \calV$ such that
+  Given a Hilbert space $\calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV'$, there exists a unique $u \in \calV$ such that
   \begin{equation}
     a(u,v) = \ell(v) \quad \forall v \in \calV.
     \label{eq:posnd_lax_milgram}
@@ -652,7 +652,7 @@ The proof of existence and uniqueness of a weak solution using the Lax-Milgram t
 \end{proposition}
 \begin{corollary}
   \label{cor:posnd_friedrichs_1}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq 0$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma_D \subset \partial \Omega$ and $\Gamma_D \neq \emptyset$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\Omega,\Gamma_D}$ that depends only on $\Omega$ and $\Gamma_D$ such that
   \begin{equation*}
     %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
     \| v \|_{L^2(\Omega)} \leq C_{\Omega,\Gamma_D} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
@@ -665,7 +665,7 @@ The proof of existence and uniqueness of a weak solution using the Lax-Milgram t
     \| v \|_{L^2(\Omega)} \leq C_\Omega | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
   \end{equation*}
 \end{corollary}
-Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specialization of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
+Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specializations of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
 %The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
 
 For many bilinear forms associated with boundary value problems, the verification of continuity relies on the trace inequality.
@@ -680,7 +680,7 @@ The trace inequality is particularly useful when we wish to show continuity of a
 
 The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on data $\ell(\cdot)$.
 \begin{proposition}[stability]
-  Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied. Then, the solution satisfies
+  Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied. Then, the solution $u$ satisfies
   \begin{equation*}
     \| u \|_\calV \leq \frac{1}{\alpha} \| \ell \|_{\calV'},
   \end{equation*}
@@ -702,7 +702,7 @@ The Lax-Milgram theorem concerns with the existence and uniqueness of a weak sol
 The stability result shows that the energy norm of the solution $u$ is bounded by the dual norm of the data $\ell$.  The closely related result in the corollary can be interpreted to mean that a small disturbance in the data $\ell$ results in a small perturbation in the solution $u$.
 
 \section{Example: well-posedness of a Poisson problem}
-We now demonstrate the application of the Lax-Milgram theorem to prove that the mixed Poisson problem considered in Section~\ref{sec:posnd_mixed} is wellposed.  The problem is reproduced here for convenience.  Let $\Omega \subset \RR^d$ be a Lipschitz domain, $\Gamma_D$ and $\Gamma_N$ be Dirichlet and Neumann boundaries such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N$ and $\Gamma_D \neq \emptyset$, and $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Find $u \in \calV \equiv H^1_0(\Omega)$ such that
+We now demonstrate the application of the Lax-Milgram theorem to prove that the mixed Poisson problem considered in Section~\ref{sec:posnd_mixed} is well-posed.  The problem is reproduced here for convenience.  Let $\Omega \subset \RR^d$ be a Lipschitz domain, $\Gamma_D$ and $\Gamma_N$ be Dirichlet and Neumann boundaries such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N$ and $\Gamma_D \neq \emptyset$, and $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Find $u \in \calV$ such that
 \begin{equation*}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
 \end{equation*}
@@ -750,7 +750,7 @@ here, the first inequality follows from Cauchy-Schwarz, and the second inequalit
   \\
   &\leq C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
 \end{align*}
-here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from the trace inequality, Proposition~\ref{prop:posnd_trace_ineq}. Since both the volume and Neumann-boundary terms are continuous, the linear form $\ell(\cdot)$ is continuous.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a unique solution.
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from the trace inequality, Proposition~\ref{prop:posnd_trace_ineq}. Since both the volume and Neumann-boundary terms are continuous, the linear form $\ell(\cdot)$ is continuous.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a unique solution, and the problem is well-posed.
 
 \section{Minimization formulation}
 We now obtain the minimization formulation for boundary value problems under two assumptions on the bilinear form $a(\cdot,\cdot)$:
@@ -763,7 +763,7 @@ Our variational formulation is as follows: find $u \in \calV_D$ such that
   a(u,v) = \ell(v) \quad \forall v \in \calV,
   \label{eq:posnd_energy_var}
 \end{equation}
-where $\calV_D  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B\}$ for some boundary function $u_B$, $ \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$, and a continuous linear form $\ell: \calV \to \RR$.
+where $\calV_D \equiv  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B\}$ for some boundary function $u_B$, $ \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$, and a continuous linear form $\ell: \calV \to \RR$.
   We then introduce an energy functional, $J: H^1(\Omega) \to \RR$, given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} a(w,w) - \ell(w) \quad \forall w \in H^1(\Omega).
