@@ -122,19 +122,18 @@ These two functions are equivalent in $L^2(\Omega)$.  (We also readily confirm t
   \| f - g \|^2_{L^2(\Omega)} \equiv \int_{-1}^1 (f - g)^2 dx =
   \lim_{\epsilon \to 0}
   (\int_{-1}^{-\epsilon} (\underbrace{f - g}_{=0})^2 dx + \int_{\epsilon}^{1} (\underbrace{f - g}_{=0})^2 dx )
-  dx
   =0.
 \end{equation*}
 Since $\| f - g \|_{L^2(\Omega)} = 0$,  $f$ and $g$ are equivalent in $L^2(\Omega)$.
 
 \begin{definition}[weak derivative in $\RR^1$]
-  Let $\Omega \equiv (-1,1) \subset \RR^1$ and $C^\infty_0(\Omega)$ be the space of infinitely differentiable functions over $\Omega$ that vanish at the endpoints. The weak first derivative of a function $g$, $D^1g$, exists if there exists $D^1g \in L^2(\Omega)$ such that
+  Let $\Omega \subset \RR^1$ be a bounded domain and $C^\infty_0(\Omega)$ be the space of infinitely differentiable functions over $\Omega$ that vanish at the endpoints. The weak first derivative of a function $g$, $D^1g$, exists if there exists $D^1g \in L^2(\Omega)$ such that
 \begin{equation*}
-  \int_{-1}^1 v D^1 g dx = - \int_{-1}^1 \dd{v}{x} g dx \quad \forall v \in C^\infty_0(\Omega).
+  \int_\Omega v D^1 g dx = - \int_\Omega \dd{v}{x} g dx \quad \forall v \in C^\infty_0(\Omega).
 \end{equation*}
 More generally, the weak $k$-th derivative of a function $g$, $D^kg$, exists if there exists $D^kg \in L^2(\Omega)$ such that
 \begin{equation*}
-  \int_{-1}^1 v D^k g dx = (-1)^k \int_{-1}^1 \dd{^kv}{x^k} g dx \quad \forall v \in C^\infty_0(\Omega).
+  \int_\Omega v D^k g dx = (-1)^k \int_\Omega \dd{^kv}{x^k} g dx \quad \forall v \in C^\infty_0(\Omega).
 \end{equation*}
 \end{definition}
 
@@ -159,8 +158,8 @@ To make the idea of weak derivative concrete, consider the absolute-value functi
 we observe that 
 \begin{equation*}
   (D^1 g)(x) = \begin{cases}
-    -1 \quad x \leq 0 \\
-    1 \quad x > 0
+    -1, \quad x \leq 0 \\
+    1, \quad x > 0
   \end{cases}
 \end{equation*}
 satisfies the relationship. (The particular value at $x = 0$ is irrelevant because it is a set of measure zero.) However, the weak second derivative of $g$, $D^2g$, does not exist. To see this, we observe that
@@ -378,9 +377,9 @@ We readily observe that the solution to the strong form~\eqref{eq:posnd_mixed_bc
   \\
   &= \int_\Omega v (-\Delta u) dx + \int_{\Gamma_D} v \pp{u}{n} ds + \int_{\Gamma_N} v \pp{u}{n} ds  - \int_\Omega vf dx - \int_{\Gamma_N} vg ds
   \\
-  &= \int_\Omega v \underbrace{ (-\Delta u - f) }_{= 0 \text{ as $-\Delta u=  0$ in $\Omega$}} dx
+  &= \int_\Omega v \underbrace{ (-\Delta u - f) }_{= 0 \text{ as $-\Delta u=  f$ in $\Omega$}} dx
   + \underbrace{ \int_{\Gamma_D} v \pp{u}{n} ds }_{= 0 \text{ as $v|_{\Gamma_D} = 0$}}
-  + \int_{\Gamma_N} v \underbrace{ \left( \pp{u}{n} - g \right) }_{= 0 \text{ as $\pp{u}{n} = 0$ on $\Gamma_N$}}ds = 0.
+  + \int_{\Gamma_N} v \underbrace{ \left( \pp{u}{n} - g \right) }_{= 0 \text{ as $\pp{u}{n} = g$ on $\Gamma_N$}}ds = 0.
 \end{align*}
 Hence a solution to the strong form~\eqref{eq:posnd_mixed_bc_strong} is a solution to the variational form~\eqref{eq:posnd_mixed_bc_weak}; however, again the converse is not true as the variational form admits more general forms of $f$ and $g$ than the strong form.
 
@@ -438,7 +437,7 @@ To obtain a variational form of~\eqref{eq:posnd_inhomo_bc_strong}, we introduce 
   \calV_D &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
   \calV &\equiv H^1_0(\Omega).
 \end{align*}
-Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. Rather, $\calV_D$ is an \emph{affine space}: given an arbitrary fixed element $u_D \in \calV_D$, we have $\calV_D = u_D + \calV = \{ u_D + v \ | \ v \in \calV \}$. We now employ the weighted residual method: we multiply~\eqref{eq:posnd_inhomo_bc_strong} by a test function $v$ in the \emph{linear space} $\calV$ --- and not \emph{affine space} $\calV_D$ ---, integrate the expression, and integrate by parts the right hand side to obtain
+Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. Rather, $\calV_D$ is an \emph{affine space}: given an arbitrary fixed element $u_D \in \calV_D$ so that $u_D|_{\Gamma_D} = u_B$, we have $\calV_D = u_D + \calV = \{ u_D + v \ | \ v \in \calV \}$. We now employ the weighted residual method: we multiply~\eqref{eq:posnd_inhomo_bc_strong} by a test function $v$ in the \emph{linear space} $\calV$ --- and not \emph{affine space} $\calV_D$ ---, integrate the expression, and integrate by parts the right hand side to obtain
 \begin{equation*}
   \int_{\Omega} v(-\Delta u) dx = \int_\Omega vf dx
   \quad \Rightarrow \quad
@@ -471,16 +470,21 @@ We readily observe that the solution to the strong form~\eqref{eq:posnd_inhomo_b
 Moreover, the boundary condition $u = u_B$ on $\Gamma_D \equiv \partial \Omega$ is satisfied because $u \in \calV_D$. 
 Hence a solution to the strong form~\eqref{eq:posnd_inhomo_bc_strong} is a solution to the variational form~\eqref{eq:posnd_inhomo_bc_var}; however, again the converse is not true as the variational form admits more general solutions.
 
-In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed function $u_D$ in $\calV_D$; the function $u_D$ can be any function in $H^1(\Omega)$ that satisfies the inhomogeneous Dirichlet boundary condition. We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u \in \calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
+In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed function $u_D$ in $\calV_D$; the function $u_D \in \calV_D$ can be any function in $H^1(\Omega)$ that satisfies the inhomogeneous Dirichlet boundary condition so that $u_D|_{\Gamma_D} = u_B$. We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u$ in the linear space $\calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
 \begin{equation*}
   a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
   a(\tilde u,v) = \ell(v) - a(u_D,v).
 \end{equation*}
-We note that $\ell(\cdot) - a(u_D,\cdot)$ is another linear form on $\calV$. We hence consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
+We now recognize the right hand side $\ell(\cdot) - a(u_D,\cdot)$ as another linear form on $\calV$ and formally introduce $\tilde \ell: \calV \to \RR$ such that
 \begin{equation*}
-  a(\tilde u,v) = \ell(v) - a(u_D,v) \quad \forall v \in \calV.
+  \tilde \ell(v) \equiv \ell(v) - a(u_D,v) \quad \forall v \in \calV.
 \end{equation*}
-Once we find $\tilde u$, we then set $u = u_D + \tilde u$, which is in $\calV_D$.
+We then consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
+\begin{equation}
+  \label{eq:posnd_inhomo_bc_var_reform}
+  a(\tilde u,v) = \tilde \ell(v) \quad \forall v \in \calV.
+\end{equation}
+Once we find $\tilde u$, we then set $u = u_D + \tilde u$, which is in $\calV_D$. Note that $\tilde u \in \calV$ depends on our choice of $u_D \in \calV_D$ because $\tilde \ell(\cdot)$ depends on $u_D$; however, the actual solution $u = u_D + \tilde u$ is independent of the particular choice of $u_D \in \calV_D$.
 
 %% For completeness, we also introduce the minimization form.  We introduce a functional $J: \calV_D \to \RR$ given by
 %% \begin{equation}
@@ -529,9 +533,10 @@ We have so far considered the variational formulation of Poisson equations with 
   n \cdot a \nabla u &= g \quad \text{on } \Gamma_N \notag \\
   n \cdot a \nabla u + k u &= q \quad \text{on } \Gamma_R, \notag
 \end{align}
-where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  Note that in general each coefficient is spatially varying and hence is a function of space; e.g., the diffusivity tensor evaluated at $x \in \Omega \subset \RR^d$ is in $\RR^{d \times d}$ and hence is denoted $a: \Omega \to \RR^{d \times d}$.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere:
+where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  Note that in general each coefficient is spatially varying and hence is a function of space; e.g., the diffusivity tensor evaluated at $x \in \Omega \subset \RR^d$ is in $\RR^{d \times d}$ and hence is denoted $a: \Omega \to \RR^{d \times d}$.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere: $a(x) \in \RR^{d \times d}$ satisfies
 \begin{equation*}
-  \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
+  \xi^T a(x) \xi > 0 \quad \forall \xi \neq 0 \quad \text{ a.e. in } \Omega.
+%  \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
 \end{equation*}
 Also note that in order for the differentiation $\nabla \cdot ( a \nabla u)$ for the \emph{strong formulation} \eqref{eq:posnd_gen_strong} to be well defined, the diffusivity tensor field must satisfy certain smoothness conditions; we will soon see that this is not a requirement for the weak formulation.
 
@@ -567,6 +572,12 @@ where
   \quad \forall v \in \calV.
 \end{align*}
 With the variational formulation~\eqref{eq:posnd_gen_weak}, unlike with the strong formulation~\eqref{eq:posnd_gen_strong}, we need not assume any smoothness of the coefficients $a$, $b$, or $c$.  We only require that the coefficients are bounded: $a \in (L^\infty(\Omega))^{d \times d}$, $b \in (L^\infty(\Omega))^d$, and $c \in L^\infty(\Omega)$.
+
+As discussed in Section~\ref{sec:posnd_inhomo_bc}, in practice, the inhomogeneous Dirichlet boundary conditions are more conveniently treated through the decomposition of the solution as $u = u_D + \tilde u$ for some arbitrary but fixed $u_D \in \calV_D$ so that $u_D|_{\Gamma_D} = u_B$ and $\tilde u \in \calV$.  We then consider the following variational problem: find $\tilde u \in \calV$ such that
+\begin{equation*}
+  a(\tilde u,v) = \tilde \ell(v) \quad \forall v \in \calV,
+\end{equation*}
+where $\tilde \ell: \calV \to \RR$ is the modified linear form such that $\tilde \ell(v) \equiv \ell(v) - a(u_D,v)$, $\forall v \in \calV$; we then set $u = u_D + \tilde u$. 
 
 %% We note that it is also possible to perform the procedure in reverse: we start from the variational form and then identify the associated strong form. Specifically, we start with the variational form, and invoke the integration by parts to identify the PDE and boundary conditions: for all $v \in \calV$,
 %% \begin{align*}
@@ -641,51 +652,13 @@ The following theorem provides an answer to the question regarding the existence
   \begin{proof}
     The proof of existence is beyond the scope of this course.  We refer to Brenner and Scott (2008).
 
-    The proof of uniqueness is as follows. Suppose we have two solutions $u_1 \in \calV$ and $u_2 \in \calV$ that are distinct ($u_1 \neq u_2$) and satisfy~\eqref{eq:posnd_lax_milgram}: i.e., $a(u_1,v) = \ell(v)$, $\forall v \in \calV$, and $a(u_2,v) = \ell(v)$, $\forall v \in \calV$. The subtraction of the two equations yields $a(u_1,v) - a(u_2,v) = 0$, $\forall v \in \calV$.  We then invoke bilinearity to obtain $a(u_1 - u_2,v) = 0$, $\forall v \in \calV$. We then choose $v = u_1 - u_2$, which yields $a(u_1 - u_2, u_1 - u_2) = 0$.  The coercivity of the bilinear form implies that $a(u_1 - u_2, u_1 - u_2) \geq \alpha \| u_1 - u_2 \|^2_\calV$; since the left hand side is $0$, we obtain $\| u_1 - u_2 \|^2_\calV = 0$.  Hence, we arrive at the contradiction $u_1 = u_2$.  If two solutions satisfy~\eqref{eq:posnd_lax_milgram}, then they must be the same; the solution to~\eqref{eq:posnd_lax_milgram} is unique.
+    The proof of uniqueness is as follows. Suppose we have two solutions $u_1 \in \calV$ and $u_2 \in \calV$ that are distinct ($u_1 \neq u_2$) and satisfy~\eqref{eq:posnd_lax_milgram}: i.e., $a(u_1,v) = \ell(v)$, $\forall v \in \calV$, and $a(u_2,v) = \ell(v)$, $\forall v \in \calV$. The subtraction of the two equations yields $a(u_1,v) - a(u_2,v) = 0$, $\forall v \in \calV$.  We then invoke bilinearity to obtain $a(u_1 - u_2,v) = 0$, $\forall v \in \calV$. We then choose $v = u_1 - u_2$, which yields $a(u_1 - u_2, u_1 - u_2) = 0$.  The coercivity of the bilinear form implies that $a(u_1 - u_2, u_1 - u_2) \geq \alpha \| u_1 - u_2 \|^2_\calV$; since the left hand side is $0$, we obtain $\| u_1 - u_2 \|^2_\calV = 0$.  Hence, we arrive at the contradiction: $u_1 = u_2$.  If two solutions satisfy~\eqref{eq:posnd_lax_milgram}, then they must be the same; the solution to~\eqref{eq:posnd_lax_milgram} is unique.
   \end{proof}
 \end{theorem}
-The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result. 
+The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result.
 
-The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Poincar\'e-Friedrichs inequality.
-\begin{proposition}[Poincar\'e-Friedrichs inequality]
-  \label{prop:posnd_friedrichs}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq \emptyset$. Then, there exists a constant $C_{\rm PF} < \infty$ that only depends on $\Omega$ and $\Gamma$ such that
-  \begin{equation*}
-    \| v \|_{L^2(\Omega)}^2 \leq C_{\rm PF} ( | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Gamma)} )  \quad \forall v \in H^1(\Omega).
-  \end{equation*}
-  \begin{proof}
-    The proof of the theorem is beyond the scope of this course.  We refer to Brenner and Scott (2008).
-  \end{proof}
-\end{proposition}
-\begin{corollary}
-  \label{cor:posnd_friedrichs_1}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma_D \subset \partial \Omega$ and $\Gamma_D \neq \emptyset$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\rm PF} < \infty$ that depends only on $\Omega$ and $\Gamma_D$ such that
-  \begin{equation*}
-    %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
-    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
-  \end{equation*}
-\end{corollary}
-\begin{corollary}
-  \label{cor:posnd_friedrichs_2}
-  Let $\Omega \in \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm PF} < \infty$ that depends on only $\Omega$ such that
-  \begin{equation*}
-    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
-  \end{equation*}
-\end{corollary}
-Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specializations of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
-%The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
 
-For many bilinear forms associated with boundary value problems, the verification of continuity relies on the trace inequality.
-\begin{proposition}[trace inequality]
-  \label{prop:posnd_trace_ineq}
-  Let $\Omega \subset \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm tr} < \infty$ that depends only on $\Omega$ such that
-  \begin{equation*}
-    \| v \|_{L^2(\partial \Omega)} \leq C_{\rm tr} \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega).
-  \end{equation*}
-\end{proposition}
-The trace inequality is particularly useful when we wish to show continuity of a linear or bilinear form which involves integration over (a part of) the boundary.
-
-The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on data $\ell(\cdot)$.
+The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on the data $\ell(\cdot)$.
 \begin{proposition}[stability]
   Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied. Then, the solution $u$ satisfies
   \begin{equation*}
@@ -708,7 +681,69 @@ The Lax-Milgram theorem concerns with the existence and uniqueness of a weak sol
 \end{corollary}
 The stability result shows that the energy norm of the solution $u$ is bounded by the dual norm of the data $\ell$.  The closely related result in the corollary can be interpreted to mean that a small disturbance in the data $\ell$ results in a small perturbation in the solution $u$.
 
+
+Before we conclude this section, we remark on the well-posedness of problems with inhomogeneous Dirichlet data.  The Lax-Milgram theorem~\ref{thm:lax_milgram} requires both the test and trial spaces to be a Hilbert space and in particular linear. We however recall that the trial space for a problem with inhomogeneous Dirichlet data is an affine space $\calV_D \equiv u_D + \calV$ for some fixed $u_D \in H^1(\Omega)$ and a linear space $\calV$. To prove the existence and uniqueness of the solution, we rely on the reformulated variational formulation \eqref{eq:posnd_inhomo_bc_var_reform}, which decomposes the solution $u \in \calV_D$ as $u = u_D + \tilde u$ for an arbitrary (but fixed $u_D$) and $\tilde u \in \calV$.  We specifically apply the Lax-Milgram theorem to the problem for $\tilde u$: find $\tilde u \in \calV$ such that
+  \begin{equation*}
+    a(\tilde u, v) = \tilde \ell(v) \quad \forall v \in \calV,
+  \end{equation*}
+  where $\tilde \ell: \calV \to \RR$ is the reformulated linear form $\tilde \ell(v) \equiv \ell(v) - a(u_D,v)$, $\forall v \in \calV$. By the Lax-Milgram theorem, a unique solution to the problem exists if $a:\calV \times \calV \to \RR$ is coercive and continuous, and $\tilde \ell \in \calV'$ is continuous. The latter requires that $\exists C < \infty$ such that $|\tilde \ell(v)| \leq C\| v \|_\calV$, $\forall v \in \calV$.  We now observe that, assuming $\ell(\cdot)$ and $a(\cdot,\cdot)$ are continuous, 
+  \begin{align*}
+    | \tilde \ell(v) | \equiv | \ell(v) - a(u_D,v) |
+    \leq | \ell(v) | + | a(u_D,v) |
+    \leq c \| v \|_{\calV} + \gamma \| u_D \|_{\calV} \| v \|_{\calV}
+    = (c + \gamma \| u_D \|_{\calV}) \| v \|_{\calV},
+  \end{align*}
+  where $c$ and $\gamma$ are the continuity constant for $\ell(\cdot)$ and $a(\cdot,\cdot)$, respectively.  Hence $\tilde \ell(\cdot)$ is continuous under these assumptions, and we can apply the Lax-Milgram theorem to show the existence and uniqueness of $\tilde u \in \calV$ and in turn $u = u_D + \tilde u \in \calV_D$.
+
+\section{Poincar\'e-Friedrichs and trace inequalities}
+The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Poincar\'e-Friedrichs inequality.
+\begin{proposition}[Poincar\'e-Friedrichs inequality]
+  \label{prop:posnd_friedrichs}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma \subset \partial \Omega$ and $\Gamma \neq \emptyset$. Then, there exists a constant $C_{\rm PF} < \infty$ that only depends on $\Omega$ and $\Gamma$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\Omega)}^2 \leq C_{\rm PF} ( | v |^2_{H^1(\Omega)} + \| v \|^2_{L^2(\Gamma)} )  \quad \forall v \in H^1(\Omega).
+  \end{equation*}
+  \begin{proof}
+    Proof of the proposition is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+  \end{proof}
+\end{proposition}
+\begin{corollary}
+  \label{cor:posnd_friedrichs_1}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain, and suppose $\Gamma_D \subset \partial \Omega$ and $\Gamma_D \neq \emptyset$.   Let $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Then, there exists a constant $C_{\rm PF} < \infty$ that depends only on $\Omega$ and $\Gamma_D$ such that
+  \begin{equation*}
+    %\| v \|_{H^1(\Omega)} \leq C | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in \calV.
+  \end{equation*}
+\end{corollary}
+\begin{corollary}
+  \label{cor:posnd_friedrichs_2}
+  Let $\Omega \in \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm PF} < \infty$ that depends on only $\Omega$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\Omega)} \leq C_{\rm PF} | v |_{H^1(\Omega)} \quad \forall v \in H^1_0(\Omega).
+  \end{equation*}
+\end{corollary}
+Proposition~\ref{prop:posnd_friedrichs} allows us to bound the $L^2(\Omega)$ norm of a function by the $H^1(\Omega)$ \emph{semi}-norm of the function and the $L^2(\Gamma)$ norm of the trace of the function on a portion of the boundary, $\Gamma \subset \partial \Omega$.  Corollaries~\ref{cor:posnd_friedrichs_1}~(and~\ref{cor:posnd_friedrichs_2}) are specializations of the results for functions that vanish on a portion (and whole) of the boundary such that $\| u \|_{L^2(\Gamma_D)} = 0$.  Intuitively, the corollaries bound the (integrated) value of the function by the (integrated) gradient of the function, assuming that the function is ``pinned'' to vanish over a portion of the boundary.
+%The special case of Proposition~\ref{prop:th_poincare_gen} for $\Gamma_D \equiv \partial \Omega$ is known as the \emph{Poincar\'e inequality}.
+\begin{remark}[Naming of the Poincar\'e-Friedrichs inequality]
+  Proposition~\ref{cor:posnd_friedrichs_1} and the related results, such as Corollaries~\ref{cor:posnd_friedrichs_1}~and~\ref{cor:posnd_friedrichs_2}, are sometimes called just Poincar\'e inequality or Friedrichs inequality.  In this note, we will refer to inequalities of these types collectively as Poincar\'e-Friedrichs inequalities.
+\end{remark}
+
+For many bilinear forms associated with boundary value problems, the verification of continuity relies on the trace inequality.
+\begin{proposition}[trace inequality]
+  \label{prop:posnd_trace_ineq}
+  Let $\Omega \subset \RR^d$ be a Lipschitz domain. Then, there exists a constant $C_{\rm tr} < \infty$ that depends only on $\Omega$ such that
+  \begin{equation*}
+    \| v \|_{L^2(\partial \Omega)} \leq C_{\rm tr} \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega).
+  \end{equation*}
+    \begin{proof}
+    Proof of the proposition is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+  \end{proof}
+\end{proposition}
+The trace inequality is particularly useful when we wish to show continuity of a linear or bilinear form which involves integration over (a part of) the boundary.
+
+
 \section{Example: well-posedness of a Poisson problem}
+\label{eq:posnd_wellposedness_example}
 We now demonstrate the application of the Lax-Milgram theorem to prove that the mixed Poisson problem considered in Section~\ref{sec:posnd_mixed} is well-posed.  The problem is reproduced here for convenience.  Let $\Omega \subset \RR^d$ be a Lipschitz domain, $\Gamma_D$ and $\Gamma_N$ be Dirichlet and Neumann boundaries such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N$ and $\Gamma_D \neq \emptyset$, and $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$.  Find $u \in \calV$ such that
 \begin{equation*}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
@@ -739,25 +774,38 @@ We next show that the bilinear form is coercive: $\forall v \in \calV$,
   \leq | v |^2_{H^1(\Omega)} + C_{\rm PF}^2 | v |^2_{H^1(\Omega)}
   = (1 + C_{\rm PF}^2) a(v,v),
 \end{equation*}
-where $C_{\rm PF} < \infty$ is the constant associated with the (corollary of the) Poincar\'e-Friedrichs inequality, Corollary~\ref{cor:posnd_friedrichs_1}.  It follows that $(1+C_{\rm PF}^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$.  Hence, the bilinear from is coercive with the coercivity constant  $\alpha = (1 + C_{\rm PF}^2)^{-1}$.  We now show that the volume source term of the linear form is continuous:
-\begin{align*}
-  \| \int_{\Omega} \cdot\,f dx \|_{\calV'}
-  &\equiv \sup_{v \in \calV}
-  \frac{|\int_\Omega v f dx|}{\| v \|_{H^1(\Omega)}}
-  \leq \sup_{v \in \calV} \frac{\| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
-  \leq\| f \|_{L^2(\Omega)} < \infty; %+ C_{\rm tr}\| g \|_{L^2(\Omega)}< \infty;
-\end{align*}
-here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$.  We finally show that the Neumann boundary term of the linear form is continuous:
-\begin{align*}
-  \| \int_{\Gamma_N} \cdot\,g ds \|_{\calV'}
-  &\equiv \sup_{v \in \calV}
-  \frac{|\int_{\Gamma_N} v g ds|}{\| v \|_{H^1(\Omega)}}
-  \leq \sup_{v \in \calV} \frac{ \| v \|_{L^2(\Gamma_N)} \| g \|_{L^2(\Gamma_N)}}{\| v \|_{H^1(\Omega)}}
-  \leq \sup_{v \in \calV} \frac{C_{\Omega} \| v \|_{H^1(\Omega)} \| g \|_{L^2(\Gamma_N)} }{\| v \|_{H^1(\Omega)}}
-  \\
-  &\leq C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
-\end{align*}
-here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from the trace inequality, Proposition~\ref{prop:posnd_trace_ineq}. Since both the volume and Neumann-boundary terms are continuous, the linear form $\ell(\cdot)$ is continuous.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a unique solution, and the problem is well-posed.
+where $C_{\rm PF} < \infty$ is the constant associated with the (corollary of the) Poincar\'e-Friedrichs inequality, Corollary~\ref{cor:posnd_friedrichs_1}.  It follows that $(1+C_{\rm PF}^2)^{-1}\| v \|^2_{H^1(\Omega)} \leq a(v,v)$, $\forall v \in \calV$.  Hence, the bilinear from is coercive with the coercivity constant  $\alpha = (1 + C_{\rm PF}^2)^{-1}$.  We now show that the volume source term of the linear form is continuous: $\forall v \in \calV$,
+\begin{align}
+  |\int_\Omega vf dx|
+  \leq \| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}
+  \leq \| f \|_{L^2(\Omega)} \| v \|_{H^1(\Omega)};
+  \label{eq:posnd_example_f}
+%  \| \int_{\Omega} \cdot\,f dx \|_{\calV'}
+%  &\equiv \sup_{v \in \calV}
+%  \frac{|\int_\Omega v f dx|}{\| v \|_{H^1(\Omega)}}
+%  \leq \sup_{v \in \calV} \frac{\| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)}}{\| v \|_{H^1(\Omega)}}
+%  \leq\| f \|_{L^2(\Omega)} < \infty; %+ C_{\rm tr}\| g \|_{L^2(\Omega)}< \infty;
+\end{align}
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from $\| v\|_{L^2(\Omega)} \leq (\| v \|^2_{L^2(\Omega)} + | v |_{H^1(\Omega)}^2)^{1/2} = \| v \|_{H^1(\Omega)}^2$, $\forall v \in \calV$. We then show that the Neumann boundary term of the linear form is continuous: $\forall v \in \calV$,
+\begin{align}
+  |\int_{\Gamma_N} vgds|
+  \leq \| v \|_{L^2(\Gamma_N)} \| g \|_{L^2(\Gamma_N)}
+  \leq C_{\rm tr} \| g \|_{L^2(\Gamma_N)}  \| v \|_{H^1(\Omega)};
+  \label{eq:posnd_example_g}
+%  \| \int_{\Gamma_N} \cdot\,g ds \|_{\calV'}
+%  &\equiv \sup_{v \in \calV}
+%  \frac{|\int_{\Gamma_N} v g ds|}{\| v \|_{H^1(\Omega)}}
+%  \leq \sup_{v \in \calV} \frac{ \| v \|_{L^2(\Gamma_N)} \| g \|_{L^2(\Gamma_N)}}{\| v \|_{H^1(\Omega)}}
+%  \leq \sup_{v \in \calV} \frac{C_{\Omega} \| v \|_{H^1(\Omega)} \| g \|_{L^2(\Gamma_N)} }{\| v \|_{H^1(\Omega)}}
+%  \\
+%  &\leq C_{\Omega}\| g \|_{L^2(\Omega)}< \infty;
+\end{align}
+here, the first inequality follows from Cauchy-Schwarz, and the second inequality follows from the trace inequality, Proposition~\ref{prop:posnd_trace_ineq}. The combination of \eqref{eq:posnd_example_f} and \eqref{eq:posnd_example_g} yields, $\forall v \in \calV$,
+\begin{equation*}
+  | \ell(v) | \leq | \int_\Omega vf dx | + |\int_{\Gamma_N} vg ds|
+  \leq  (\| f \|_{L^2(\Omega)} + C_{\rm tr} \| g \|_{L^2(\Gamma_N)}) \| v \|_{H^1(\Omega)};
+\end{equation*}
+hence the linear form $\ell(\cdot)$ is continuous with the continuity constant $c =  \| f \|_{L^2(\Omega)} + C_{\rm tr} \| g \|_{L^2(\Gamma_N)}$.  We confirm that all conditions of the Lax-Milgram theorem are satisfied; hence the Poisson problem has a unique solution, and the problem is well-posed.
 
 \section{Minimization formulation}
 We now obtain the minimization formulation for boundary value problems under two assumptions on the bilinear form $a(\cdot,\cdot)$:
