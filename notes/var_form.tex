@@ -10,17 +10,17 @@ We start the section with an apology: it may be difficult to appreciate the form
 
 The solutions to the PDEs are most naturally sought in Hilbert spaces. By way of preliminaries, we recall the definition of a \emph{linear space}, \emph{norm}, and \emph{inner product}. (We limit ourselves to spaces of real-valued functions; however the following statements readily extend to spaces of complex-valued functions.)
 \begin{definition}[linear space]
-  $\calV$ is a linear space if the following conditions hold:
+  $\calV$ is a linear space if the following conditions hold.
   \begin{enumerate}
-  \item if $w,v \in \calV$, then $w + v \in \calV$
-  \item if $w \in \calV$ and $\alpha \in \RR$, then $\alpha w \in \calV$
+  \item If $w,v \in \calV$, then $w + v \in \calV$.
+  \item If $w \in \calV$ and $\alpha \in \RR$, then $\alpha w \in \calV$.
   \end{enumerate}
 \end{definition}
 \begin{remark}
   If $\calV$ is a linear space and $v_1,\dots,v_n \in \calV$, then $\sum_{i=1}^n \alpha_i v_i \in \calV$ for any $\alpha_1, \dots, \alpha_n \in \RR$.
 \end{remark}
 \begin{definition}[norm]
-  Given a linear space $\calV$, a norm is a function $\| \cdot \| : \calV \to \RR$ that satisfies the following three conditions: for all $w,v \in \calV$ and $\alpha \in \RR$, 
+  Given a linear space $\calV$, a norm is a function $\| \cdot \| : \calV \to \RR$ that satisfies the following three conditions: $\forall w,v \in \calV$ and $\forall \alpha \in \RR$, 
   \begin{enumerate}
   \item absolute scalability: $\| \alpha v \| = |\alpha| \| v \|$
   \item positive definiteness: $ \| v \| \geq 0$,  and $\| v \| = 0 \Leftrightarrow v = 0$
@@ -28,7 +28,7 @@ The solutions to the PDEs are most naturally sought in Hilbert spaces. By way of
   \end{enumerate}
 \end{definition}
 \begin{definition}[inner product]
-  Given a linear space $\calV$, an inner product is a function $(\cdot,\cdot): \calV \times \calV \to \RR$ that satisfies the following three conditions: for all $w,v,z \in \calV$ and $\alpha,\beta \in \RR$,
+  Given a linear space $\calV$, an inner product is a function $(\cdot,\cdot): \calV \times \calV \to \RR$ that satisfies the following three conditions: $\forall w,v,z \in \calV$ and $\forall \alpha,\beta \in \RR$,
 \begin{enumerate}
 \item symmetry: $(w,v) = (v,w)$
 \item linearity in first argument: $ (\alpha w + \beta v, z) = \alpha (w,z) + \beta (v,z)$
@@ -49,7 +49,7 @@ Note: the combination of the first and second conditions implies that the inner 
      \begin{equation*}
        \| \alpha v \|^2 = (\alpha v, \alpha v) = \alpha^2 (v,v) = |\alpha|^2 \| v \|^2.
      \end{equation*}
-     The positive definiteness of the induced norm is a direct consequence of the positive definiteness of the associated inner product.  The triangle inequality is proved using the Cauchy-Schwarz inequality in Proposition~\ref{prop:posnd_cauchy_schwarz}:
+     The positive definiteness of the induced norm is a direct consequence of the positive definiteness of the associated inner product.  The triangle inequality is proved using the Cauchy-Schwarz inequality in Proposition~\ref{prop:posnd_cauchy_schwarz}: $\forall w,v \in \calV$, 
      \begin{equation*}
        \| w + v \|^2
        = (w + v, w+ v)
