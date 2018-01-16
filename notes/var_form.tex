@@ -428,34 +428,34 @@ In the variational formulation of the mixed boundary condition, the Dirichlet an
 We now consider a problem with \emph{inhomogeneous} Dirichlet boundary condition.  The strong form is as follows: find $u$ such that
 \begin{align}
   -\Delta u &= f \quad \text{in } \Omega \label{eq:posnd_inhomo_bc_strong} \\
-  u &= u_B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
+  u &= u^B \quad \text{on } \Gamma_D \equiv \partial \Omega \notag
 \end{align}
-for some boundary function $u_B$ and source term $f$. While we here focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:posnd_mixed} to treat mixed problems with inhomogeneous Dirichlet and Neumann boundary conditions.
+for some boundary function $u^B$ and source term $f$. While we here focus on the pure Dirichlet problem for simplicity, the approach in this section can be combined with the approach for mixed problems in Section~\ref{sec:posnd_mixed} to treat mixed problems with inhomogeneous Dirichlet and Neumann boundary conditions.
 
 To obtain a variational form of~\eqref{eq:posnd_inhomo_bc_strong}, we introduce spaces
 \begin{align*}
-  \calV_D &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
+  \calV^E &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u^B \}, \\
   \calV &\equiv H^1_0(\Omega).
 \end{align*}
-Note that, for $u_B \neq 0$, $\calV_D$ is \emph{not} a linear space; for $w,v \in \calV_D$, $z = w + v \notin \calV_D$ because $z|_{\Gamma_D} = 2 u_B \neq u_B$. Rather, $\calV_D$ is an \emph{affine space}: given an arbitrary fixed element $u_D \in \calV_D$ so that $u_D|_{\Gamma_D} = u_B$, we have $\calV_D = u_D + \calV = \{ u_D + v \ | \ v \in \calV \}$. We now employ the weighted residual method: we multiply~\eqref{eq:posnd_inhomo_bc_strong} by a test function $v$ in the \emph{linear space} $\calV$ --- and not \emph{affine space} $\calV_D$ ---, integrate the expression, and integrate by parts the right hand side to obtain
+The superscript ``E'' stands for ``essential'', as the space $\calV^E$ satisfies the essential (i.e., Dirichlet) boundary condition. Note that, for $u^B \neq 0$, $\calV^E$ is \emph{not} a linear space; for $w,v \in \calV^E$, $z = w + v \notin \calV^E$ because $z|_{\Gamma_D} = 2 u^B \neq u^B$. Rather, $\calV^E$ is an \emph{affine space}: given an arbitrary fixed element $u^E \in \calV^E$ so that $u^E|_{\Gamma_D} = u^B$, we have $\calV^E = u^E + \calV = \{ u^E + v \ | \ v \in \calV \}$. We now employ the weighted residual method: we multiply~\eqref{eq:posnd_inhomo_bc_strong} by a test function $v$ in the \emph{linear space} $\calV$ --- and not \emph{affine space} $\calV^E$ ---, integrate the expression, and integrate by parts the right hand side to obtain
 \begin{equation*}
   \int_{\Omega} v(-\Delta u) dx = \int_\Omega vf dx
   \quad \Rightarrow \quad
   \int_\Omega \nabla v \cdot \nabla u dx - \underbrace{ \int_{\partial \Omega} v \pp{u}{n} ds }_{= 0}
   = \int_\Omega v f dx;
 \end{equation*}
-again the boundary term vanishes because $v$ is in $\calV$ (and not $\calV_D$). 
+again the boundary term vanishes because $v$ is in $\calV$ (and not $\calV^E$). 
 We recognize a bilinear form and a linear form
 \begin{align*}
   a(w,v) &\equiv \int_\Omega \nabla v \cdot \nabla w dx \quad \forall w,v \in \calV \\
   \ell(v) &\equiv \int_\Omega vf dx \quad \forall v \in \calV.
 \end{align*}
-The variational problem is as follows: find $u \in \calV_D$ such that
+The variational problem is as follows: find $u \in \calV^E$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV.
   \label{eq:posnd_inhomo_bc_var}
 \end{equation}
-We note that the bilinear form and linear form are identical to the homogeneous Dirichlet boundary condition case considered in Section~\ref{sec:posnd_homo_dir}.  However, our trial space is different; the space $\calV_D$ is an affine space of functions that satisfy the inhomogeneous Dirichlet boundary condition.  As discussed in Section~\ref{sec:posnd_mixed}, a Dirichlet boundary condition is an essential boundary condition, which is explicitly imposed through the choice of the space. %ecause the inhomogeneous Dirichlet boundary condition $u = u_B$ on $\Gamma_D$ is an essential boundary condition. the test space $\calV$ is a linear space of functions that vanish on the Dirichlet boundary.
+We note that the bilinear form and linear form are identical to the homogeneous Dirichlet boundary condition case considered in Section~\ref{sec:posnd_homo_dir}.  However, our trial space is different; the space $\calV^E$ is an affine space of functions that satisfy the inhomogeneous Dirichlet boundary condition.  As discussed in Section~\ref{sec:posnd_mixed}, a Dirichlet boundary condition is an essential boundary condition, which is explicitly imposed through the choice of the space. %ecause the inhomogeneous Dirichlet boundary condition $u = u^B$ on $\Gamma_D$ is an essential boundary condition. the test space $\calV$ is a linear space of functions that vanish on the Dirichlet boundary.
 
 We readily observe that the solution to the strong form~\eqref{eq:posnd_inhomo_bc_strong} satisfies the variational form~\eqref{eq:posnd_inhomo_bc_var};  for all $v \in \calV$,
 \begin{align*}
@@ -467,38 +467,38 @@ We readily observe that the solution to the strong form~\eqref{eq:posnd_inhomo_b
   &= \int_\Omega v \underbrace{ (-\Delta u - f) }_{= 0 \text{ as $-\Delta u=  0$ in $\Omega$}} dx
   + \underbrace{ \int_{\partial \Omega} v \pp{u}{n} ds }_{= 0 \text{ as $v|_{\Gamma_D \equiv \partial \Omega} = 0$}}.
 \end{align*}
-Moreover, the boundary condition $u = u_B$ on $\Gamma_D \equiv \partial \Omega$ is satisfied because $u \in \calV_D$. 
+Moreover, the boundary condition $u = u^B$ on $\Gamma_D \equiv \partial \Omega$ is satisfied because $u \in \calV^E$. 
 Hence a solution to the strong form~\eqref{eq:posnd_inhomo_bc_strong} is a solution to the variational form~\eqref{eq:posnd_inhomo_bc_var}; however, again the converse is not true as the variational form admits more general solutions.
 
-In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed function $u_D$ in $\calV_D$; the function $u_D \in \calV_D$ can be any function in $H^1(\Omega)$ that satisfies the inhomogeneous Dirichlet boundary condition so that $u_D|_{\Gamma_D} = u_B$. We then express the solution $u$ as $u = u_D + \tilde u$ for $\tilde u$ in the linear space $\calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
+In practice, it is more convenient to reformulate the problem such that both the trial and test spaces are linear.  We first choose an arbitrary fixed function $u^E$ in $\calV^E$; the function $u^E \in \calV^E$ can be any function in $H^1(\Omega)$ that satisfies the inhomogeneous Dirichlet boundary condition so that $u^E|_{\Gamma_D} = u^B$. We then express the solution $u$ as $u = u^E + \tilde u$ for $\tilde u$ in the linear space $\calV$, and rearrange the variational form~\eqref{eq:posnd_inhomo_bc_var} as
 \begin{equation*}
-  a(u_D + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
-  a(\tilde u,v) = \ell(v) - a(u_D,v).
+  a(u^E + \tilde u,v) = \ell(v) \quad \Rightarrow \quad
+  a(\tilde u,v) = \ell(v) - a(u^E,v).
 \end{equation*}
-We now recognize the right hand side $\ell(\cdot) - a(u_D,\cdot)$ as another linear form on $\calV$ and formally introduce $\tilde \ell: \calV \to \RR$ such that
+We now recognize the right hand side $\ell(\cdot) - a(u^E,\cdot)$ as another linear form on $\calV$ and formally introduce $\tilde \ell: \calV \to \RR$ such that
 \begin{equation*}
-  \tilde \ell(v) \equiv \ell(v) - a(u_D,v) \quad \forall v \in \calV.
+  \tilde \ell(v) \equiv \ell(v) - a(u^E,v) \quad \forall v \in \calV.
 \end{equation*}
 We then consider a variational problem for $\tilde u$: find $\tilde u \in \calV$ such that
 \begin{equation}
   \label{eq:posnd_inhomo_bc_var_reform}
   a(\tilde u,v) = \tilde \ell(v) \quad \forall v \in \calV.
 \end{equation}
-Once we find $\tilde u$, we then set $u = u_D + \tilde u$, which is in $\calV_D$. Note that $\tilde u \in \calV$ depends on our choice of $u_D \in \calV_D$ because $\tilde \ell(\cdot)$ depends on $u_D$; however, the actual solution $u = u_D + \tilde u$ is independent of the particular choice of $u_D \in \calV_D$.
+Once we find $\tilde u$, we then set $u = u^E + \tilde u$, which is in $\calV^E$. Note that $\tilde u \in \calV$ depends on our choice of $u^E \in \calV^E$ because $\tilde \ell(\cdot)$ depends on $u^E$; however, the actual solution $u = u^E + \tilde u$ is independent of the particular choice of $u^E \in \calV^E$.
 
-%% For completeness, we also introduce the minimization form.  We introduce a functional $J: \calV_D \to \RR$ given by
+%% For completeness, we also introduce the minimization form.  We introduce a functional $J: \calV^E \to \RR$ given by
 %% \begin{equation}
 %%   J(w) \equiv \frac{1}{2} \int_{\Omega} \nabla w \cdot \nabla w dx - \int_\Omega f w dx
 %%   \label{eq:posnd_inhomo_bc_min_func}
 %% \end{equation}
-%% and state the minimization problem: find $u \in \calV_D$ such that
+%% and state the minimization problem: find $u \in \calV^E$ such that
 %% \begin{equation}
-%%   u = \argmin_{w \in \calV_D} J(w).
+%%   u = \argmin_{w \in \calV^E} J(w).
 %%   \label{eq:posnd_inhomo_bc_min}
 %% \end{equation}
-%% We can readily show, using the same procedure used in Section~\ref{sec:pos1d_min}, that $u \in \calV_D$ is the solution to the variational problem~\eqref{eq:posnd_inhomo_bc_var} if and only if it is the solution to the minimization problem~\eqref{eq:posnd_inhomo_bc_min}.
+%% We can readily show, using the same procedure used in Section~\ref{sec:pos1d_min}, that $u \in \calV^E$ is the solution to the variational problem~\eqref{eq:posnd_inhomo_bc_var} if and only if it is the solution to the minimization problem~\eqref{eq:posnd_inhomo_bc_min}.
 
-%% We now show that the solution to~\eqref{eq:posnd_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:posnd_inhomo_bc_min}. We first set $w = u + v$, where $u \in \calV_D$ is the solution to~\eqref{eq:posnd_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV_D$). We then observe
+%% We now show that the solution to~\eqref{eq:posnd_inhomo_bc_strong} satisfies the minimization statement~\eqref{eq:posnd_inhomo_bc_min}. We first set $w = u + v$, where $u \in \calV^E$ is the solution to~\eqref{eq:posnd_inhomo_bc_strong} and $v$ is an arbitrary function in $\calV$ (and \emph{not} $\calV^E$). We then observe
 %% \begin{align*}
 %%   J(u + v)
 %%   &=
@@ -513,14 +513,14 @@ Once we find $\tilde u$, we then set $u = u_D + \tilde u$, which is in $\calV_D$
 %%   J'(u;v) = \int_{\Omega} \nabla v \cdot \nabla u dx - \int_\Omega f v
 %%   = - \int_\Omega v (\underbrace{ \Delta u + f }_{= 0 \text{ as } -\Delta u = f \text{ in } \Omega}) dx + \int_{\Gamma_D \equiv \partial \Omega} \underbrace{ v \pp{u}{n} }_{=0 \text{ as } v \in \calV}ds  = 0;
 %% \end{equation*}
-%% the second term vanishes because $v \in \calV$ (and not $\calV_D$). It follows
+%% the second term vanishes because $v \in \calV$ (and not $\calV^E$). It follows
 %% \begin{equation*}
 %%   J(u+v) = J(u) + \frac{1}{2} \int_\Omega \nabla v \cdot \nabla v dx > J(u) \quad \forall v \neq 0,
 %% \end{equation*}
 %% and hence the solution $u$ to strong form~\eqref{eq:posnd_mixed_bc_strong} is the minimizer of the functional~\eqref{eq:posnd_mixed_bc_min_func} and hence the solution to the minimization form~\eqref{eq:posnd_mixed_bc_min}.
 
 
-%The solution is sought in the space $\calV_D$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
+%The solution is sought in the space $\calV^E$ that satisfies the inhomogeneous Dirichlet boundary condition, while the test functions are in the space $\calV$.
 
 
 
@@ -529,11 +529,11 @@ We have so far considered the variational formulation of Poisson equations with 
 \begin{align}
   - \nabla \cdot (a \nabla u) + b \cdot \nabla u + c u &= f \quad \text{in } \Omega
   \notag \\
-  u &= u_B \quad \text{on } \Gamma_D \label{eq:posnd_gen_strong} \\
+  u &= u^B \quad \text{on } \Gamma_D \label{eq:posnd_gen_strong} \\
   n \cdot a \nabla u &= g \quad \text{on } \Gamma_N \notag \\
   n \cdot a \nabla u + k u &= q \quad \text{on } \Gamma_R, \notag
 \end{align}
-where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u_B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  Note that in general each coefficient is spatially varying and hence is a function of space; e.g., the diffusivity tensor evaluated at $x \in \Omega \subset \RR^d$ is in $\RR^{d \times d}$ and hence is denoted $a: \Omega \to \RR^{d \times d}$.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere: $a(x) \in \RR^{d \times d}$ satisfies
+where $a: \Omega \to \RR^{d \times d}$ is the diffusivity tensor, $b: \Omega \to \RR^d$ is the advection vector, $c: \Omega \to \RR$ is the reaction constant, $f: \Omega \to \RR$ is the source term,  $n: \partial \Omega \to \RR^d$ is the outward-point normal on $\partial \Omega$, $u^B: \Gamma_D \to \RR$ is the Dirichlet boundary function, $g: \Gamma_N \to \RR$ is the Neumann source term, $k: \Gamma_R \to \RR$ is the Robin coefficient, and $q: \Gamma_R \to \RR$ is the Robin source term.  Note that in general each coefficient is spatially varying and hence is a function of space; e.g., the diffusivity tensor evaluated at $x \in \Omega \subset \RR^d$ is in $\RR^{d \times d}$ and hence is denoted $a: \Omega \to \RR^{d \times d}$.  For the second-order PDE to be \emph{elliptic}, we require that the diffusitivity tensor is symmetric positive definite almost everywhere: $a(x) \in \RR^{d \times d}$ satisfies
 \begin{equation*}
   \xi^T a(x) \xi > 0 \quad \forall \xi \neq 0 \quad \text{ a.e. in } \Omega.
 %  \sum_{i,j=1}^d a_{ij}(x) \xi_i \xi_j > 0 \quad \forall \xi \in \RR^d \text{ a.e. in } \Omega.
@@ -542,7 +542,7 @@ Also note that in order for the differentiation $\nabla \cdot ( a \nabla u)$ for
 
 To obtain a variational form of~\eqref{eq:posnd_gen_strong}, we introduce spaces
 \begin{align*}
-  \calV_D &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u_B \}, \\
+  \calV^E &\equiv \{ w \in H^1(\Omega) \ | \ w|_{\Gamma_D} = u^B \}, \\
   \calV &\equiv \{ w \in H^1(\Omega) \ | \ w_{\Gamma_D} = 0 \}.
 \end{align*}
 As discussed in Section~\ref{sec:posnd_inhomo_bc}, the Dirichlet boundary condition is imposed strongly; the Neumann and Robin boundary conditions are imposed weakly.  We now multiply~\eqref{eq:posnd_gen_strong} by a test function $v$ in the linear space $\calV$, integrate the expression, and integrate by parts the diffusion term to obtain
@@ -554,13 +554,13 @@ As discussed in Section~\ref{sec:posnd_inhomo_bc}, the Dirichlet boundary condit
   - \underbrace{\int_{\Gamma_N} v n \cdot a \nabla u ds}_{\text{(N)}}
   - \underbrace{\int_{\Gamma_R} v n \cdot a \nabla u ds}_{\text{(R)}}
 \end{align*}
-We now impose the boundary conditions.  The Dirichlet boundary condition is imposed strongly by the choice of the trial space $\calV_D$ and the test space $\calV$; the term (D) vanishes because $v|_{\Gamma_D} = 0$ for all $v \in \calV$.  The Neumann boundary condition $n \cdot a \nabla u = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV_D$ such that
+We now impose the boundary conditions.  The Dirichlet boundary condition is imposed strongly by the choice of the trial space $\calV^E$ and the test space $\calV$; the term (D) vanishes because $v|_{\Gamma_D} = 0$ for all $v \in \calV$.  The Neumann boundary condition $n \cdot a \nabla u = g$ is weakly imposed; we replace the boundary term (N) by $\int_{\Gamma_N} v g ds$.  The Robin boundary condition $\pp{u}{n} + k u = q$ is also weakly imposed; we replace the boundary term (R) by $\int_{\Gamma_R} v (-ku + q) ds$.  Upon the substitution of the appropriate boundary conditions, our weighted-residual formulation reads as follows: find $u \in \calV^E$ such that
 \begin{equation*}
   \int_\Omega (\nabla v \cdot a \nabla u  + v b \cdot \nabla u + c vu - vf) dx
   - \int_{\Gamma_N} v g ds - \int_{\Gamma_R} v (-ku + q) ds = 0
   \quad \forall v \in \calV.
 \end{equation*}
-Some reorganization of the terms yield the following variational formulation: find $u \in \calV_D$ such that
+Some reorganization of the terms yield the following variational formulation: find $u \in \calV^E$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
   \label{eq:posnd_gen_weak}
@@ -573,11 +573,11 @@ where
 \end{align*}
 With the variational formulation~\eqref{eq:posnd_gen_weak}, unlike with the strong formulation~\eqref{eq:posnd_gen_strong}, we need not assume any smoothness of the coefficients $a$, $b$, or $c$.  We only require that the coefficients are bounded: $a \in (L^\infty(\Omega))^{d \times d}$, $b \in (L^\infty(\Omega))^d$, and $c \in L^\infty(\Omega)$.
 
-As discussed in Section~\ref{sec:posnd_inhomo_bc}, in practice, the inhomogeneous Dirichlet boundary conditions are more conveniently treated through the decomposition of the solution as $u = u_D + \tilde u$ for some arbitrary but fixed $u_D \in \calV_D$ so that $u_D|_{\Gamma_D} = u_B$ and $\tilde u \in \calV$.  We then consider the following variational problem: find $\tilde u \in \calV$ such that
+As discussed in Section~\ref{sec:posnd_inhomo_bc}, in practice, the inhomogeneous Dirichlet boundary conditions are more conveniently treated through the decomposition of the solution as $u = u^E + \tilde u$ for some arbitrary but fixed $u^E \in \calV^E$ so that $u^E|_{\Gamma_D} = u^B$ and $\tilde u \in \calV$.  We then consider the following variational problem: find $\tilde u \in \calV$ such that
 \begin{equation*}
   a(\tilde u,v) = \tilde \ell(v) \quad \forall v \in \calV,
 \end{equation*}
-where $\tilde \ell: \calV \to \RR$ is the modified linear form such that $\tilde \ell(v) \equiv \ell(v) - a(u_D,v)$, $\forall v \in \calV$; we then set $u = u_D + \tilde u$. 
+where $\tilde \ell: \calV \to \RR$ is the modified linear form such that $\tilde \ell(v) \equiv \ell(v) - a(u^E,v)$, $\forall v \in \calV$; we then set $u = u^E + \tilde u$. 
 
 %% We note that it is also possible to perform the procedure in reverse: we start from the variational form and then identify the associated strong form. Specifically, we start with the variational form, and invoke the integration by parts to identify the PDE and boundary conditions: for all $v \in \calV$,
 %% \begin{align*}
@@ -603,14 +603,14 @@ where $\tilde \ell: \calV \to \RR$ is the modified linear form such that $\tilde
 %%   \pp{u}{n} &= g \quad \text{on } \Gamma_N \\
 %%   \pp{u}{n} + ku &= q \quad \text{on } \Gamma_R.
 %% \end{align*}
-%% We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N$, and (iii) the Robin boundary condition on $\Gamma_R$.  Finally, because $u \in \calV_D \equiv \{ u \in H^1(\Omega) \ | \ u|_{\Gamma_D} = u_B \}$, we have
+%% We have identified (i) the PDE, (ii) the Neumann boundary condition on $\Gamma_N$, and (iii) the Robin boundary condition on $\Gamma_R$.  Finally, because $u \in \calV^E \equiv \{ u \in H^1(\Omega) \ | \ u|_{\Gamma_D} = u^B \}$, we have
 %% \begin{equation*}
-%%   u|_{\Gamma_D} = u_B \quad \text{on } \Gamma_D,
+%%   u|_{\Gamma_D} = u^B \quad \text{on } \Gamma_D,
 %% \end{equation*}
 %% which is the Dirichlet boundary condition on $\Gamma_D$.
 
 \section{Well-posedness of the weak formulation}
-We now address a fundamental question: what conditions should a weak formulation satisfy to guarantee the existence \emph{and} uniqueness of the solution?  We recall that, in general, a weak formulation is defined by a test space $\calV$, trial space $\calV_D \equiv u_D + \calV$, bilinear form $a(\cdot,\cdot)$, and linear form $\ell(\cdot)$; as such, we wish to identify conditions that these ingredients must satisfy to ensure the existence and uniqueness of the solution.
+We now address a fundamental question: what conditions should a weak formulation satisfy to guarantee the existence \emph{and} uniqueness of the solution?  We recall that, in general, a weak formulation is defined by a test space $\calV$, trial space $\calV^E \equiv u^E + \calV$, bilinear form $a(\cdot,\cdot)$, and linear form $\ell(\cdot)$; as such, we wish to identify conditions that these ingredients must satisfy to ensure the existence and uniqueness of the solution.
 
 We first provide a few definitions that characterize a linear form and bilinear form.
 \begin{definition}[dual norm and continuity]
@@ -682,18 +682,18 @@ The Lax-Milgram theorem concerns with the existence and uniqueness of a weak sol
 The stability result shows that the energy norm of the solution $u$ is bounded by the dual norm of the data $\ell$.  The closely related result in the corollary can be interpreted to mean that a small disturbance in the data $\ell$ results in a small perturbation in the solution $u$.
 
 
-Before we conclude this section, we remark on the well-posedness of problems with inhomogeneous Dirichlet data.  The Lax-Milgram theorem~\ref{thm:lax_milgram} requires both the test and trial spaces to be a Hilbert space and in particular linear. We however recall that the trial space for a problem with inhomogeneous Dirichlet data is an affine space $\calV_D \equiv u_D + \calV$ for some fixed $u_D \in H^1(\Omega)$ and a linear space $\calV$. To prove the existence and uniqueness of the solution, we rely on the reformulated variational formulation \eqref{eq:posnd_inhomo_bc_var_reform}, which decomposes the solution $u \in \calV_D$ as $u = u_D + \tilde u$ for an arbitrary (but fixed $u_D$) and $\tilde u \in \calV$.  We specifically apply the Lax-Milgram theorem to the problem for $\tilde u$: find $\tilde u \in \calV$ such that
+Before we conclude this section, we remark on the well-posedness of problems with inhomogeneous Dirichlet data.  The Lax-Milgram theorem~\ref{thm:lax_milgram} requires both the test and trial spaces to be a Hilbert space and in particular linear. We however recall that the trial space for a problem with inhomogeneous Dirichlet data is an affine space $\calV^E \equiv u^E + \calV$ for some fixed $u^E \in H^1(\Omega)$ and a linear space $\calV$. To prove the existence and uniqueness of the solution, we rely on the reformulated variational formulation \eqref{eq:posnd_inhomo_bc_var_reform}, which decomposes the solution $u \in \calV^E$ as $u = u^E + \tilde u$ for an arbitrary (but fixed $u^E$) and $\tilde u \in \calV$.  We specifically apply the Lax-Milgram theorem to the problem for $\tilde u$: find $\tilde u \in \calV$ such that
   \begin{equation*}
     a(\tilde u, v) = \tilde \ell(v) \quad \forall v \in \calV,
   \end{equation*}
-  where $\tilde \ell: \calV \to \RR$ is the reformulated linear form $\tilde \ell(v) \equiv \ell(v) - a(u_D,v)$, $\forall v \in \calV$. By the Lax-Milgram theorem, a unique solution to the problem exists if $a:\calV \times \calV \to \RR$ is coercive and continuous, and $\tilde \ell \in \calV'$ is continuous. The latter requires that $\exists C < \infty$ such that $|\tilde \ell(v)| \leq C\| v \|_\calV$, $\forall v \in \calV$.  We now observe that, assuming $\ell(\cdot)$ and $a(\cdot,\cdot)$ are continuous, 
+  where $\tilde \ell: \calV \to \RR$ is the reformulated linear form $\tilde \ell(v) \equiv \ell(v) - a(u^E,v)$, $\forall v \in \calV$. By the Lax-Milgram theorem, a unique solution to the problem exists if $a:\calV \times \calV \to \RR$ is coercive and continuous, and $\tilde \ell \in \calV'$ is continuous. The latter requires that $\exists C < \infty$ such that $|\tilde \ell(v)| \leq C\| v \|_\calV$, $\forall v \in \calV$.  We now observe that, assuming $\ell(\cdot)$ and $a(\cdot,\cdot)$ are continuous, 
   \begin{align*}
-    | \tilde \ell(v) | \equiv | \ell(v) - a(u_D,v) |
-    \leq | \ell(v) | + | a(u_D,v) |
-    \leq c \| v \|_{\calV} + \gamma \| u_D \|_{\calV} \| v \|_{\calV}
-    = (c + \gamma \| u_D \|_{\calV}) \| v \|_{\calV},
+    | \tilde \ell(v) | \equiv | \ell(v) - a(u^E,v) |
+    \leq | \ell(v) | + | a(u^E,v) |
+    \leq c \| v \|_{\calV} + \gamma \| u^E \|_{\calV} \| v \|_{\calV}
+    = (c + \gamma \| u^E \|_{\calV}) \| v \|_{\calV},
   \end{align*}
-  where $c$ and $\gamma$ are the continuity constant for $\ell(\cdot)$ and $a(\cdot,\cdot)$, respectively.  Hence $\tilde \ell(\cdot)$ is continuous under these assumptions, and we can apply the Lax-Milgram theorem to show the existence and uniqueness of $\tilde u \in \calV$ and in turn $u = u_D + \tilde u \in \calV_D$.
+  where $c$ and $\gamma$ are the continuity constant for $\ell(\cdot)$ and $a(\cdot,\cdot)$, respectively.  Hence $\tilde \ell(\cdot)$ is continuous under these assumptions, and we can apply the Lax-Milgram theorem to show the existence and uniqueness of $\tilde u \in \calV$ and in turn $u = u^E + \tilde u \in \calV^E$.
 
 \section{Poincar\'e-Friedrichs and trace inequalities}
 The proof of existence and uniqueness of a weak solution using the Lax-Milgram theorem relies on the continuity and coercivity of the bilinear form and the continuity of the linear form.  For many bilinear forms associated with boundary value problems, the verification of coercivity relies on the Poincar\'e-Friedrichs inequality.
@@ -813,12 +813,12 @@ We now obtain the minimization formulation for boundary value problems under two
 \item[1.] coercivity: $\exists \alpha > 0$ such that $a(v,v) \geq \alpha\| v \|_\calV$, $\forall v \in \calV$.
 \item[2.] symmetry: $a(w,v) = a(v,w)$, $\forall w,v, \in \calV$.
 \end{itemize}
-Our variational formulation is as follows: find $u \in \calV_D$ such that
+Our variational formulation is as follows: find $u \in \calV^E$ such that
 \begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
   \label{eq:posnd_energy_var}
 \end{equation}
-where $\calV_D \equiv  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B\}$ for some boundary function $u_B$, $ \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$, and a continuous linear form $\ell: \calV \to \RR$.
+where $\calV^E \equiv  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u^B\}$ for some boundary function $u^B$, $ \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$, and a continuous linear form $\ell: \calV \to \RR$.
   We then introduce an energy functional, $J: H^1(\Omega) \to \RR$, given by
 \begin{equation}
   J(w) \equiv \frac{1}{2} a(w,w) - \ell(w) \quad \forall w \in H^1(\Omega).
@@ -826,12 +826,12 @@ where $\calV_D \equiv  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B\}$ for som
 \end{equation}
  We then have the following minimization formulation: find $u \in \calV$ such that
 \begin{equation}
-  u = \argmin_{w \in \calV_D} J(w).
+  u = \argmin_{w \in \calV^E} J(w).
   \label{eq:posnd_energy_min}
 \end{equation}
 This is a minimization formulation for a general symmetric, coercive problem.
 
-We can readily show that $u \in \calV$ is the solution to the minimization problem~\eqref{eq:posnd_energy_min} if and only if it is the solution to the variational problem~\eqref{eq:posnd_energy_var}. Suppose $u \in \calV_D$ is the solution to the variational problem~\eqref{eq:posnd_energy_var}. Let $w = u + v$ for some $v \in \calV$.  (Note that $w \in \calV_D$.)  We then observe, $\forall v \in \calV$,
+We can readily show that $u \in \calV$ is the solution to the minimization problem~\eqref{eq:posnd_energy_min} if and only if it is the solution to the variational problem~\eqref{eq:posnd_energy_var}. Suppose $u \in \calV^E$ is the solution to the variational problem~\eqref{eq:posnd_energy_var}. Let $w = u + v$ for some $v \in \calV$.  (Note that $w \in \calV^E$.)  We then observe, $\forall v \in \calV$,
 \begin{align*}
   J(w)
   &=
@@ -847,7 +847,7 @@ We can readily show that $u \in \calV$ is the solution to the minimization probl
 \end{align*}
 Hence, $J(w) > J(u)$ for all $w \neq u$, and $u$ is the minimizer of $J$ \eqref{eq:posnd_energy_fun}.  Note that this proof relies on the fact that the bilinear form is symmetric and coercive.
 
-Conversely, suppose $u \in \calV_D$ is the solution to the minimization problem~\eqref{eq:posnd_energy_min}. Because the energy functional is quadratic in the argument, the minimizer $u$ must satisfy the stationarity condition
+Conversely, suppose $u \in \calV^E$ is the solution to the minimization problem~\eqref{eq:posnd_energy_min}. Because the energy functional is quadratic in the argument, the minimizer $u$ must satisfy the stationarity condition
 \begin{equation*}
   J'(u;v) \equiv \lim_{\epsilon \to 0} \frac{1}{\epsilon}(J(u+\epsilon v) - J(u)) = 0 \quad \forall v \in \calV;
 \end{equation*}
@@ -862,7 +862,7 @@ the Fr\'echet derivative (i.e., directional derivative) about $u$ in any directi
   = \lim_{\epsilon \to 0} (a(u,v) - \ell(v) + \frac{1}{2} \epsilon a(v,v))
   = a(u,v) - \ell(v) 
 \end{align*}
-Hence, for $u \in \calV_D$ to be the minimizer, it must satisfy
+Hence, for $u \in \calV^E$ to be the minimizer, it must satisfy
 \begin{equation*}
   J'(u;v) = a(u,v) - \ell(v) = 0, \forall v \in \calV,
 \end{equation*}
@@ -932,7 +932,7 @@ We summarize key points of this lecture:
 %% \end{align*}
 %% We now impose the three boundary conditions. The (inhomogeneous) Dirichlet boundary condition on $\Gamma_D$ is enforced strongly through the choice of the trial and test spaces.  Namely, we choose for our trial and test spaces
 %% \begin{align*}
-%%   \calV_D &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u_B \} \\
+%%   \calV^E &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u^B \} \\
 %%   \calV &\equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \};
 %% \end{align*}
 %% note that the choice will result in the elimination of the boundary term (D) since $v|_{\Gamma_D} = 0$ for $v \in \calV$.
