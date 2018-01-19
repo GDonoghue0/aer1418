@@ -150,28 +150,102 @@ where $u^B$ is specifies the inhomogeneous Dirichlet boundary
 
 
 \section{Galerkin method}
-
-We now seek a
-
-Our Galerkin approximation is as follows: find $u_h \in \calV_h^E$ such that
-\begin{equation*}
+We first recall the weak formulation for the exact problem: find $u \in \calV$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV,
+  \label{eq:fe_form_true}
+\end{equation}
+where $a: \calV \times \calV \to \RR$ is a coercive, continuous bilinear form and $\ell: \calV \to \RR$ is a continuous linear form. We now seek an approximation to~\eqref{eq:fe_form_true} in a (finite-dimensional) subspace $\calV_h \subset \calV$: find $u_h \in \calV_h$ such that
+\begin{equation}
   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
-\end{equation*}
+  \label{eq:fe_form_gal_0}
+\end{equation}
+In words, we obtain the finite-element problem by simply replacing test and trials spaces by $\calV_h \subset \calV$.  Because the trial and test approximation spaces are the same, the method is referred to as the \emph{Galerkin method}.  (If the test and trial approximation spaces are different, the method is referred to as the \emph{Petrov-Galerkin method}.) We also note that the finite element problem~\eqref{eq:fe_form_gal_0} depends on the space $\calV_h$ but is independent of the particular basis $\{ \phi_i \}_{i=1}^n$ for $\calV_h$.  We will prove in Section~\ref{sec:fe_form_gal_wellposed} that~\eqref{eq:fe_form_gal_0} has a unique solution.
 
-find $\hat u_h \in \RR^n$ such that
+We now wish to recast the finite element problem~\eqref{eq:fe_form_gal_0} in linear algebraic from that is amenable to computer implementation.  To this end, we represent the solution and test functions in terms of their basis coefficients, $u_h = \sum_{j=1}^n \hat u_{h,j} \phi_j$ and $v = \sum_{i=1}^n \hat v \phi_i$ to yield the following equivalent problem for the coefficients: find $\hat u_h \in \RR^n$ such that
 \begin{equation*}
-  a
+  a(\sum_{j=1}^n \hat u_{h,j} \phi_j, \sum_{i=1}^n \hat v_i \phi_i)
+  = \ell(\sum_{i=1}^n \hat v_i \phi_i) \quad \forall \hat v \in \RR^n.
 \end{equation*}
+We then invoke the bilinearity of $a(\cdot,\cdot)$ and the linearity of $\ell(\cdot)$ to obtain
+\begin{equation*}
+  \sum_{i,j = 1}^n \hat v_i a(\phi_j,\phi_i) \hat u_{h,j} = \sum_{i=1}^n \hat v_i \ell(\phi_i).
+\end{equation*}
+The problem can be more compactly expressed using the matrix-vector notation: find $\hat u_h \in \RR^n$ such that
+\begin{equation}
+  \hat v^T \hat A_h \hat u_h = \hat v^T \hat f_h \quad \forall \hat v \in \RR^n,
+  \label{eq:fe_form_gal_3}
+\end{equation}
+where the \emph{stiffness matrix} $\hat A_h \in \RR^{n \times n}$ is given by
+\begin{equation*}
+  \hat A_{h,ij} \equiv a(\phi_j, \phi_i), \quad i,j = 1,\dots,n,
+\end{equation*}
+and the \emph{load vector} $\hat f_h \in \RR^n$ is given by
+\begin{equation*}
+  \hat f_{h,i} \equiv \ell(\phi_i), \quad i = 1,\dots,n.
+\end{equation*}
+In order for~\eqref{eq:fe_form_gal_3}, each row of $A_h \hat u_h - f_h$ must be equal to zero; otherwise, we can find $\hat v \in \RR^n$ that is finite only on that non-zero and hence~\eqref{eq:fe_form_gal_3} would not hold.  We hence conclude that the statement \eqref{eq:fe_form_gal_3} is equivalent to finding $\hat u_h \in \RR^n$ that satisfies 
+\begin{equation}
+  \hat A_h \hat u_h = \hat f_h  \quad \text{(in $\RR^n$)}.
+  \label{eq:fe_form_gal_4}
+\end{equation}
+We will prove in Section~\ref{sec:fe_form_gal_wellposed} that~\eqref{eq:fe_form_gal_4} has a unique solution.
 
-$\hat A_h \in \RR^{n \times n}$ such that 
+\section{Well-posedness of the Galerkin finite element problem}
+\label{sec:fe_form_gal_wellposed}
+We now wish to show that~\eqref{eq:fe_form_gal_0} has a unique solution and is well-posed.
+\begin{proposition}
+  \label{prop:fe_form_gal_wellposed}
+    Given an approximation space $\calV_h \subset \calV$, a continuous, coercive bilinear form $a: \calV \times \calV \to \RR$, and a continuous linear functional $\ell \in \calV'$, there exists a unique $u_h \in \calV_h$ such that
+  \begin{equation*}
+    a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
+  \end{equation*}
+  \begin{proof}
+We will appeal to the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}; to do so, we need to demonstrate that (i) the bilinear form $a(\cdot,\cdot)$ is coercive in $\calV_h$, (ii) the bilinear form is continuous $a(\cdot,\cdot)$ is continuous in $\calV_h$, and (iii) the linear form $\ell(\cdot)$ is continuous in $\calV_h$.  The coercivity of $a(\cdot,\cdot)$ in $\calV_h$ follows form
 \begin{equation*}
-  \hat A_{h,ij} \equiv a(\phi_j, \phi_i) \quad i,j = 1,\dots,n.
+  \alpha_h \equiv \inf_{v \in \calV_h} \frac{a(v,v)}{\| v \|_\calV} \geq
+  \inf_{v \in \calV} \frac{a(v,v)}{\| v \|_\calV} \equiv \alpha > 0,
 \end{equation*}
+where the inequality follows from $\calV_h \subset \calV$.  The coercivity constant associated with $\calV_h$, $\alpha_h$, is bounded from the below by the coercivity constant associated with $\calV$, $\alpha$, which itself is bounded from the below by $0$. The continuity of $a(\cdot,\cdot)$ in $\calV_h$ follows from
+\begin{equation*}
+  \gamma_h \equiv \sup_{v \in \calV_h} \frac{a(v,v)}{\| v \|_\calV} \leq
+  \sup_{v \in \calV} \frac{a(v,v)}{\| v \|_\calV} \equiv \gamma < \infty,
+\end{equation*}
+where the inequality again follows from $\calV_h \subset \calV$.  The continuity constant associated with $\calV_h$, $\gamma_h$, is bounded from the above by the continuity constant associated with $\calV$, $\gamma$, which itself is finite.  Similarly, the continuity of $\ell(\cdot)$ in $\calV_h$ follows from
+\begin{equation*}
+  \| \ell \|_{(\calV_h)'} \equiv \sup_{v \in \calV_h} \frac{\ell(v)}{\| v \|_\calV} \leq \sup_{v \in \calV} \frac{\ell(v)}{\| v \|_\calV} \equiv \| \ell \|_{\calV'} < \infty,
+\end{equation*}
+where the inequality again follows from $\calV_h \subset \calV$.  Because the bilinear from is coercive and continuous in $\calV_h$ and the linear from is continuous in $\calV_h$, we conclude by the Lax-Milgram theorem that the solution exists and is unique.
+  \end{proof}
+\end{proposition}
+The proposition shows the existence of a unique solution to the finite element problem~\eqref{eq:fe_form_gal_0} without appealing to any specific basis for $\calV_h$; the finite element solution $u_h \in \calV_h$ (perhaps not too surprisingly) depends only on the space $\calV_h$ and is independent of the specific basis $\{ \phi_i \}_{i=1}^n$ used to represent the solution.
 
-$\hat f_h \in \RR^n$ such that
+We can also show that the linear algebraic problem~\ref{eq:fe_form_gal_4} associated with the basis coefficients, $\hat A_h \hat u_h = \hat f_h$, is well-posed.  One way to prove the existence of unique coefficients is to appeal to (i) the existence and uniqueness of $u_h \in \calV_h$ by Proposition~\eqref{prop:fe_form_gal_wellposed} and (ii) the existence and uniqueness of the associated basis-specific representation $u_h = \sum_{i=1}^n \hat u_{h,i} \phi_i$ since $\{\phi_i\}_{i=1}^n$ is a basis for $\calV_h$. Alternatively, we can directly show that the matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite and hence is non-singular. 
+\begin{proposition}
+  If the bilinear form $a: \calV \times \calV \to \RR$ is symmetric and coercive, then the stiffness matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite (SPD).
+  \begin{proof}
+    The symmetry of $\hat A_h$ follows directly from the symmetry of the bilinear form:
+  \begin{equation*}
+    \hat A_{h,ij} = a(\phi_j,\phi_i) = a(\phi_i,\phi_j) = \hat A_{h,ji}.
+  \end{equation*}
+  To prove positive definiteness, we first observe that $\forall \hat v \in \RR^n$, 
 \begin{equation*}
-  \hat f_{h,i} \equiv \ell(\phi_i) \quad i = 1,\dots,n
+  \hat v^T \hat A_{h} \hat v
+  =
+  \sum_{i,j = 1}^n \hat v_i a(\phi_j, \phi_i) \hat v_j 
+  = a(\sum_{j=1}^n \hat v_j \phi_j, \sum_{i=1}^n \hat v_i \phi_i)
+  \geq \alpha \| \sum_{i=1}^n \hat v_i \phi_i \|^2_{\calV} \geq 0,
 \end{equation*}
+where the first inequality follows from the coercivity of $a(\cdot,\cdot)$ and the last equality follows from the positive definiteness of the norm $\| \cdot \|_{\calV}$. Moreover, because $\| \cdot \|_{\calV}$ is a norm, $\| \sum_{i=1}^n \hat v_i \phi_i \|_\calV = 0$ if and only if $\sum_{i=1}^n \hat v_i \phi_i = 0$.  In addition, because $\{\phi_i\}_{i=1}^n$ is a basis and in particular linearly independent, $\sum_{i=1}^n \hat v_i \phi_i = 0$ if and only if $\hat v_i = 0$, $\forall i = 1,\dots,n$. It follows that
+\begin{equation*}
+  \hat v^T \hat A_h \hat v = 0 \quad \text{if and only if} \quad \hat v = 0.
+\end{equation*}
+Hence, the matrix $\hat A_h \in \RR^{n \times n}$ is SPD.
+  \end{proof}
+\end{proposition}
+
+\section{Optimality of finite element approximation}
+
 
 \section{Minimization formulation: Rayleigh-Ritz}
 We now seek the finite element approximation to the problem using the minimization formulation. To this end, we recall that the energy functional is given by 
