@@ -5,6 +5,7 @@
 \section{Introduction}
 The objective of this section is threefold.  We first introduce finite elements for reference triangles. We then discuss the assembly of finite elements to construct a finite element space.  We finally discuss approximation properties of these finite element spaces.
 
+
 \section{Triangulation}
 We first introduce a \emph{triangulation} of $\Omega \subset \RR^d$.  A triangulation
 \begin{equation*}
@@ -123,11 +124,11 @@ While the choice of a basis not unique, the nodal basis provides a convenient in
 We note that the coefficient $\hat w_j$ must be equal to $w(x_j)$, because $w(x_i) = \sum_{j=1}^n \hat w_j \phi_j(x_i) = \sum_{j=1}^n \hat w_j \delta_{ij} = \hat w_i$, $i = 1,\dots,n$; here, the second equality follows from the Lagrange interpolation property~\eqref{eq:fe_lagrange_basis_prop}.  In words, $\hat w_j = w(x_j)$, the value of the function $w \in \calV_h$ evaluated at the associated node $x_j$. This interpretation of nodal basis allows us to readily confirm that the nodal basis is indeed a basis: for any $w \in \calV_h$, there exists a unique $\hat w \in \RR^n$ such that $w = \sum_{j=1}^n \hat w_j \phi_j$.  We can clearly express any function $w \in \calV_h$ in the form~\eqref{eq:fe_rep}; moreover the representation is unique. 
 
 \section{Approximation spaces: essential boundary conditions}
-We recall from Lecture~\ref{ch:var_form} that Dirichlet boundary conditions are treated as \emph{essential} boundary conditions in the weak formulation of second-order elliptic PDEs.  For instance, given a mixed Poisson problem on $\Omega \subset \RR^d$ with a Dirichlet boundary $\Gamma_D \subset \partial \Omega$, the appropriate function space is
+We recall from Lecture~\ref{ch:var_form} that Dirichlet boundary conditions are treated as essential boundary conditions in the weak formulation of second-order elliptic PDEs.  For instance, given a mixed Poisson problem on $\Omega \subset \RR^d$ with a Dirichlet boundary $\Gamma_D \subset \partial \Omega$, the appropriate function space is
 \begin{equation*}
   \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
 \end{equation*}
-The functions in the associated approximation space $\calV_h$ must also vanish on $\Gamma_D$ so that $\calV_h \subset \calV$.  To this end, for nodal basis, we can readily enforce this condition by eliminating the basis functions associated with the nodes on the (closure of the) Dirichlet boundary $\overline \Gamma_D$ from the approximation space. The dimension of the approximation space is
+The functions in the associated approximation space $\calV_h$ must also vanish on $\Gamma_D$ so that $\calV_h \subset \calV$.  With nodal basis, we can readily enforce this condition by eliminating the basis functions associated with the nodes on the (closure of the) Dirichlet boundary $\overline \Gamma_D$ from the approximation space. The dimension of the resulting approximation space for $\calV \subset H^1(\Omega)$ is
 \begin{equation*}
   n = \text{dim}(\calV_h) = (\text{dimension of approximation space for $H^1(\Omega)$}) - (\text{number of Dirichlet nodes}).
 \end{equation*}
@@ -135,13 +136,14 @@ Then, as before, we can express any function in $w \in \calV_h$ as
 \begin{equation*}
   w = \sum_{j=1}^n \hat w_j \phi_j,
 \end{equation*}
-where the basis $\{ \phi_j \}_{j=1}^n$ consists of nodal basis associated with nodes not on the Dirichlet boundary.
+where the basis $\{ \phi_j \}_{j=1}^n$ consists of nodal basis associated with nodes not on the (closure of the) Dirichlet boundary.
 
-We now consider the construction of an approximation space for affine spaces of the form
+We now consider the construction of an approximation space for an affine space of the form
 \begin{equation*}
-  \calV^E \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u^B \},
+  \calV^E \equiv u^E + \calV,
 \end{equation*}
-where $u^B$ is specifies the inhomogeneous Dirichlet boundary 
+where $u^E$ is an arbitrary member in $H^1(\Omega)$ that satisfies the boundary condition $u^E|_{\Gamma_D} = u^B$.  In general, 
+
 
 \begin{equation*}
   w = u^E_h + \sum_{j=1}^n \hat w_j \phi_j
@@ -191,7 +193,7 @@ In order for~\eqref{eq:fe_form_gal_3}, each row of $A_h \hat u_h - f_h$ must be 
 \end{equation}
 We will prove in Section~\ref{sec:fe_form_gal_wellposed} that~\eqref{eq:fe_form_gal_4} has a unique solution.
 
-\section{Well-posedness of the Galerkin finite element problem}
+\section{Well-posedness of the Galerkin finite element formulation}
 \label{sec:fe_form_gal_wellposed}
 We now wish to show that~\eqref{eq:fe_form_gal_0} has a unique solution and is well-posed.
 \begin{proposition}
@@ -244,10 +246,8 @@ Hence, the matrix $\hat A_h \in \RR^{n \times n}$ is SPD.
   \end{proof}
 \end{proposition}
 
-\section{Optimality of finite element approximation}
 
-
-\section{Minimization formulation: Rayleigh-Ritz}
+\section{Minimization formulation: Rayleigh-Ritz formulation}
 We now seek the finite element approximation to the problem using the minimization formulation. To this end, we recall that the energy functional is given by 
 \begin{align*}
   J(w) =  J(\sum_{j=1}^n \hat w_j \phi_j)

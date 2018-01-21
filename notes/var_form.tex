@@ -658,7 +658,7 @@ The following theorem provides an answer to the question regarding the existence
 The Lax-Milgram theorem provides sufficient conditions under which a weak formulation possess a unique solution.  We however note that these are only sufficient, and not necessary, conditions.  The above proof for uniqueness also shows how certain properties of the ingredients, such as bilinearity and coercivity, are used to prove the desired result.
 
 
-The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuous on the data $\ell(\cdot)$.
+The Lax-Milgram theorem concerns with the existence and uniqueness of a weak solution.  We now introduce a \emph{stability} or \emph{well-posedness} result which shows that the solution $u$ depends continuously on the data $\ell(\cdot)$.
 \begin{proposition}[stability]
   Suppose the conditions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}, are satisfied. Then, the solution $u$ satisfies
   \begin{equation*}
@@ -810,7 +810,7 @@ hence the linear form $\ell(\cdot)$ is continuous with the continuity constant $
 \section{Minimization formulation}
 We now obtain the minimization formulation for boundary value problems under two assumptions on the bilinear form $a(\cdot,\cdot)$:
 \begin{itemize}
-\item[1.] coercivity: $\exists \alpha > 0$ such that $a(v,v) \geq \alpha\| v \|_\calV$, $\forall v \in \calV$.
+\item[1.] coercivity: $\exists \alpha > 0$ such that $a(v,v) \geq \alpha\| v \|^2_\calV$, $\forall v \in \calV$.
 \item[2.] symmetry: $a(w,v) = a(v,w)$, $\forall w,v, \in \calV$.
 \end{itemize}
 Our variational formulation is as follows: find $u \in \calV^E$ such that
@@ -824,7 +824,7 @@ where $\calV^E \equiv  \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = u^B\}$ for som
   J(w) \equiv \frac{1}{2} a(w,w) - \ell(w) \quad \forall w \in H^1(\Omega).
   \label{eq:posnd_energy_fun}
 \end{equation}
- We then have the following minimization formulation: find $u \in \calV$ such that
+ We then have the following minimization formulation: find $u \in \calV^E$ such that
 \begin{equation}
   u = \argmin_{w \in \calV^E} J(w).
   \label{eq:posnd_energy_min}
@@ -837,7 +837,7 @@ We can readily show that $u \in \calV$ is the solution to the minimization probl
   &=
   J(u+v)
   =
-  e\frac{1}{2} a(u+v,u+v) - \ell(u+v)
+  \frac{1}{2} a(u+v,u+v) - \ell(u+v)
   \\
   &=
   \underbrace{\frac{1}{2} a(u,u) - \ell(u)}_{J(u)} + \underbrace{ \frac{1}{2} a(u,v) + \frac{1}{2} a(v,u)}_{= a(u,v) \text{ by symmetry}} - \ell(v) + \frac{1}{2} a(v,v)

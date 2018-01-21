@@ -37,7 +37,7 @@
 Please adhere to the collaboration policy: the final write up must be prepared individually without consulting others. (See the syllabus for details.)
 
 \section*{Part 1. Formulation and analysis}
-We wish to understand the insulation characteristics of a jacket worn by a person walking outside in a cold, windy day.  In our simplified analysis, the person is a circle that acts as a heat source, and the jacket is a ring that surrounds the person. We wish to model the temperature distribution in the ring-shaped jacket and to evaluate the temperature on the inner surface, which contacts the person.
+We wish to understand the insulation characteristics of a jacket worn by a person walking outside in a cold, windy day.  In our simplified analysis, the person is a circle that acts as a heat source, and the jacket is a ring that surrounds the person. We wish to model the temperature distribution in the ring-shaped jacket and evaluate the temperature on the inner surface, which contacts the person.
 
 We now provide a mathematical description of the problem.  All variables are nondimensionalized.  We introduce a two-dimensional annular domain
 \begin{equation*}
@@ -70,21 +70,21 @@ Answer the following questions:
 
   \emph{Note:} the integrand of the bilinear form should depend on the coordinate $x \in \Omega \subset \RR^1$.
 \end{enumerate}
-For the following questions, the variational problem, bilinear form, and linear form refer to those obtained in (b).
+For the following questions, the variational problem, bilinear form, and linear form refer to those obtained in (b). 
 \begin{enumerate}[(a)]
   \setcounter{enumi}{2}
 \item Show that the bilinear form is coercive.
 \item Show that the bilinear form is continuous.
 \item Show that the linear form is continuous.
-\item Prove that the variational problem has a unique solution.
-\item Suppose the Biot number is zero: $B_{\rm out} = 0$.  Prove that the bilinear form is not coercive.  Does the problem have a unique solution?
+\item Prove or provide a counter example to the following statement: the variational problem has a unique solution.
+\item Suppose the Biot number is zero: $B_{\rm out} = 0$.  Prove that the bilinear form is not coercive.  Prove or provide a counter example to the following statement:  the variational problem has a unique solution.
 
   \emph{Note:} to prove that the bilinear from is not coercive, you need to find only one function for which the coercivity condition is violated.
 \item State a minimization form of the variational problem.  Specifically, identify (i) the function space and (ii) energy functional.
 \end{enumerate}
 
 \section*{Part 2. Implementation}
-We now wish to develop a finite-element code that approximates the solution to the one-dimensional variational problem obtained in Part 1. The code should use a piecewise linear finite element space and accept an arbitrary discretization parameter $h > 0$.  
+We now wish to develop a finite-element code that approximates the solution to the one-dimensional variational problem obtained in Part 1. The code should use a piecewise linear finite element space with a uniform (but arbitrary) spacing $h > 0$.%and accept an arbitrary discretization parameter $h > 0$.  
 \begin{enumerate}[(a)]
 \item Write a finite-element code that solves the heat conduction problem.
 
@@ -97,7 +97,7 @@ We now wish to develop a finite-element code that approximates the solution to t
     \ell^o(u) - \ell^o(u_h) = a(e,e),
   \end{equation*}
   where $e \equiv u - u_h$ is the error in the finite element approximation $u_h$.  
-\item Solve the finite element problem for $r_{\rm in} = 1/2$, $r_{\rm out} = 2$, $k = 1$, $g = 1$, $B_{\rm out} = 1$, and uniform grid spacings of $h = 1/2, 1/4, 1/8, \dots, 1/64$. Report the reference value of the output for $h_{\rm ref} \equiv 1/512$, $\ell^o(u_{\rm ref})$.  Plot the output error (with respect to $\ell^o(u_{h_{\rm ref}})$) against the grid spacing $h$ in log-log scale, and report the observed convergence rate.  Does the observed convergence rate match your expectation based on the theory?
+\item Solve the finite element problem for $r_{\rm in} = 1/2$, $r_{\rm out} = 2$, $k = 1$, $g = 1$, $B_{\rm out} = 1$, and uniform grid spacings of $h = 1/2, 1/4, 1/8, \dots, 1/64$. Report the reference value of the output for $h_{\rm ref} \equiv 1/512$, $\ell^o(u_{h_{\rm ref}})$.  Plot the output error (with respect to $\ell^o(u_{h_{\rm ref}})$) against the grid spacing $h$ in log-log scale, and report the observed convergence rate.  Does the observed convergence rate match your expectation based on the theory?
 %\item Execute the finite-element code for $B_{\rm out} = 0$.  %How does the code fail?
 %  Does the observed behavior match your expectation?
 \end{enumerate}

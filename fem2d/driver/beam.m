@@ -147,7 +147,7 @@ U = zeros(ndof,1);
 U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
-figure(1), clf,
+figure(2), clf,
 Uv = reshape(U,[nnode,2]);
 mesh2 = mesh;
 mesh2.coord = mesh2.coord + Uv;

@@ -21,7 +21,7 @@ ref = make_ref_tri(p,pquad);
 mesh = make_thermal_fin_mesh(h);
 if p == 2
     mesh = add_quadratic_nodes(mesh);
-    endedi
+end
 mesh = make_bgrp(mesh);
 mesh = refine_uniform(mesh); 
 
