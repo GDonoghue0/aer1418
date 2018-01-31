@@ -41,19 +41,25 @@ if (plot_edge)
     tri_edge_all = zeros(2,nbedge,nelem);
 end
 
+if (size(u,2) > 1 || (isfield(opt,'broken') && opt.broken))
+    ubroken = true;
+else 
+    ubroken = false;
+end
+
 shp_ref = shape_tri(ref.p, x_ref);
 u_all = zeros(nx_ref, nelem);
 x_all = zeros(nx_ref, 2, nelem);
 tri_all = zeros(3, ntri_ref, nelem);
 for elem = 1:nelem
     tril = mesh.tri(elem,:)';
-    if (size(u,2) == 1)
-        ul = u(tril);
-    else
+    if (ubroken)
         ul = u(:,elem);
+    else
+        ul = u(tril);
     end
     xl = mesh.coord(tril,:);
-    
+
     u_all(:,elem) = shp_ref*ul;
     x_all(:,:,elem) = shp_ref*xl;
     tri_all(:,:,elem) = tri_ref' + (elem-1)*nx_ref;
