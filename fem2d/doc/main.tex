@@ -239,9 +239,9 @@ The next set of fields define the 1d quadrature rule on a unit line segment.  Th
   \caption{Example $p=1$, $p_{\rm quad} = 4$ reference edge element.  The interpolation nodes are numbered; the quadrature points are shown in dots ($\bullet$).}
 \end{figure}
 \begin{itemize}
-\item \texttt{xq1d}. An $n_{\rm quad-1d}$-vector of the coordinate of the 1d quadrature points, where $n_{\rm quad-1d}$ is the number of 1d quadrature points.
+\item \texttt{xqf}. An $n_{\rm quad-facet}$-vector of the coordinate of the 1d quadrature points, where $n_{\rm quad-facet}$ is the number of 1d quadrature points.
 \begin{verbatim}
->> ref.xq1d
+>> ref.xqf
 
 ans =
 
@@ -249,9 +249,9 @@ ans =
     0.5000
     0.8873
 \end{verbatim}
-\item \texttt{wq1d}. An $n_{\rm quad-1d}$-vector of 1d quadrature weights.
+\item \texttt{wqf}. An $n_{\rm quad-facet}$-vector of 1d quadrature weights.
 \begin{verbatim}
->> ref.wq1d
+>> ref.wqf
 
 ans =
 
@@ -262,9 +262,9 @@ ans =
 \end{itemize}
 The next set of fields define the 1d shape functions on a unit line segment. 
 \begin{itemize}
-\item \texttt{shp1d}. An $n_{\rm quad-1d} \times n_{\rm shp-1d}$ array of the values of the 1d shape functions evaluated at 1d quadrature points.
+\item \texttt{shpf}. An $n_{\rm quad-facet} \times n_{\rm shp-facet}$ array of the values of the 1d shape functions evaluated at 1d quadrature points.
 \begin{verbatim}
->> ref.shp1d
+>> ref.shpf
 
 ans =
 
@@ -272,9 +272,9 @@ ans =
     0.5000    0.5000
     0.1127    0.8873
 \end{verbatim}
-\item \texttt{shpx1d}. An $n_{\rm quad-1d} \times n_{\rm shp-1d}$ array of the derivative of the 1d shape functions evaluated at 1d quadrature points.
+\item \texttt{shpxf}. An $n_{\rm quad-facet} \times n_{\rm shp-facet}$ array of the derivative of the 1d shape functions evaluated at 1d quadrature points.
 \begin{verbatim}
->> ref.shpx1d
+>> ref.shpxf
 
 ans =
 
@@ -285,9 +285,9 @@ ans =
 \end{itemize}
 The last field relates edge degrees of freedom to element degrees of freedom.  The field is used, for example, to identify boundary degrees of freedom.
 \begin{itemize}
-\item \texttt{e2n}. An $n_{\rm shp-1d} \times 3 \times 2$ array of edge-to-node connectivity information, where $n_{\rm shp-1d}$ is the number of interpolation nodes on an edge (i.e., $n_{\rm shp-1d} = 2$ and $3$ for $p=1$ and $2$, respectively). \texttt{e2n(i,j,1)} is the $i$-th interpolation node on the $j$-th edge when the edge is oriented in the natural direction (i.e., along the counter-clockwise orientation of the element). \texttt{e2n(i,j,2)} is the $i$-th interpolation node on the $j$-th edge when the edge is oriented in the reverse direction (i.e., along the clockwise orientation of the element).
+\item \texttt{f2n}. An $n_{\rm shp-facet} \times 3 \times 2$ array of edge-to-node connectivity information, where $n_{\rm shp-facet}$ is the number of interpolation nodes on an edge (i.e., $n_{\rm shp-facet} = 2$ and $3$ for $p=1$ and $2$, respectively). \texttt{f2n(i,j,1)} is the $i$-th interpolation node on the $j$-th edge when the edge is oriented in the natural direction (i.e., along the counter-clockwise orientation of the element). \texttt{f2n(i,j,2)} is the $i$-th interpolation node on the $j$-th edge when the edge is oriented in the reverse direction (i.e., along the clockwise orientation of the element).
 \begin{verbatim}
->> ref.e2n
+>> ref.f2n
 
 ans(:,:,1) =
 
@@ -304,9 +304,9 @@ ans(:,:,2) =
 We now provide a list of functions.
 \begin{itemize}
 \item \texttt{interp\_nodes\_\{tri,line\}}.  Returns Lagrange interpolation nodes.  Used to fill the \texttt{.xint} field of the \texttt{ref} structure.
-\item \texttt{quad\_\{tri,line\}}.  Returns quadrature points and weights.  Used to fill the \texttt{.xq}, \texttt{.wq}, \texttt{.xq1d}, and \texttt{.wq1d} fields of the \texttt{ref} structure.
+\item \texttt{quad\_\{tri,line\}}.  Returns quadrature points and weights.  Used to fill the \texttt{.xq}, \texttt{.wq}, \texttt{.xqf}, and \texttt{.wqf} fields of the \texttt{ref} structure.
 \item \texttt{monomial\_\{tri,line\}}.  Evaluates the shape function values and gradients associated with monomial basis.  Provides basis function from which the Lagrange shape functions are generated using \texttt{shape\_\{tri,line\}}; the function is rarely used by its own.
-\item \texttt{shape\_\{tri,line\}}.  Evaluates the shape function values and gradients associated with Lagrange basis.  Used to fill the \texttt{.shp}, \texttt{.shpx}, \texttt{.shp1d}, and \texttt{.shpx1d} fields of the \texttt{ref} structure.
+\item \texttt{shape\_\{tri,line\}}.  Evaluates the shape function values and gradients associated with Lagrange basis.  Used to fill the \texttt{.shp}, \texttt{.shpx}, \texttt{.shpf}, and \texttt{.shpxf} fields of the \texttt{ref} structure.
 \item \texttt{make\_ref\_tri}.  A high-level function that fills in all the fields of the \texttt{ref} structure.
 \end{itemize}
 \end{document}
