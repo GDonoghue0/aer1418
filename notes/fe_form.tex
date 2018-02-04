@@ -15,11 +15,15 @@ is a set of non-overlapping elements $K_1, \dots, K_{n_e}$ such that the union o
   K_i \cap K_j &= \emptyset,  \quad i \neq j \\
   \cup_{i=1}^{n_e} \overline K_i &= \overline \Omega.
 \end{align*}
-(We consider the closure of the elements because we consider each element to be open.) An example of a triangulation is shown in Figure~\ref{fig:fe_mesh_p1}. The triangulation comprise $n_e = 9$ triangular elements $\{K_i\}_{i=1}^{n_e}$, which are delineated by $n_v = 9$ vertices $\{z_i\}_{i=1}^{n_v}$. For each element $K_i$, we define the \emph{diameter}
+(We consider the closure of the elements because we consider each element to be open.) An example of a triangulation is shown in Figure~\ref{fig:fe_mesh_p1}. The triangulation comprises $n_e = 9$ triangular elements $\{K_i\}_{i=1}^{n_e}$, which are delineated by $n_v = 9$ vertices $\{z_i\}_{i=1}^{n_v}$. For each element $K_i$, we define the \emph{diameter}
 \begin{equation*}
-  h_{K_i} \equiv \text{diam}(K_i),
+  h_{K_i} \equiv \text{diam}(K_i).
 \end{equation*}
-which is the diameter of the smallest ball that covers the element $K_i$. The subscript $h$ of the triangulation $\calT_h$ signifies the maximum diameter of the elements in the triangulation,
+The diameter of $K_i$ is the supremum of the distances between pairs of points in $K^i$,
+\begin{equation*}
+  \text{diam}(K_i) = \sup_{x,y \in K_i} \| x - y \|_2;
+\end{equation*}
+the diameter for a triangle $K_i$ is the length of the longest edge. (We take the supremum because each element is open.) The subscript $h$ of the triangulation $\calT_h$ signifies the maximum diameter of the elements in the triangulation,
 \begin{equation*}
   h \equiv \max_{i = 1,\dots,n_e} h_{K_i}.
 \end{equation*}
@@ -35,7 +39,7 @@ which is the diameter of the smallest ball that covers the element $K_i$. The su
   \label{fig:fe_mesh_p1}
 \end{figure}
 
-While mathematically a triangulation is simply a collection of non-overlapping elements, we need a convenient means to represent the triangulation on a computer.  One approach is to store tables of \emph{node coordinates} and \emph{element-node connectivities}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, the element $K_5$ is delineated by the nodes $z_6$, $z_5$, and $z_3$; the coordinate table then indicates that the coordinates of these three nodes are $z_6 = (0.28,-0.07)$, $z_5 = (-0.21,0.98)$, and $z_3 = (-0.29,0.04)$. By convention, we order the nodes of the triangles in the counter-clockwise manner. The coordinate and connectivity tables together provide a complete geometric description of all elements.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in an array form.
+While mathematically a triangulation is simply a collection of non-overlapping elements that cover the domain, we need a convenient means to represent the triangulation on a computer.  One approach is to store tables of \emph{node coordinates} and \emph{element-node connectivities}.  Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} are respectively the coordinate and connectivity tables associated with the triangulation shown in Figure~\ref{fig:fe_mesh_p1}. The connectivity table indicates that, for instance, the element $K_5$ is delineated by the nodes $z_6$, $z_5$, and $z_3$; the coordinate table then indicates that the coordinates of these three nodes are $z_6 = (0.28,-0.07)$, $z_5 = (-0.21,0.98)$, and $z_3 = (-0.29,0.04)$. By convention, we order the nodes of the triangles in the counter-clockwise manner. The coordinate and connectivity tables together provide a complete geometric description of all elements.  Note that, in Figure~\ref{fig:fe_mesh_p1}, for each triangle, we indicate the first of the three nodes that delineate the triangle by a dot ($\bullet$); with this convention we have identical information presented in Figure~\ref{fig:fe_mesh_p1} in a visual form and Tables~\ref{tb:fe_mesh_p1_coord} and \ref{tb:fe_mesh_p1_tri} in an array form.
 
 \begin{table}
   \centering
@@ -107,14 +111,14 @@ here $\PP^1(K)$ is the space of linear polynomials over $K$. We note the two req
 
 We note that the condition $\calV_h \subset H^1(\Omega)$ means that the weak derivative of functions must be square integrable (in the Lebesgue sense); for piecewise polynomials, the condition is satisfied if and only if the function is continuous.  To see this, we observe the following.  If a function is continuous and piecewise polynomial, the weak first derivative is a (potentially discontinuous) piecewise polynomial and hence is square integrable; the function hence is in $H^1(\Omega)$.  If a function is not continuous across element interfaces, then the weak first derivative generates delta distributions at the interfaces and hence is not in $L^2(\Omega)$; recall for instance a concrete example for a Heaviside-like function in Section~\ref{sec:posnd_sobolev}. Hence, for a piecewise polynomial function, the continuity is a necessary and sufficient condition for the function to be in $H^1(\Omega)$. 
 
-We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}, such as the one shown in Figure~\ref{fig:fe_fun_p1}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely describe any function in $\calV_h$. To this end, we introduce a \emph{basis} for the linear space $\calV_h$.  We recall that a set of functions $\{ \phi_i \}_{i=1}^n$ is a basis for $\calV_h$ if the set (i) spans $\calV_h$ and (ii) is linearly independent. The first requirement implies that any $w \in \calV_h$ can be expressed as a linear combination of $\{ \phi_i \}_{i=1}^n$.  The second requirement implies that the coefficients associated with the representation of $w \in \calV_h$ in terms of $\{ \phi_i \}_{i=1}^n$ is unique.  In other words, if $\{ \phi_i \}_{i=1}^n$ is a basis for $\calV_h$, then for any $w \in \calV_h$ there exists a unique $\hat w \in \RR^n$ such that
+We now need a convenient means to describe functions in $\calV_h$ given by~\eqref{eq:fe_lin_Vh}, such as the one shown in Figure~\ref{fig:fe_fun_p1}.  Specifically, we need to pick \emph{global degrees of freedom} with which we can uniquely associate any function in $\calV_h$ to a set of real numbers. To this end, we introduce a \emph{basis} for the linear space $\calV_h$.  We recall that a set of functions $\{ \phi_i \}_{i=1}^n$ is a basis for $\calV_h$ if the set (i) spans $\calV_h$ and (ii) is linearly independent. The first requirement implies that any $w \in \calV_h$ can be expressed as a linear combination of $\{ \phi_i \}_{i=1}^n$.  The second requirement implies that the coefficients associated with the representation of $w \in \calV_h$ in terms of $\{ \phi_i \}_{i=1}^n$ is unique.  In other words, if $\{ \phi_i \}_{i=1}^n$ is a basis for $\calV_h$, then for any $w \in \calV_h$ there exists a unique $\hat w \in \RR^n$ such that
 \begin{equation}
   w = \sum_{j=1}^n \hat w_j \phi_j
   \label{eq:fe_form_fun_rep}
 \end{equation}
-for $n = \text{dim}(\calV_h)$. In other words, given a basis function $\{ \phi_i \}_{i=1}^{n}$ for $\calV_h$, the relationship~\eqref{eq:fe_form_fun_rep} is an isomorphism (i.e., a bijective map) from $\RR^n$ to $\calV_h$.
+for $n = \text{dim}(\calV_h)$. Given a basis $\{ \phi_i \}_{i=1}^{n}$ for $\calV_h$, the relationship~\eqref{eq:fe_form_fun_rep} is an isomorphism (i.e., a bijective map) from $\RR^n$ to $\calV_h$.  A function that belongs to a basis $\{ \phi_i \}_{i=1}^n$ is called a \emph{basis function} or a \emph{shape function}.
 
-While the choice of a basis is not unique, one convenient choice is a \emph{Lagrange basis} or \emph{nodal basis}.  Nodal basis $\{ \phi_j \}_{j=1}^n$ comprises functions that take on the value of 1 at the associated node and 0 at all other nodes:
+While the choice of a basis is not unique, one convenient choice is a \emph{Lagrange basis} or \emph{nodal basis}.  A nodal basis $\{ \phi_j \}_{j=1}^n$ comprises functions that take on the value of 1 at the associated node and 0 at all other nodes:
 \begin{equation}
   \phi_j(z_i) = \delta_{ij},
   \label{eq:fe_lagrange_basis_prop}
@@ -133,7 +137,7 @@ The nodal basis, unlike many other bases, provides a convenient interpretation i
   w = \sum_{j=1}^n \hat w_j \phi_j = \sum_{j=1}^n w(z_j) \phi_j.
   \label{eq:fe_rep}
 \end{equation}
-We note that the coefficient $\hat w_j$ must be equal to $w(z_j)$, because $w(z_i) = \sum_{j=1}^n \hat w_j \phi_j(z_i) = \sum_{j=1}^n \hat w_j \delta_{ij} = \hat w_i$, $i = 1,\dots,n$; here, the second equality follows from the Lagrange interpolation property~\eqref{eq:fe_lagrange_basis_prop}.  In words, $\hat w_j = w(z_j)$, the value of the function $w \in \calV_h$ evaluated at the associated node $x_j$. This interpretation of nodal basis also allows us to readily confirm that the nodal basis is indeed a basis: for any $w \in \calV_h$, there exists a unique $\hat w \in \RR^n$ such that $w = \sum_{j=1}^n \hat w_j \phi_j$. % We can clearly express any function $w \in \calV_h$ in the form~\eqref{eq:fe_rep}; moreover the representation is unique.
+We note that the coefficient $\hat w_j$ must be equal to $w(z_j)$, because $w(z_i) = \sum_{j=1}^n \hat w_j \phi_j(z_i) = \sum_{j=1}^n \hat w_j \delta_{ij} = \hat w_i$, $i = 1,\dots,n$; here, the second equality follows from the Lagrange interpolation property~\eqref{eq:fe_lagrange_basis_prop}.  In words, $\hat w_j = w(z_j)$, the value of the function $w \in \calV_h$ evaluated at the associated node $x_j$. This interpretation of nodal basis functions also allows us to readily confirm that the nodal basis is indeed a basis: for any $w \in \calV_h$, there exists a unique $\hat w \in \RR^n$ such that $w = \sum_{j=1}^n \hat w_j \phi_j$. % We can clearly express any function $w \in \calV_h$ in the form~\eqref{eq:fe_rep}; moreover the representation is unique.
 
 We note that approximation spaces of the form~\eqref{eq:fe_lin_Vh} can be refined to yield a sequence of approximation spaces. A space $\calV_{h'}$ is said to be a \emph{refinement} of a space $\calV_h$ if
 \begin{equation*}
@@ -146,7 +150,7 @@ i.e., every member of $\calV_h$ is also a member of $\calV_{h'}$. For a piecewis
 for $h_1 > h_2 > \dots > h_n$. (We recall that the subscript $h$ of $\calV_h$ indicates the diameter of the largest element, $h \equiv \max_{K \in \calT_h} \text{diam}(K)$.)  The ability to refine, and hence construct a sequence of enriched spaces, is important. Intuitively, we might relate this ability to arbitrary refine the approximation spaces with the ability to find an approximation that is arbitrary close to the exact solution.  We will make this notion of convergence more formal in a later lecture.
 
 \section{Approximation spaces: essential boundary conditions}
-We recall from Lecture~\ref{ch:var_form} that Dirichlet boundary conditions are treated as essential boundary conditions in the weak formulation of second-order elliptic PDEs.  For instance, given a mixed Poisson problem on $\Omega \subset \RR^d$ with a homogeneous Dirichlet boundary $\Gamma_D \subset \partial \Omega$, the appropriate function space is
+We recall from Lecture~\ref{ch:var_form} that Dirichlet boundary conditions are treated as essential boundary conditions in the weak formulation of second-order elliptic PDEs.  The essential boundary conditions are explicitly imposed through the choice of the space.  For instance, given a mixed Poisson problem on $\Omega \subset \RR^d$ with a homogeneous Dirichlet boundary $\Gamma_D \subset \partial \Omega$, the appropriate function space is
 \begin{equation*}
   \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
 \end{equation*}
@@ -160,23 +164,34 @@ we note that the notation $H^1_h(\Omega)$ is \emph{not} standard in literature, 
 \begin{equation*}
   \calV_h \equiv \{ v \in \calV \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \};
 \end{equation*}
-functions in the approximation space $\calV_h$ must vanish on $\Gamma_D$ so that $\calV_h \subset \calV$.  For a piecewise linear approximation space, an equivalent condition is
+functions in the approximation space $\calV_h$ must vanish on $\Gamma_D$ so that $\calV_h \subset \calV$.  The space $\calV_h$ is a subspace of $\calV$ because the functions restricted to element $K$ is in $\PP^1(K)$.  The space $\calV_h$ is also a subspace of $H^1_h(\Omega)$ because, while both spaces comprise piecewise linear functions, the functions in $\calV_h$ must vanish on the boundary $\Gamma_D$.
+
+For a piecewise linear function $v \in H^1_h(\Omega)$, a condition equivalent to $v|_{\Gamma_D} = 0$ is
 \begin{equation*}
   v_h(z_j) = 0 \quad \text{for all nodes $z_j$ on $\bar \Gamma_D$,}
 \end{equation*}
-where $\bar \Gamma_D$ is the closure of the Dirichlet boundary.  We consider the closure so that the nodes at the boundary (i.e., endpoints in $\RR^2$) are included in the set. In other words,
+where $\bar \Gamma_D$ is the closure of the Dirichlet boundary. 
+We consider the closure so that the nodes at the boundary (i.e., endpoints in $\RR^2$) are included in the set. In other words,
 \begin{equation*}
   \calV_h = \{ v \in H^1_h(\Omega) \ | \ v(z_j) = 0, \ \forall z_j \text{ on } \bar \Gamma_D \}.
 \end{equation*}
+For instance, in Figure~\ref{fig:fe_mesh_p1_bnd}, the piecewise linear function must vanish on the nodes $z_4$, $z_7$, $z_8$, and $z_9$.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.35\textwidth]{fe_mesh_p1_bnd}
+  \caption{A triangulated domain with a Dirichlet boundary.}
+  \label{fig:fe_mesh_p1_bnd}
+\end{figure}
+
+
 For a nodal basis, the boundary condition can be explicitly imposed by eliminating the shape functions associated with the nodes on $\overline \Gamma_D$ from the approximation space. The dimension of the resulting approximation space for $\calV \subset H^1(\Omega)$ is
 \begin{equation*}
   n \equiv \text{dim}(\calV_h) = \text{dim}(H^1_h(\Omega)) - (\text{number of nodes on $\bar \Gamma_D$}).
 \end{equation*}
-Then, as before, we can express any function in $w \in \calV_h$ in terms of $\hat w \in \RR^n$ as
+For instance, the dimension of the piecewise linear approximation space shown in Figure~\ref{fig:fe_mesh_p1_bnd} is $n = 9 - 4 = 5$, where the active shape functions are associated with the nodes $z_1$, $z_2$, $z_3$, $z_5$, and $z_6$. Once the set of active shape functions of $H^1_h(\Omega)$ are identified, we can readily reassign them as a basis $\{ \phi_j \}_{j=1}^n$ of $\calV_h$. Without loss of generality, we also reassign the associated node numbers $\{z_j\}_{j=1}^n$. Then, as before, we can express any function in $w \in \calV_h$ in terms of $\hat w \in \RR^n$ as
 \begin{equation*}
-  w = \sum_{j=1}^n \hat w_j \phi_j,
+  w = \sum_{j=1}^{n} \hat w_j \phi_j = \sum_{j=1}^{n} w(z_j) \phi_j.
 \end{equation*}
-where the basis $\{ \phi_j \}_{j=1}^n$ consists of nodal shape functions associated with nodes not on the (closure of the) Dirichlet boundary.
 
 We now consider an inhomogeneous Dirichlet boundary condition, say $u|_{\Gamma_D} = u^B$. We recall that the appropriate test space for the problem is $\calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}$ and the trial space is $\calV^E \equiv u^E + \calV$, where $u^E$ is an arbitrary member of $H^1(\Omega)$ that satisfies the boundary condition $u^E|_{\Gamma_D} = u^B$.  If the boundary function $u^B$ is a piecewise polynomial that conforms to the triangulation, then it is possible to find $u^E_h \in H^1_h(\Omega)$ that satisfies the boundary condition exactly: $u^E_h|_{\Gamma_D} = u^B$.  Otherwise, we have to choose $u^E_h \in H^1_h(\Omega)$ in the piecewise polynomial space that approximately satisfies the boundary condition: $u^E_h|_{\Gamma_D} \approx u^B$.  In either case, a convenient choice (though not the only choice) is to simply choose any $u^E_h \in H^1_h(\Omega)$ such that
 \begin{equation*}
@@ -186,7 +201,7 @@ We can then express any function in $w \in \calV_h^E \equiv u_h^E + \calV_h$ in 
 \begin{equation*}
   w = u^E_h + \sum_{j=1}^n \hat w_j \phi_j,
 \end{equation*}
-where $\{\phi_j\}_{j=1}^n$ consists of nodal basis associated with nodes not on $\bar \Gamma_D$.
+where $\{\phi_j\}_{j=1}^n$ is a nodal basis associated with nodes not on $\bar \Gamma_D$.
 
 
 %We also recall that we can reformulate the problem as follows: find $\tilde u \in \calV$ such that
@@ -217,7 +232,7 @@ where $a: \calV \times \calV \to \RR$ is a coercive, continuous bilinear form an
   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
   \label{eq:fe_form_gal_0}
 \end{equation}
-This is the Galerkin finite element approximation of~\eqref{eq:fe_form_true}. In words, we obtain the finite-element problem by simply replacing test and trials spaces by $\calV_h \subset \calV$.  Because the trial and test approximation spaces are the same, the method is referred to as a \emph{Galerkin method}.  (If the test and trial approximation spaces are different, the method is referred to as a \emph{Petrov-Galerkin method}.) We also note that the finite element problem~\eqref{eq:fe_form_gal_0} depends on the space $\calV_h$ but is independent of the particular basis $\{ \phi_i \}_{i=1}^n$ for $\calV_h$.  We will prove in Section~\ref{sec:fe_form_gal_wellposed} that the solution to~\eqref{eq:fe_form_gal_0} exists and is unique.
+This is the Galerkin finite element approximation of~\eqref{eq:fe_form_true}. In words, we obtain the finite element problem by simply restricting the test and trials spaces from $\calV$ to $\calV_h \subset \calV$.  Because the trial and test approximation spaces are the same, the method is referred to as a \emph{Galerkin method}, or, more explicitly, \emph{Bubnov-Galerkin method}.  (If the test and trial approximation spaces are different, the method is referred to as a \emph{Petrov-Galerkin method}.) The finite element problem~\eqref{eq:fe_form_gal_0} depends on the space $\calV_h$ but is independent of the particular basis $\{ \phi_i \}_{i=1}^n$ for $\calV_h$.  We will prove in Section~\ref{sec:fe_form_gal_wellposed} that the solution to~\eqref{eq:fe_form_gal_0} exists and is unique.
 
 We now wish to recast the finite element problem~\eqref{eq:fe_form_gal_0} in linear algebraic from that is amenable to computer implementation.  To this end, we represent the solution and test functions in terms of their basis coefficients, $u_h = \sum_{j=1}^n \hat u_{h,j} \phi_j$ and $v = \sum_{i=1}^n \hat v \phi_i$ to yield the following equivalent problem for the coefficients: find $\hat u_h \in \RR^n$ such that
 \begin{equation*}
@@ -258,7 +273,7 @@ The following proposition shows that the solution to~\eqref{eq:fe_form_gal_0} ex
     a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
   \end{equation*}
   \begin{proof}
-We will appeal to the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}; to do so, we need to demonstrate that (i) the bilinear form $a(\cdot,\cdot)$ is coercive in $\calV_h$, (ii) the bilinear form is continuous $a(\cdot,\cdot)$ is continuous in $\calV_h$, and (iii) the linear form $\ell(\cdot)$ is continuous in $\calV_h$.  All of these properties follows from the fact that $\calV_h$ is a subspace of $\calV$.  The coercivity of $a(\cdot,\cdot)$ in $\calV_h$ follows from
+We will appeal to the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}; to do so, we need to demonstrate that (i) the bilinear form $a(\cdot,\cdot)$ is coercive in $\calV_h$, (ii) the bilinear form is continuous $a(\cdot,\cdot)$ is continuous in $\calV_h$, and (iii) the linear form $\ell(\cdot)$ is continuous in $\calV_h$.  All of these properties follow from the fact that $\calV_h$ is a subspace of $\calV$.  The coercivity of $a(\cdot,\cdot)$ in $\calV_h$ follows from
 \begin{equation*}
   \alpha_h \equiv \inf_{v \in \calV_h} \frac{a(v,v)}{\| v \|^2_\calV} \geq
   \inf_{v \in \calV} \frac{a(v,v)}{\| v \|^2_\calV} \equiv \alpha > 0,
@@ -323,18 +338,16 @@ Hence, the matrix $\hat A_h \in \RR^{n \times n}$ is SPD.
   Because the matrix $\hat A_h \in \RR^{n \times n}$ is SPD, the matrix is non-singular, and the linear system $\hat A_h \hat u_h = \hat f_h$ has a unique solution.
 \end{remark}
 
-Before we conclude a section, we make an important remark.  A finite element solution $u_h \in \calV_h$ is a \emph{field} that approximates the solution $u \in \calV$. Because $u_h$ is a field, we can evaluate $u_h$ at any point $x \in \Omega$.  This is fundamentally different from a finite difference method, which approximates the solution at discrete set of points, and the solution elsewhere is in general not approximated.  (Of course, we could in practice interpolate the finite difference solution, but that involves an additional approximation.)  While the coefficients $\hat u_h \in \RR^n$ is associated with the nodal value of the solution for nodal bases, this is a rather special interpretation for a nodal bases. The finite element solution field $u_h \in \calV_h$ only depends on the space $\calV_h$ and not the particular basis used to represent the functions in $\calV_h$. %, and the finite element method is a method to find an approximation solution field.
+Before we conclude a section, we make an important remark.  A finite element solution $u_h \in \calV_h$ is a \emph{field} that approximates the solution $u \in \calV$. Because $u_h$ is a field, we can evaluate $u_h$ at any point $x \in \Omega$.  This is fundamentally different from a finite difference method, which approximates the solution at a discrete set of points, and the solution elsewhere is in general not approximated.  (Of course, we could in practice interpolate the finite difference solution, but that involves an additional approximation.)  While the coefficients $\hat u_h \in \RR^n$ is associated with the nodal value of the solution for nodal bases, this is a rather special interpretation for a nodal bases. The finite element solution field $u_h \in \calV_h$ only depends on the space $\calV_h$ and not the particular basis used to represent the functions in $\calV_h$. 
 
-
-
-\section{Minimization formulation: Rayleigh-Ritz formulation}
+\section{Minimization formulation}
 For a variational problem with a symmetric, coercive bilinear form, we can also formulate the finite element problem using a minimization formulation.  We recall that the energy functional associated with the minimization problem is $J: \calV \to \RR$ such that
 \begin{equation*}
   J(w) \equiv \frac{1}{2} a(w,w) - \ell(w),
 \end{equation*}
 where $a: \calV \times \calV \to \RR$ is a symmetric, coercive bilinear form, and $\ell: \calV \to \RR$ is a linear form.  The solution is given by $u \in \calV$ such that
 \begin{equation*}
-  u = \argmin_{w \in \calV^E} J(w).
+  u = \argmin_{w \in \calV} J(w).
 \end{equation*}
 We recall that the minimization formulation and the variational formulation are equivalent.
 
@@ -359,8 +372,8 @@ The sufficient condition for $\hat u_h$ to be the minimizer is that (i) the grad
 \end{equation*}
 which is the same as the Galerkin finite element statement for the coefficients,~\ref{eq:fe_form_gal_4}.  The condition (ii) is also satisfied because the Hessian of $J(\hat u_h)$ is $\hat A_h$, which we have proven is SPD for a symmetric, coercive bilinear form in Proposition~\eqref{prop:fe_form_Ah_spd}. Hence, the finite element solution $u_h \in \calV_h$, and the associated coefficients $\hat u_h \in \RR^n$, can also be obtained using the minimization formulation.
 
-\section{Generalization}
-In this lecture, we considered an approximation space based on piecewise linear ($\PP^1$) polynomials and constructed the associated Galerkin (and Rayleigh-Ritz) approximation. However, the Galerkin (and Rayleigh-Ritz) procedure are in fact a general projection procedure that works with any approximation spaces.
+\section{Generalization: higher-order and spectral methods}
+In this lecture, we constructed the Galerkin approximation based on an approximation space $\calV_h$ of piecewise linear ($\PP^1$) polynomials; however, the Galerkin method --- which approximates the solution $u \in \calV$ in a subspace $\calV_h$ --- is in fact a general procedure that works with any approximation space $\calV_h \subset \calV$.
 
 For instance, we could consider a domain with a curved boundary and an associated triangulation as shown in Figure~\ref{fig:fe_form_mesh_p2}, and then considered a space of piecewise quadratic ($\PP^2$) polynomials,
 \begin{equation}
@@ -392,7 +405,7 @@ An example of a function that belongs to the space is shown in Figure~\ref{fig:f
 
 Figures~\ref{fig:fe_shape_global_p2_1} and \ref{fig:fe_shape_global_p2_2} show two of the nodal shape functions for the $\PP^2$ space associated with the triangulation~\ref{fig:fe_form_mesh_p2}.  Unlike the nodal shape functions for the $\PP^1$ space which are associated with only vertices of the triangles, the nodal shape functions for the $\PP^2$ space are associated with either vertices or edges.  
 
-As another example, if the domain of interest $\Omega$ is a line in $\RR^1$, a square in $\RR^2$, a cube in $\RR^3$, or any shape that can be mapped to these shapes, then we can also consider the approximation space can be consists of global polynomials
+As another example, suppose the domain of interest $\Omega$ is a line in $\RR^1$, a square in $\RR^2$, a cube in $\RR^3$, or any shape that can be mapped to these shapes. Then we can also consider an approximation space consists of global polynomials
 \begin{equation*}
   \calV_p \equiv \{ v \in \calV \ | \ v \in (\PP^p(\Omega))^d \}.
 \end{equation*}
@@ -406,8 +419,8 @@ We summarize key points of this lecture:
 \item An approximation space $\calV_h$ is a finite-dimensional subspace of $\calV \subset H^1(\Omega)$; the space comprises, for example, piecewise polynomials associated with the triangulation.
 \item Given a basis $\{ \phi_i \}_{i=1}^n$ for $\calV_h$, any function $v \in \calV_h$ can be identified with a unique coefficients $\hat v \in \RR^n$, which are the global degrees of freedom of $\calV_h$.
 \item An approximation space can be successively refined to yield a sequence of approximation spaces.
-\item If a nodal basis is used for $H^1_h(\Omega)$, a subspace $\calV_h \subset H^1_h(\Omega)$ that satisfies the essential boundary conditions can be formed by removing nodal shape functions on the closure of the Dirichlet boundary.
-\item The Galkerin finite element method solves the variational problem in a finite-dimensional approximation space $\calV_h \subset \calV$.
+\item If a nodal basis is used for $H^1_h(\Omega)$, then a subspace $\calV_h \subset H^1_h(\Omega)$ that satisfies the essential boundary conditions can be formed by removing nodal shape functions on the closure of the Dirichlet boundary.
+\item The Galerkin finite element method solves the variational problem in a finite-dimensional approximation space $\calV_h \subset \calV$.
 \item Given a basis $\{\phi_i\}_{i=1}^n$ of $\calV_h$, the coefficients $\hat u_h \in \RR^n$ associated with the solution $u_h \in \calV_h$ solves a $n \times n$ linear system $\hat A_h \hat u_h = \hat f_h$, where $A_{h,ij} = a(\phi_j,\phi_i)$ and $f_{h,i} = \ell(\phi_i)$.
 \item If the bilinear form is coercive and continuous and the linear form is continuous, the solution to the Galerkin finite element problem exists and is unique.
 \item If the bilinear form is symmetric, coercive, and continuous, then the finite element solution $u_h \in \calV_h$ can also be obtained from the minimization principle.
