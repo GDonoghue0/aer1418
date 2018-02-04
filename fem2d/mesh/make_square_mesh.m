@@ -1,7 +1,7 @@
 function mesh = make_square_mesh(h,type)
 % MAKE_SQUARE_MESH creates a square mesh
 % INPUT
-%   ne1d: number of element in each dimension
+%   h: approximate diameter of elements
 %   type (optional): options are 'structured' and 'unstructured'
 % OUTPUT
 %   mesh: mesh structure
@@ -11,6 +11,9 @@ function mesh = make_square_mesh(h,type)
 %     2: right 
 %     3: bottom 
 %     4: top 
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 if (nargin < 1)
     h = 1;
 end

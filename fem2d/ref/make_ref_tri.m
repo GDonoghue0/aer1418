@@ -6,6 +6,8 @@ function ref = make_ref_tri(p, pquad)
 % OUTPUT
 %   ref: reference element structure
 
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 % quadrature rule
 ref.pquad = pquad;
 [ref.xq, ref.wq] = quad_tri(pquad);
@@ -16,11 +18,11 @@ ref.xint = interp_nodes_tri(p);
 [ref.shp, ref.shpx] = shape_tri(p, ref.xq);
 
 % face quadrature
-[ref.xq1d, ref.wq1d] = quad_line(pquad);
-[ref.shp1d, ref.shpx1d] = shape_line(p, ref.xq1d);
+[ref.xqf, ref.wqf] = quad_line(pquad);
+[ref.shpf, ref.shpxf] = shape_line(p, ref.xqf);
 
 % nodes on edges
-ref.e2n = nodes_on_edge(p);
+ref.f2n = nodes_on_edge(p);
 
 end
 

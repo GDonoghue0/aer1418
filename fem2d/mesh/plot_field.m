@@ -8,7 +8,67 @@ function [h,he] = plot_field(mesh,ref,u,opt)
 % OUTPUT
 %   h: handle to the patch object
 %   he: handle to the edge object (if opt.edgecolor is not 'none')
-%
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
+if (nargin < 4)
+    opt = [];
+end
+switch size(mesh.coord,2)
+    case 1
+        [h,he] = plot_field_line(mesh,ref,u,opt);
+    case 2
+        [h,he] = plot_field_tri(mesh,ref,u,opt);
+    otherwise
+        error('unsupported dimension');
+end
+end
+
+
+function [h,he] = plot_field_line(mesh,ref,u,opt)
+% PLOT_FIELD_LINE plots the solution field on line mesh
+if (nargin < 4)
+    opt = [];
+end
+if ~isfield(opt,'nref')
+    opt.nref = ref.p + 14*(ref.p-1);
+end
+if isfield(opt,'edgecolor') && ~strcmp(opt.edgecolor,'none')
+    plot_edge = true;
+else
+    plot_edge = false;
+end
+nelem = size(mesh.tri,1);
+
+x_ref = linspace(0,1,opt.nref+1)';
+nx_ref = size(x_ref,1);
+
+shp_ref = shape_line(ref.p, x_ref);
+u_all = zeros(nx_ref, nelem);
+x_all = zeros(nx_ref, nelem);
+for elem = 1:nelem
+    tril = mesh.tri(elem,:)';
+    xl = mesh.coord(tril);
+    ul = u(tril);
+
+    x_all(:,elem) = shp_ref*xl;
+    u_all(:,elem) = shp_ref*ul;
+end
+h = plot(x_all,u_all,'k-'); hold on;
+
+if (plot_edge)
+    xe = mesh.coord(mesh.tri(:,[1,2]));
+    ue = u(mesh.tri(:,[1,2]));
+    he = plot(xe,ue,'o');
+    set(he,'markerfacecolor',opt.edgecolor,'color',opt.edgecolor);
+else
+    he = [];
+end
+end
+
+
+function [h,he] = plot_field_tri(mesh,ref,u,opt)
+% PLOT_FIELD_LINE plots the solution field on tri mesh
 if (nargin < 4)
     opt = [];
 end
@@ -96,8 +156,8 @@ if (plot_edge)
         he = plot(xxe,yye,'k-');
     end
     set(he,'color',opt.edgecolor);
+else
+    he = [];
 end
-
-
 
 end

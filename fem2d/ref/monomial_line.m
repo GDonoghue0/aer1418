@@ -10,6 +10,9 @@ function [shp,shpx] = monomial_line(p,x)
 %   shpx: np by 2 (or 3) matrix containing the derivative of the
 %         monomial basis functions evaluated at x.  The number of columns 
 %         is 2 and 3 for linear and quadratic polynomials, respectively.
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 np = size(x,1);
 oo = ones(np,1);
 zz = zeros(np,1);

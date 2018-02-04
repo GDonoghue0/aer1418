@@ -110,20 +110,20 @@ for bgrp = 1:length(mesh.bgrp)
     for edge = 1:size(mesh.bgrp{bgrp},1)
         elem = mesh.bgrp{bgrp}(edge,3);
         ledge = mesh.bgrp{bgrp}(edge,4);
-        lnode = ref.e2n(:,ledge);
+        lnode = ref.f2n(:,ledge);
         tril = mesh.tri(elem,lnode).';
         
         % compute mesh jacobians
         xl = mesh.coord(tril,:);
-        %xq = ref.shp1d*xl;
-        jacq = ref.shpx1d*xl;
+        %xq = ref.shpf*xl;
+        jacq = ref.shpxf*xl;
         detJq = sqrt(sum(jacq.^2,2));
         
         % compute quadrature weight
-        wqJ = ref.wq1d.*detJq;
+        wqJ = ref.wqf.*detJq;
         
         % compute basis
-        phiq = ref.shp1d;
+        phiq = ref.shpf;
         
         % tip Neumann boundary condition
         ffloc = zeros(nldof,1);
@@ -241,7 +241,7 @@ for ihole = 1:length(xholes)
     for edge = 1:size(bgrp,1)
         elem = bgrp(edge,3);
         ledge = bgrp(edge,4);
-        lnode = ref.e2n(3,ledge);
+        lnode = ref.f2n(3,ledge);
         node = mesh.tri(elem,lnode);
         xnode = mesh.coord(node,:);
         r0 = sqrt(sum((xnode - xh).^2));

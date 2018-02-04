@@ -12,6 +12,9 @@ function [shp,shpx] = shape_line(p,x)
 %         is 3 and 6 for linear and quadratic polynomials, respectively.
 %         shp(:,:,1) contains the x-derivative, and shp(:,:,2) constrains
 %         the y-derivative.
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 xnodes = interp_nodes_line(p);
 inv_coeff = monomial_line(p,xnodes);
 [psi,psix] = monomial_line(p,x);

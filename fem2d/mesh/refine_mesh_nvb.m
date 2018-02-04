@@ -7,6 +7,8 @@ function mesh = refine_mesh_nvb(mesh,tmark)
 % OUTPUT
 %   mesh: updated mesh structure.
 
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 p = size(mesh.tri,2)/3;
 coord = mesh.coord;
 tri = mesh.tri(:,1:3);

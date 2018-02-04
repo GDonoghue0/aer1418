@@ -12,6 +12,8 @@ function mesh = make_egrp(mesh)
 %           boundary group number.
 %         egrp(i,6) is the local edge index of the right element
 
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 tri = mesh.tri;
 ntri = size(tri,1);
 tedge = [tri(:,[2,3])

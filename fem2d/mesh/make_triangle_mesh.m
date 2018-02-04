@@ -5,6 +5,9 @@ function mesh = make_triangle_mesh(ne1d)
 % OUTPUT
 %   mesh: mesh structure. The boundary edge groups are as follows:
 %         1 = diagonal (top,right), 2 = left, 3 = bottom
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 if (nargin < 1)
     ne1d = 1;
 end

@@ -7,6 +7,8 @@ function mesh = make_circle_mesh(h, curved_p2)
 %   boundary groups: 
 %     1: entire circumference of the mesh
 
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 % make a unit circle
 if (nargin < 1)
     h = 0.2; 

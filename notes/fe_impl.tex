@@ -67,13 +67,13 @@ We next introduce the \emph{reference triangle} $\tilde T \subset \RR^2$. While 
 \begin{equation*}
   \tilde v_1 \equiv (0,0), \quad \tilde v_2 \equiv (1,0), \quad \text{and} \quad \tilde v_3 \equiv (0,1).
 \end{equation*}
-The vertices are ordered in the counter-clockwise manner, starting with the first vertex at the origin. We also denote the three facets of the triangles by
+The vertices are ordered in the counter-clockwise manner, starting with the first vertex at the origin. We also denote the three \emph{facets} of the triangles by
 \begin{equation*}
   \tilde F_1 \equiv ( \tilde v_2, \tilde v_3), \quad  \tilde F_2 \equiv ( \tilde v_3, \tilde v_1), \quad \text{and} \quad  \tilde F_3 \equiv ( \tilde v_1, \tilde v_2).
 \end{equation*}
-We choose the convention that the facet number is the same as the vertex number of the vertex on the other side of the triangle. Each facet is oriented such that the collection of the three edges defines the triangle in the counter-clockwise orientation.  
+(A facet is a $d-1$ entity associated with a canonical shape; for a triangle, a facet is an edge.)  We choose the convention that the facet number is the same as the vertex number of the vertex on the other side of the triangle. Each facet is oriented such that the collection of the three edges defines the triangle in the counter-clockwise orientation.  
 
-We could introduce other reference domains including, for instance, a square in $\RR^2$ or a tetrahedron or cube in $\RR^3$; however, in this lecture, we will only consider the reference line segment $\tilde I$ and the reference triangle $\tilde T$.  
+We could introduce other reference domains including, for instance, a square in $\RR^2$, a tetrahedron in $\RR^3$, or a cube in $\RR^3$; however, in this lecture, we will only consider the reference line segment $\tilde I$ and the reference triangle $\tilde T$.  
 
 \subsection{Linear Lagrange finite element on a line segment}
 \label{sec:fe_lin_line}
@@ -503,21 +503,21 @@ The efficient implementation of this procedure relies on the efficient evaluatio
 \end{definition}
 The orthogonality condition (ii) implies that the set $\{ \psi_i \}_{i=0}^{n}$ is linearly independent and hence is a basis for $\PP^n(\tilde I)$. In addition the Legendre polynomials of arbitrary degree and their respective derivatives can be evaluated using recurrence relations. We can hence use~\eqref{eq:fe_gen_val_rep} and \eqref{eq:fe_gen_der_rep} with the Legendre polynomials as the underlying basis.  In higher dimensions, we may use the tensor product of Legendre polynomials as the underlying basis.  The use of the Legendre polynomial as the underlying polynomial also ensures the linear system~\eqref{eq:fe_gen_coeff_sys} remains well-posed even if the polynomial degree is very high; the Vandermonde matrix associated with the monomials become ill-conditioned for a high-degree polynomials as the monomials becomes nearly linearly dependent.
 
-\subsection{Computer implementation}
-The procedure described in this section can be easily and efficiently implemented in any programming language. We here describe the procedure using a MATLAB-like language. The ingredients of the code are
-\begin{itemize}
-\item \texttt{interp\_nodes}.  The function returns an array of interpolation nodes $Z \in \RR^{n_s \times d}$ so that $Z_{ij} = \tilde z_{i,j}$ for a given reference domain and polynomial degree.
-\item \texttt{monomial}. The input to the function is an array of evaluation points $X \in \RR^{n \times d}$ so that $X_{ij}$ is the $j$-th coordinate of the $i$-th evaluation. The function returns a matrix of function values $\Psi(X) \in \RR^{n \times n_s}$ so that $\Psi_{ij}(X) = \psi_j(x_i)$ and a order-3 tensor of derivative values $\nabla\Psi(X) \in \RR^{n \times n_s \times d}$ so that $(\nabla \Psi(X))_{ijk} = \left. \pp{\psi_j}{x_k} \right|_{x_i}$.  Here, $\psi_j$ is the $j$-th monomial basis function.  More generally $\{ \psi_j \}_{j=1}^{n_s}$ is underlying basis from which shape functions $\{ \phi_j \}_{j=1}^{n_s}$ are constructed; they could be, for example, (a tensor-product of) Legendre polynomials.
-\end{itemize}
-From these two functions, we can readily evaluate the values and gradients of Lagrange shape functions.  Our Vandermonde matrix $V \in \RR^{n_s \times n_s}$ associated with interpolation nodes $Z \in \RR^{n_s \times d}$ is given by
-\begin{equation*}
-  V = \Psi(Z) \quad (\text{in } \RR^{n_s \times n_s}).
-\end{equation*}m
-The Lagrange shape functions evaluated at the $n$ points associated with $X \in \RR^{n \times d}$ is given by $\Phi(X) \in \RR^{n \times n_s}$ such that
-\begin{equation*}
-  \Phi(X) = \Psi(X) V^{-1} \quad (\text{in } \RR^{n \times n_s}).
-\end{equation*}
-Here, $(\Phi(X))_{ij} = \phi_j(x_i)$, and we invoke the fact that the Vandermonde matrix $V$ is the inverse of the coefficient matrix $C$. Similarly, the derivative of the Lagrange shape functions 
+%% \subsection{Computer implementation}
+%% The procedure described in this section can be easily and efficiently implemented in any programming language. We here describe the procedure using a MATLAB-like language. The ingredients of the code are
+%% \begin{itemize}
+%% \item \texttt{interp\_nodes}.  The function returns an array of interpolation nodes $Z \in \RR^{n_s \times d}$ so that $Z_{ij} = \tilde z_{i,j}$ for a given reference domain and polynomial degree.
+%% \item \texttt{monomial}. The input to the function is an array of evaluation points $X \in \RR^{n \times d}$ so that $X_{ij}$ is the $j$-th coordinate of the $i$-th evaluation. The function returns a matrix of function values $\Psi(X) \in \RR^{n \times n_s}$ so that $\Psi_{ij}(X) = \psi_j(x_i)$ and a order-3 tensor of derivative values $\nabla\Psi(X) \in \RR^{n \times n_s \times d}$ so that $(\nabla \Psi(X))_{ijk} = \left. \pp{\psi_j}{x_k} \right|_{x_i}$.  Here, $\psi_j$ is the $j$-th monomial basis function.  More generally $\{ \psi_j \}_{j=1}^{n_s}$ is underlying basis from which shape functions $\{ \phi_j \}_{j=1}^{n_s}$ are constructed; they could be, for example, (a tensor-product of) Legendre polynomials.
+%% \end{itemize}
+%% From these two functions, we can readily evaluate the values and gradients of Lagrange shape functions.  Our Vandermonde matrix $V \in \RR^{n_s \times n_s}$ associated with interpolation nodes $Z \in \RR^{n_s \times d}$ is given by
+%% \begin{equation*}
+%%   V = \Psi(Z) \quad (\text{in } \RR^{n_s \times n_s}).
+%% \end{equation*}m
+%% The Lagrange shape functions evaluated at the $n$ points associated with $X \in \RR^{n \times d}$ is given by $\Phi(X) \in \RR^{n \times n_s}$ such that
+%% \begin{equation*}
+%%   \Phi(X) = \Psi(X) V^{-1} \quad (\text{in } \RR^{n \times n_s}).
+%% \end{equation*}
+%% Here, $(\Phi(X))_{ij} = \phi_j(x_i)$, and we invoke the fact that the Vandermonde matrix $V$ is the inverse of the coefficient matrix $C$. Similarly, the derivative of the Lagrange shape functions 
 
   \section{Physical elements}
   \label{sec:fe_phy_elem}

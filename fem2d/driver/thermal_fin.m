@@ -86,20 +86,20 @@ for bgrp = 1:length(mesh.bgrp)
     for edge = 1:size(mesh.bgrp{bgrp},1)
         elem = mesh.bgrp{bgrp}(edge,3);
         ledge = mesh.bgrp{bgrp}(edge,4);
-        lnode = ref.e2n(:,ledge);
+        lnode = ref.f2n(:,ledge);
         tril = mesh.tri(elem,lnode).';
         
         % compute mesh jacobians
         xl = mesh.coord(tril,:);
-        %xq = ref.shp1d*xl;
-        jacq = ref.shpx1d*xl;
+        %xq = ref.shpf*xl;
+        jacq = ref.shpxf*xl;
         detJq = sqrt(sum(jacq.^2,2));
         
         % compute quadrature weight
-        wqJ = ref.wq1d.*detJq;
+        wqJ = ref.wqf.*detJq;
         
         % compute basis
-        phiq = ref.shp1d;
+        phiq = ref.shpf;
         
         % root inhomogeneous Neumann condition
         if (bgrp == 1)

@@ -12,6 +12,9 @@ function [shp,shpx] = shape_tri(p,x)
 %         is 3 and 6 for linear and quadratic polynomials, respectively.
 %         shp(:,:,1) contains the x-derivative, and shp(:,:,2) constrains
 %         the y-derivative.
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 xnodes = interp_nodes_tri(p);
 inv_coeff = monomial_tri(p,xnodes);
 [psi,psix] = monomial_tri(p,x);

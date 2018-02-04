@@ -6,6 +6,9 @@ function [xq,wq] = quad_tri(pquad)
 %   xq: nq by 2 matrix of quadrature points, where nq is the number of
 %       quadrature points
 %   wq: nq-vector of quadrature weights
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 switch pquad
     case {0,1}
         dat = [

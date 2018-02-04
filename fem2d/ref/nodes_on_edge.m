@@ -10,6 +10,9 @@ function e2n = nodes_on_edge(p)
 %        i-th interpolation node on the j-th edge when the edge is oriented
 %        in the reverse direction (i.e., along the clockwise orientation of
 %        the element).
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 switch p
     case 1
         e2n(:,:,1) = [2 3 1 

@@ -4,6 +4,9 @@ function xnodes = interp_nodes_line(p)
 %   p: polynomial order; must be 1 or 2
 % OUTPUT:
 %   xnodes: np by 1 matrix of node coordinates; np is the number of nodes
+
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 switch p 
     case 1
         xnodes = [0; 1];
