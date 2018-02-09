@@ -150,6 +150,7 @@ i.e., every member of $\calV_h$ is also a member of $\calV_{h'}$. For a piecewis
 for $h_1 > h_2 > \dots > h_n$. (We recall that the subscript $h$ of $\calV_h$ indicates the diameter of the largest element, $h \equiv \max_{K \in \calT_h} \text{diam}(K)$.)  The ability to refine, and hence construct a sequence of enriched spaces, is important. Intuitively, we might relate this ability to arbitrary refine the approximation spaces with the ability to find an approximation that is arbitrary close to the exact solution.  We will make this notion of convergence more formal in a later lecture.
 
 \section{Approximation spaces: essential boundary conditions}
+\label{sec:fe_form_essential_bc}
 We recall from Lecture~\ref{ch:var_form} that Dirichlet boundary conditions are treated as essential boundary conditions in the weak formulation of second-order elliptic PDEs.  The essential boundary conditions are explicitly imposed through the choice of the space.  For instance, given a mixed Poisson problem on $\Omega \subset \RR^d$ with a homogeneous Dirichlet boundary $\Gamma_D \subset \partial \Omega$, the appropriate function space is
 \begin{equation*}
   \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \}.
@@ -310,16 +311,19 @@ We now consider the well-posedness of the linear algebraic problem~\ref{eq:fe_fo
   \end{proof}
 \end{proposition}
 
-\emph{If} we assume that the bilinear form is not only continuous and coercive but also symmetric, then we can also show that the matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite and hence is non-singular. 
-\begin{proposition}
-  \label{prop:fe_form_Ah_spd}
-  If the bilinear form $a: \calV \times \calV \to \RR$ is symmetric and coercive, then the stiffness matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite (SPD).
-  \begin{proof}
-    The symmetry of $\hat A_h$ follows directly from the symmetry of the bilinear form:
+Alternatively, we can show that, if $a:\calV \times \calV \to \RR$ is coercive, then the matrix $\hat A_h \in \RR^{n \times n}$ is \emph{positive definite} and hence is non-singular, and a unique solution to $\hat A_h \hat u_h = \hat f_h$ exists.
+\begin{definition}[positive definite matrix]
+  A matrix $A \in \RR^{n \times n}$, not necessarily symmetric, is positive definite if
   \begin{equation*}
-    \hat A_{h,ij} = a(\phi_j,\phi_i) = a(\phi_i,\phi_j) = \hat A_{h,ji} \quad  \forall i,j = 1, \dots, n.
+    x^T A x \geq 0 \quad \forall x \in \RR^n,
   \end{equation*}
-  To prove positive definiteness, we first observe that $\forall \hat v \in \RR^n$, 
+  and $x^T A x = 0$ if and only if $x = 0$.
+\end{definition}
+\begin{proposition}
+  \label{prop:fe_form_Ah_pd}
+  If the bilinear form $a: \calV \times \calV \to \RR$ is coercive (but not necessarily symmetric), then the stiffness matrix $\hat A_h \in \RR^{n \times n}$ associated with a basis $\{ \phi_i \}_{i=1}^n$ of $\calV_h$ is positive definite (PD).
+  \begin{proof}
+  We observe that $\forall \hat v \in \RR^n$, 
 \begin{equation*}
   \hat v^T \hat A_{h} \hat v
   =
@@ -331,12 +335,38 @@ where the first inequality follows from the coercivity of $a(\cdot,\cdot)$ and t
 \begin{equation*}
   \hat v^T \hat A_h \hat v = 0 \quad \text{if and only if} \quad \hat v = 0.
 \end{equation*}
-Hence, the matrix $\hat A_h \in \RR^{n \times n}$ is SPD.
+Hence, the matrix $\hat A_h \in \RR^{n \times n}$ is PD.
+  \end{proof}
+\end{proposition}
+\begin{proposition}
+  A positive definite (not necessarily symmetric) matrix $A \in \RR^{n \times n}$ is non-singular.
+  \begin{proof}
+    The proof is by contraction.  Suppose the matrix $A$ is singular.  Then, $\text{ker}(A) \neq 0$, and there exists $x \neq 0$ such that $Ax = 0$.  This in turn implies that $x^T A x = 0$ for the vector $x \neq 0$.  But, if $A$ is PD then $x^T A x = 0$ if and only if $x = 0$.  We hence have a contraction; a PD matrix must have $\text{ker}(A) = 0$ and hence is non-singular.
   \end{proof}
 \end{proposition}
 \begin{remark}
-  Because the matrix $\hat A_h \in \RR^{n \times n}$ is SPD, the matrix is non-singular, and the linear system $\hat A_h \hat u_h = \hat f_h$ has a unique solution.
+  Because the matrix $\hat A_h \in \RR^{n \times n}$ is PD, the matrix is non-singular, and the linear system $\hat A_h \hat u_h = \hat f_h$ has a unique solution.
 \end{remark}
+
+\emph{If} we the bilinear form is not only coercive but also symmetric, then we can also show that the matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite (SPD).
+\begin{definition}[symmetric positive definite matrix]
+  A matrix $A \in \RR^{n \times n}$ is symmetric positive definite (SPD) if $A$ is
+  \begin{itemize}
+  \item[(i)] symmetric: $A^T = A$
+  \item[(ii)] positive definite: $x^T A x \geq 0$ $\forall x \in \RR^n$, and $x^T A x = 0$ if and only if $x = 0$.
+  \end{itemize}
+\end{definition}
+\begin{proposition}
+  \label{prop:fe_form_Ah_spd}
+  If the bilinear form $a: \calV \times \calV \to \RR$ is symmetric and coercive, then the stiffness matrix $\hat A_h \in \RR^{n \times n}$ is symmetric positive definite (SPD).
+  \begin{proof}
+    The symmetry of $\hat A_h$ follows directly from the symmetry of the bilinear form:
+  \begin{equation*}
+    \hat A_{h,ij} = a(\phi_j,\phi_i) = a(\phi_i,\phi_j) = \hat A_{h,ji} \quad  \forall i,j = 1, \dots, n.
+  \end{equation*}
+  We have already shown in Proposition~\ref{prop:fe_form_Ah_pd} that the coercivity of $a: \calV \times \calV \to \RR$ implies the positive definiteness of $\hat A_h$.
+  \end{proof}
+\end{proposition}
 
 Before we conclude a section, we make an important remark.  A finite element solution $u_h \in \calV_h$ is a \emph{field} that approximates the solution $u \in \calV$. Because $u_h$ is a field, we can evaluate $u_h$ at any point $x \in \Omega$.  This is fundamentally different from a finite difference method, which approximates the solution at a discrete set of points, and the solution elsewhere is in general not approximated.  (Of course, we could in practice interpolate the finite difference solution, but that involves an additional approximation.)  While the coefficients $\hat u_h \in \RR^n$ is associated with the nodal value of the solution for nodal bases, this is a rather special interpretation for a nodal bases. The finite element solution field $u_h \in \calV_h$ only depends on the space $\calV_h$ and not the particular basis used to represent the functions in $\calV_h$. 
 

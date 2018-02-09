@@ -7,23 +7,26 @@ function thermal_fin
 
 % discretization parameters
 dim = 2;
-h = 0.5;
 p = 2;
 pquad = 2*p;
 
 % Biot number for Robin boundary condition
 Bi = 0.1;
+nfins = 4;
 
 % make reference element
 ref = make_ref_tri(p,pquad);
 
 % make mesh
-mesh = make_thermal_fin_mesh(h);
+mesh = make_thermal_fin_mesh(nfins);
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-mesh = refine_uniform(mesh); 
+for i = 1:3
+    mesh = refine_uniform(mesh); 
+end
+size(mesh.tri)
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);
@@ -131,6 +134,8 @@ U(inodes) = A(inodes,inodes)\F(inodes);
 figure(1), clf,
 plot_field(mesh,ref,U,struct('edgecolor',[0.5,0.5,0.5]));
 axis equal;
+xlim([-4,4]);
+ylim([0,max(mesh.coord(:,2))+0.5]);
 
 % compute output (average temprature at root)
 strue = 1.407815193325423e+00; % using h = 0.05
@@ -140,22 +145,27 @@ fprintf('output = %.6e\noutput error = %.2e\n',s,serr);
 
 end
 
-function mesh = make_thermal_fin_mesh(h)
+function mesh = make_thermal_fin_mesh(nfins)
 % MAKE_THERMAL_FIN_MESH creates a thermal fin mesh
 % INPUT
-%   h: approximate element diameter
+%   nfins: number of fins
 % OUTPUT
 %   mesh: mesh structure
 % REMARKS
 %   boundary groups:
 %     1: root boundary
 %     2: all other boundaries
+if (nargin < 1)
+    nfins = 2;
+end
 
 w = 1.0; % width of the conductor
 wf = 0.5; % width of a fin
 s = 0.5; % separation between fins
 l = 3.0; % length of each fin
-nfins = 3; % number of fin pairs
+
+% basic mesh spacing
+h = 0.4;  % this value works quite well
 
 % basic fin structure to be repeated
 pv0 = [w/2, 0

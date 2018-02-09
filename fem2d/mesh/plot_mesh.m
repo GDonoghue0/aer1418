@@ -9,7 +9,7 @@ function h = plot_mesh(mesh,opt)
 % OUTPUT
 %   h: handle to the patch object
 
-% % Copyright 2018 Masayuki Yano, University of Toronto
+% Copyright 2018 Masayuki Yano, University of Toronto
 
 if (nargin < 2)
     opt = [];

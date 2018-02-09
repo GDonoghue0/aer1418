@@ -47,7 +47,7 @@ if (curved_p2)
     for edge = 1:size(bgrp,1)
         elem = bgrp(edge,3);
         ledge = bgrp(edge,4);
-        lnode = ref.e2n(3,ledge);
+        lnode = ref.f2n(3,ledge);
         node = mesh.tri(elem,lnode);
         xnode = mesh.coord(node,:);
         r0 = sqrt(sum(xnode.^2));
