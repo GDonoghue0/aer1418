@@ -631,7 +631,7 @@ We now introduce a few quantities derived from the mapping.  We can differentiat
   = \left. \pp{\calG^K_i}{\tilde x_j} \right|_{\tilde x}
   = \sum_{\alpha= 1}^{n_s} z^K_{\alpha,i} \left. \pp{\tilde \phi_\alpha}{\tilde x_j} \right|_{\tilde x},
 \end{equation*}
-where $z^K_{\alpha,i}$ is the $i$-th coordinate of the $\alpha$-th node of element $K$. The Jacobian characterizes how an infinitesimal line segment $d\tilde l$ at $\tilde x \in \tilde K$ is mapped to an infinitesimal line segment $dl$ at $x \in K$; specifically, $dl = J^K d\tilde l$.  If the mapping $\calG^K: \tilde K \to K$ is a polynomial of degree $p$, the Jacobian $J^K: \tilde K \to \RR^{d \times d}$ is a polynomial of degree $p-1$. For a $\PP^1$ mapping, the Jacobian is constant over $\tilde K$.
+where $z^K_{\alpha,i}$ is the $i$-th coordinate of the $\alpha$-th node of element $K$. The Jacobian characterizes how an infinitesimal line segment $d\tilde l$ at $\tilde x \in \tilde K$ is mapped to an infinitesimal line segment $dl$ at $x \in K$; specifically, $dl = J^K(\tilde x) d\tilde l$.  If the mapping $\calG^K: \tilde K \to K$ is a polynomial of degree $p$, the Jacobian $J^K: \tilde K \to \RR^{d \times d}$ is a polynomial of degree $p-1$. For a $\PP^1$ mapping, the Jacobian is constant over $\tilde K$.
 
 The determinant of the Jacobian $\text{det}(J^K(\tilde x))$, or more compactly $|J^K(\tilde x)|$, relates the reference area $d \tilde x$ to the physical area $dx$ by
 \begin{equation*}
@@ -648,7 +648,7 @@ For a general polynomial mapping $\calG^K: \tilde K \to K$ of degree $p$, the co
 
 The inverse mapping is greatly simplified for a $\PP^1$ mapping $\calG^K: \tilde K \to K$ because the Jacobian $J^K: \tilde K \to K$ is constant.  First, for a $\PP^1$ mapping, the condition \eqref{eq:fe_iso_map_invcond} is equivalent to the condition that (i) the area of the physical triangle is finite and (ii) the vertices are ordered in the counter-clock manner.  For a $\PP^1$ mapping, $|J^K|$ is constant and $|J^K|/2$ is the area of the physical triangle; the factor of $1/2$ is needed because the area of our reference triangle $\tilde T$ is $1/2$. Second, because $\calG^K: \tilde K \to K$ is linear, $(\calG^K)^{-1}: K \to \tilde K$ is also linear; given $x \in K$, we can find $\tilde x \in \tilde K$ by solving a linear problem. 
 
-We can also compute the Jacobian associated with the inverse mapping, or the \emph{inverse Jacobian}, $(J^K)^{-1}: K \to \RR^{d \times d}$,
+We can also compute the Jacobian associated with the inverse mapping, or the \emph{inverse Jacobian}, $(J^K)^{-1}: \tilde K \to \RR^{d \times d}$,
 \begin{equation*}
   \left. \pp{\tilde x_i}{x_j} \right|_{\tilde x}
   = \left. \pp{(( \calG^K)^{-1})_i}{x_j} \right|_{\tilde x}
@@ -668,7 +668,7 @@ where $\tilde x \mapsto x = \calG^K(\tilde x)$ is provided by the geometry mappi
 We can also differentiate~\eqref{eq:fe_impl_phiK} to obtain the derivative of the physical basis functions in the physical space: given any $\tilde x \in \tilde K$, 
 \begin{equation}
   \left. \pp{\phi^K_\alpha}{x_i} \right|_{x = \calG^K(\tilde x)} =
-  \sum_{j=1}^{d} \pp{\tilde x_j}{x_i} \left. \pp{\tilde \phi_\alpha}{\tilde x_j} \right|_{\tilde x}  \quad i = 1,\dots,d, \ \alpha = 1,\dots,n_s.
+  \sum_{j=1}^{d} \left. \pp{\tilde x_j}{x_i} \right|_{\tilde x} \left. \pp{\tilde \phi_\alpha}{\tilde x_j} \right|_{\tilde x}  \quad i = 1,\dots,d, \ \alpha = 1,\dots,n_s.
   \label{eq:fe_impl_dphiK}
 \end{equation}
 The relationship may be expressed more explicitly using matrices and vectors; for $d = 2$,
@@ -734,15 +734,17 @@ As another example, consider the physical element $K_9$ in the triangulation sho
   \label{fig:fe_impl_shape_map_p2}
 \end{figure}
 
-We make one remark about our physical basis functions defined by~\eqref{eq:fe_impl_phiK}.  Even though the reference basis function $\tilde \phi: \tilde K \to \RR$ is a polynomial in $\tilde K$, the physical basis function $\phi^K_\alpha: K \to \RR$ is in general not a polynomial in $K$. To see this, we observe that $\phi^K_\alpha(x) = \tilde \phi_\alpha((\calG^K)^{-1}(x))$, $\forall x \in K$; because the inverse map $(\calG^K)^{-1}: K \to \tilde K$ is not a polynomial in $K$ for a $\PP^{p>1}$ geometry mapping, the function $\phi^K_\alpha(\cdot) = \tilde \phi_\alpha((\calG^K)^{-1}(\cdot)) = \tilde \phi_\alpha \circ (\calG^K)^{-1}$ is not a polynomial in $K$.  Conversely, we note that $\phi^K_\alpha(\calG(\cdot)) = \phi^K_\alpha \circ \calG^K = \tilde \phi(\cdot)$ \emph{is} a polynomial in $\tilde K$. Hence, in the presence of curved elements, approximation space is not
-\begin{equation*}
-  \calV_h \equiv \{ v \in H^1(\Omega) \ | v|_K \in \PP^p(K), \ \forall K \in \calT_h \}
-\end{equation*}
-but rather
+We make one remark about our physical basis functions defined by~\eqref{eq:fe_impl_phiK}.  Even though the reference basis function $\tilde \phi: \tilde K \to \RR$ is a polynomial in $\tilde K$, the physical basis function $\phi^K_\alpha: K \to \RR$ is in general not a polynomial in $K$. To see this, we observe that $\phi^K_\alpha(x) = \tilde \phi_\alpha((\calG^K)^{-1}(x))$, $\forall x \in K$; because the inverse map $(\calG^K)^{-1}: K \to \tilde K$ is not a polynomial in $K$ for a $\PP^{p>1}$ geometry mapping, the function $\phi^K_\alpha(\cdot) = \tilde \phi_\alpha((\calG^K)^{-1}(\cdot)) = \tilde \phi_\alpha \circ (\calG^K)^{-1}$ is not a polynomial in $K$.  Conversely, we note that $\phi^K_\alpha(\calG^K(\cdot)) = \phi^K_\alpha \circ \calG^K = \tilde \phi(\cdot)$ \emph{is} a polynomial in $\tilde K$. In short, $\phi_\alpha^K \in \PP^{p} \circ (\calG^K)^{-1}$ or equivalently $\phi_\alpha^K \circ \calG^K \in \PP^p(\tilde K)$.
+
+We note each physical element is indeed a finite element characterized by the three properties: the domain is $K \in \calT_h$; the finite-dimensional approximation space is $\PP^p \circ (\calG^K)^{-1}$; the degrees of freedom are the function values at the physical nodes $\{ v(z^K_\alpha) \}_{\alpha=1}^{n_s}$.  The collection of the finite elements define our approximation space, which can be compactly denoted as
 \begin{equation*}
   \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \circ \calG^K \in \PP^p(\tilde K), \ \forall K \in \calT_h \}.
 \end{equation*}
-However, for a $\PP^1$ geometry mapping, the notation is simplified; because the inverse mapping $(\calG^K)^{-1}: K \to \tilde K$ is affine, the physical shape function $\phi^K_\alpha(\cdot) = \tilde \phi_\alpha((\calG^K)^{-1}(\cdot))$ is a polynomial in $K$.
+For a $\PP^1$ geometry mapping, the notation is simplified; because the inverse mapping $(\calG^K)^{-1}: K \to \tilde K$ is affine, the physical shape function $\phi^K_\alpha(\cdot) = \tilde \phi_\alpha((\calG^K)^{-1}(\cdot))$ is a polynomial in $K$. Thus, for $\PP^1$ geometry mapping,
+\begin{equation*}
+  \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^p(K), \ \forall K \in \calT_h \},
+\end{equation*}
+as introduced in the previous lecture.
 
 %Using these basis functions, we can represent any function 
 %given $\tilde x \in \tilde K$,
@@ -792,9 +794,9 @@ We can differentiate~\eqref{eq:fe_iso_map_face} to obtain the Jacobian, $J^F: \t
   \equiv
   \left. \pp{x_i}{\tilde s_j} \right|_{\tilde s}
   =
-  \left. \pp{\calG^F}{\tilde s_j} \right|_{\tilde s}
+  \left. \pp{\calG^F_i}{\tilde s_j} \right|_{\tilde s}
   =
-  \sum_{\alpha = 1}^{n_s^F} z^F_\alpha \left. \pp{\tilde \phi_\alpha}{\tilde s_j} \right|_{\tilde s},
+  \sum_{\alpha = 1}^{n_s^F} z^F_{\alpha,i} \left. \pp{\tilde \phi_\alpha}{\tilde s_j} \right|_{\tilde s},
   \quad i = 1,\dots,d, \ j = 1,\dots,d-1.
 \end{equation*}
 The Jacobian is rectangular because the mapping is from $\RR^{d-1}$ to $\RR^d$. The Jacobian $J^F(\tilde s)$ characterizes how an infinitesimal line segment $d\tilde l$ at $\tilde s \in \tilde I$ maps to an infinitesimal line segment $dl$ at $s \in F$: $dl = J^F(\tilde s) d\tilde l$.
@@ -815,7 +817,7 @@ This condition is automatically satisfied if $|J^K(\tilde x)| >0$ $\forall \tild
 
 The evaluation of forms associated with a boundary value problem sometimes also require the evaluation of the \emph{unit outward-pointing normal vector}. In two dimension, the normal vector is given by
 \begin{equation*}
-  n^F(\tilde s) = \frac{1}{|J^F(\tilde s)|} \bmat{c} -J^F_{21}(\tilde s) \\ J^F_{11}(\tilde s) \emat .
+  n^F(\tilde s) = \frac{1}{|J^F(\tilde s)|} \bmat{c} J^F_{21}(\tilde s) \\ -J^F_{11}(\tilde s) \emat .
 \end{equation*}
 This definition of the normal vector is for our counter-clockwise convention for the facet orientation; the sign needs to be reversed if the clockwise convection is used for the facet orientation.
 
@@ -901,23 +903,23 @@ We wish to show the conditions~\eqref{eq:fe_impl_gauss_points}~and~\eqref{eq:fe_
 The polynomials $\{ p_i \}_{i=0}^{2n_q - 1}$ is a basis for $\PP^{2n_q - 1}(\tilde I)$; the set spans $\PP^{2n_q-1}(\tilde I)$ and is linearly independent because $p_i$ is a polynomial of degree (exactly) $i$ for $i = 0,\dots,2 n_q - 1$.
 We now wish to confirm that
 \begin{equation}
-  \int_{\tilde I} p_i(\tilde x) dx = \sum_{q=1}^{n_q} \tilde \rho_q p_i(\tilde \xi_q), \quad \forall i = 0,\dots,2 n_q - 1,
+  \int_{\tilde I} p_i(\tilde x) d\tilde x = \sum_{q=1}^{n_q} \tilde \rho_q p_i(\tilde \xi_q), \quad \forall i = 0,\dots,2 n_q - 1,
   \label{eq:fe_impl_gauss_cond_2}
 \end{equation}
 which is equivalent to the original condition~\eqref{eq:fe_impl_gauss_cond}. We first readily confirm that the first $n_q$ basis functions, $\{p_i\}_{i=0}^{n_q} \equiv \{ \tilde \psi_i \}_{i=0}^{n_q}$, are integrated exactly because our weights $\{ \tilde \rho_q \}_{q=1}^{n_q}$ are chosen to integrate the functions in condition~\eqref{eq:fe_impl_gauss_weights}. 
 To prove that the next $n_q$ basis functions, $\{ p_i \}_{i=n_q}^{2n_q-1}$ are integrated exactly, we observe that the left-hand side of~\ref{eq:fe_impl_gauss_cond_2} for $i = n_q,\dots,2_{n_q}-1$ yields 
 \begin{equation*}
   (\text{LHS})
-  = \int_{\tilde I} p_{p+j}(\tilde x) d \tilde x
+  = \int_{\tilde I} p_{n_q+j}(\tilde x) d \tilde x
   = \int_{\tilde I} \tilde \psi_{n_q}(\tilde x) \tilde \psi_{j}(\tilde x) d \tilde x
-  = 0, \quad j = 0,\dots,n_q,
+  = 0, \quad j = 0,\dots,n_q-1,
 \end{equation*}
 since the Legendre polynomials are orthogonal in $L^2(\tilde I)$. On the other hand, the right-hand side of~\ref{eq:fe_impl_gauss_cond_2} for $i = n_q,\dots,2_{n_q}-1$ yields
 \begin{equation*}
   (\text{RHS})
-  = \sum_{q=1}^{n_q} \tilde \rho_q p_{p+j}(\tilde \xi_q)
+  = \sum_{q=1}^{n_q} \tilde \rho_q p_{n_q+j}(\tilde \xi_q)
   = \sum_{q=1}^{n_q} \tilde \rho_q \tilde \psi_{n_q}(\tilde \xi_q) \tilde \psi_{j}(\tilde \xi_q)
-  = 0, \quad j = 0,\dots,n_q,
+  = 0, \quad j = 0,\dots,n_q-1,
 \end{equation*}
 since $\{\tilde \xi_q\}_{q=1}^{n_q}$ are the roots of $\tilde \psi_{n_q}$ by~\eqref{eq:fe_impl_gauss_points}. In summary, the exact integration condition~\ref{eq:fe_impl_gauss_cond_2} are satisfied (i) for $i = 0,\dots,n_q-1$ because of the choice of the weights $\{\tilde \rho_q\}_{q=1}^{n_q}$ ~\eqref{eq:fe_impl_gauss_weights} and (ii) for $i = n_q, \dots, 2 n_q-1$ because of the choice of the points $\{\tilde \xi_q\}_{q=1}^{n_q}$ by~\eqref{eq:fe_impl_gauss_points}.
 
@@ -1083,8 +1085,8 @@ Following the same procedure we used for the evaluation (or approximation) of th
 \begin{equation}
   \hat A^K_{\alpha,\beta}
   =
-  \int_{\tilde K} ((J^K)^{-T}(\tilde x) \tilde \nabla \tilde \phi(\tilde x))
-  \cdot a(\calG^K(\tilde x)) (J^K(\tilde x)^{-T}) \tilde \nabla \tilde \phi(\tilde x)
+  \int_{\tilde K} (J^K(\tilde x)^{-T} \tilde \nabla \tilde \phi(\tilde x))
+  \cdot a(\calG^K(\tilde x)) J^K(\tilde x)^{-T} \tilde \nabla \tilde \phi(\tilde x)
   |J(\tilde x)| d\tilde x
   \label{eq:fe_impl_loc_mat_2}
 \end{equation}
@@ -1104,11 +1106,11 @@ We make one note about the expressions for the local load vector and stiffness m
 \begin{align*}
   \hat f^K_\alpha
   &=
-  \int_{\tilde K} \phi_\alpha(\tilde x) \underbrace{ f(\calG^K(\tilde x)) |J^K(\tilde x)| }_{\equiv f^{\rm trans}(\tilde x)}d \tilde x, \\
+  \int_{\tilde K} \tilde \phi_\alpha(\tilde x) \underbrace{ f(\calG^K(\tilde x)) |J^K(\tilde x)| }_{\equiv f^{\rm trans}(\tilde x)}d \tilde x, \\
   \hat A^K_{\alpha,\beta}
   &=
   \int_{\tilde K} \tilde \nabla \tilde \phi(\tilde x)
-  \cdot  \underbrace{ (J^K(\tilde x)^{-1} a(\calG^K(\tilde x)) J^K(\tilde x)^{-T} |J^K(\tilde x)| }_{\equiv  a^{\rm trans}(\tilde x)}\tilde \nabla \tilde \phi(\tilde x)  d\tilde x,
+  \cdot  \underbrace{ J^K(\tilde x)^{-1} a(\calG^K(\tilde x)) J^K(\tilde x)^{-T} |J^K(\tilde x)| }_{\equiv  a^{\rm trans}(\tilde x)}\tilde \nabla \tilde \phi(\tilde x)  d\tilde x,
 \end{align*}
 where $f^{\rm trans}: \tilde K \to \RR$  and $a^{\rm trans}:\tilde K \to \RR^{d \times d}$ are the transformed coefficients for the reference domain $\tilde K$. Note that the difference lies only in the interpretation; the local load vectors and stiffness matrices for both formulations are mathematically identical.
 
