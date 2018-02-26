@@ -1131,7 +1131,7 @@ is a set of $n_f$ non-overlapping facets that cover the boundary $\Gamma_N$: (i)
 \item[1.] $\theta_{F\text{-}K}: \{ 1,\dots,n_f\} \to \{1,\dots,n_e\}$. Mapping from a physical facet number to the element to which the facet belongs.
 \item[2.] $\theta_{F\text{-}\tilde F}: \{1,\dots,n_f\} \to \{1,2,3\}$. Mapping from a physical facet number to the local facet index.
 \end{itemize}
-These two mappings combined implies that a physical facet $F$ is the $i = \theta_{F\text{-}\tilde F}(K)$-th facet of the element $K_{j \equiv \theta_{F\text{-}K}(F)}$.
+These two mappings combined implies that a physical facet $F$ is the $i = \theta_{F\text{-}\tilde F}(F)$-th facet of the element $K_{j \equiv \theta_{F\text{-}K}(F)}$.
 
 To evaluate the local load vector $\tilde f^K \in \RR^{n_s}$, we appeal to the fact that the restriction of an element shape function $\phi^K$ in $\RR^d$ to a facet $F$ is a shape function in $\RR^{d-1}$:
 \begin{equation*}
@@ -1218,12 +1218,12 @@ We can construct the stiffness matrix and load vector for $\calV_h$ using the ab
 \end{align*}
 in practice the construction is carried out using the assembly procedure outlined in Section~\ref{sec:fe_assembly}. We then remove rows and columns of $\hat{\bar{A}}_{h} \in \RR^{m \times m}$ associated with the Dirichlet-boundary index set $S_{\Gamma_D}$ to create the stiffness matrix $\hat A_h \in \RR^{n \times n}$. Or, equivalently, we keep the rows and columns of $\hat{\bar A}_h \in \RR^{m \times m}$ that are in $S_{\calV_h}$; i.e.,
 \begin{equation}
-  \hat A_h \in \RR^{n \times n} = \{ a(\bar \phi_j, \bar \phi_i) \ | \ i,j \in S_{\calV_h} \}.
+  \hat A_h  = \{ a(\bar \phi_j, \bar \phi_i) \ | \ i,j \in S_{\calV_h} \}\in \RR^{n \times n}.
   \label{eq:fe_impl_hatAh_dir}
 \end{equation}
 We similarly remove the rows of $\hat{\bar{f}}_h \in \RR^m$ associated with the Dirichlet-boundary index set $S_{\Gamma_D}$ to create the load vector $\hat f_h \in \RR^n$. Or, equivalently, we keep the rows of $\hat{\bar f}_h \in \RR^{m}$ that are in $S_{\calV_h}$; i.e.,
 \begin{equation}
-  \hat f_h \in \RR^{n} = \{ \ell(\bar \phi_i) \ | \ i \in S_{\calV_h} \}.
+  \hat f_h  = \{ \ell(\bar \phi_i) \ | \ i \in S_{\calV_h} \}\in \RR^{n}.
   \label{eq:fe_impl_hatfh_dir}
 \end{equation}
 We finally solve the linear system
@@ -1283,21 +1283,21 @@ where $X_{\rm int} \in \RR^{n_s \times d}$ is the set of Lagrange interpolation 
 \begin{equation*}
   \Phi(X_{\rm quad}) = \Psi(X_{\rm quad}) V^{-1} \in \RR^{n_{\rm quad} \times n_s}.
 \end{equation*}
-(In the actual implementation, the inverse should never be explicitly computed but its action should be computed through a linear solve.)  This is an efficient and concise way to compute nodal shape functions using matrix operations.
+(In the actual implementation, the inverse should never be explicitly computed but its action should be computed through a linear solve; in \textsc{Matlab}, the above can be computed by $\Phi(X_{\rm quad}) = \Psi(X_{\rm quad}) / V$.)  This is an efficient and concise way to compute nodal shape functions using matrix operations.
 
 As another example, suppose we now wish to evaluate the mass matrix on the reference element, $\tilde M \equiv \RR^{n_s \times n_s}$ such that
 \begin{equation*}
-  \tilde M_{ij} = \int_{\tilde K} \phi_i \phi_j dx, \quad \forall i,j = 1,\dots,n_s.
+  \tilde M_{ij} = \int_{\tilde K} \tilde \phi_i(\tilde x) \tilde \phi_j(\tilde x) d \tilde x, \quad \forall i,j = 1,\dots,n_s.
 \end{equation*}
-If the shape functions are polynomials of degree $p$, then we can exactly evaluate the mass matrix by using a quadrature rule of degree $2p$.
+If the shape functions are polynomials of degree $p$, then we can exactly evaluate the mass matrix by using a quadrature rule of degree $2p$:
 \begin{equation*}
-  \tilde M_{ij} = \sum_{q=1}^{n_{\rm quad}} w_q \phi_i(x_q) \phi_j(x_q), \quad \forall i,j = 1,\dots,n_s.
+  \tilde M_{ij} = \sum_{q=1}^{n_{q}} \tilde \rho_q \tilde \phi_i(\tilde \xi_q) \tilde \phi_j(\tilde \xi_q), \quad \forall i,j = 1,\dots,n_s.
 \end{equation*}
-Now, we can combine (i) a vector of quadrature weights $w \in \RR^{n_{\rm quad}}$ and (ii) shape functions evaluated at quadrature points $\Phi(X_{\rm quad}) \in \RR^{n_{\rm quad} \times n_s}$ to evaluate the mass matrix as
+Now, we can combine (i) a vector of quadrature weights $\tilde \rho \in \RR^{n_{\rm quad}}$ and (ii) shape functions evaluated at quadrature points $\Phi(X_{\rm quad}) \in \RR^{n_{\rm quad} \times n_s}$ to evaluate the mass matrix as
 \begin{equation*}
-  \tilde M = \Phi(X_{\rm quad})^T \text{diag}(w) \Phi(X_{\rm quad}).
+  \tilde M = \Phi(X_{\rm quad})^T \text{diag}(\tilde \rho) \Phi(X_{\rm quad}).
 \end{equation*}
-(In \textsc{Matlab}, it is a bit more efficient to replace $\text{diag} w \Phi$ with $\text{bsxfun(@times, } w,\Phi)$.) The mass matrix can then be efficiently computed using a BLAS3 routine.
+(In \textsc{Matlab}, it is a bit more efficient to replace $\text{diag}( \tilde \rho ) \Phi$ with $\text{bsxfun(@times, } \tilde \rho,\Phi)$.) The mass matrix can then be efficiently computed using a BLAS3 routine.
 
 With some planning, a significant fraction --- or more precisely most computationally intense parts --- of finite element code can be expressed in terms of BLAS routines. The use of BLAS is important for both compiled languages (e.g., C, C++) and interpreted languages (e.g., \textsc{Matlab}, Python).  However, it is arguably more important for the interpreted languages because the efficiency of interpreted languages can be quite limited for simple but computationally intense operations.
 
