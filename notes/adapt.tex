@@ -1,0 +1,118 @@
+\chapter{Adaptive finite element method}
+
+\section{\textit{A posteriori} error estimation}
+
+residual: $r \in \calV'$ such that
+\begin{equation*}
+  r(v) \equiv \ell(v) - a(u_h,v) \quad \forall v \in \calV.
+\end{equation*}
+
+\begin{equation*}
+  \alpha \| e \|_{H^1(\Omega)}^2 \leq a(e,e) = r(e) \leq \| r \|_{H^{-1}(\Omega)} \| e \|_{H^1(\Omega)}
+\end{equation*}
+
+\begin{equation*}
+  \| e \|_{H^1(\Omega)} \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)}
+\end{equation*}
+
+
+\begin{equation*}
+  \rho_K \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(K)}}{\| v \|_{H^1(K)}} \quad (\leq C h)
+\end{equation*}
+
+\begin{equation*}
+  \rho_{\partial K} \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(\partial K)}}{ \| v \|_{H^1(K)}} \quad ( \leq C h^{1/2})
+\end{equation*}
+
+
+\begin{align*}
+  |r(v)|
+  &= | r (v - \calI_h v) |
+  = \left| \int_\Omega (v - \calI_h v) f dx - \int_\Omega \nabla (v - \calI_h v) \cdot \nabla u_h dx \right|
+  \\
+  &= \left| \sum_{K \in \calT_h} \left( \int_K (v - \calI_h v) (f + \Delta u_h) dx
+  + \int_{\partial K} (v - \calI_h v) \frac{1}{2} \llbracket \nabla u_h \rrbracket ds \right)  \right|
+  \\
+  &\leq \sum_{K \in \calT_h} \left( \| v - \calI_h v \|_{L^2(K)} \| f + \Delta u_h \|_{L^2(K)} + \| v - \calI_h v \|_{L^2(\partial K)} \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}\right) 
+  \\
+  &\leq  \sum_{K \in \calT_h} \underbrace{ \left( \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)} \right) }_{\eta_K}  \| v \|_{H^1(K)} 
+  \\
+  &\leq 
+  \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \left( \sum_{K \in \calT_h} \| v \|_{H^1(K)}^2 \right)^{1/2}
+  \leq   \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \| v \|_{H^1(\Omega)}
+\end{align*}
+So
+\begin{equation*}
+  \| r \|_{H^{-1}(\Omega)} \leq  \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2}.
+\end{equation*}
+We can use
+\begin{equation*}
+  \| e \|_{H^1(\Omega)} \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)}
+\end{equation*}
+for error estimate and
+\begin{equation*}
+  \eta_K \equiv \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}
+\end{equation*}
+as an elemental error indicator.
+
+We can also do output error estimate:
+\begin{equation*}
+  | \ell^o(e) | = | a (e, \psi - \psi_h) | = | r(e^\text{adj}) |
+  \leq \| r \|_{H^{-1}(\Omega)} \| e^\text{adj} \|_{H^1(\Omega)}
+  \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)} \| r^\text{adj} \|_{H^{-1}(\Omega)}
+\end{equation*}
+for
+\begin{equation*}
+  r^\text{adj}(w) = \ell^o(w) - a(w,\psi_h) \quad \forall w \in \calV.
+\end{equation*}
+
+\section{Embedding constants in $\RR^1$}
+
+\begin{proposition}
+Let $K$ be a unit line segment $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear interpolant of $v \in H^1(\tilde I)$ so that $(\calI v)(x=0) = v(x=0)$ and $(\calI v)(x=1) = v(x=1)$.  Then,
+\begin{equation*}
+  \rho_K \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}} = \frac{1}{\pi}.
+\end{equation*}
+\begin{proof}
+  We first expand the denominator to obtain
+  \begin{equation*}
+    | v |_{H^1(\tilde I)}^2
+    = | \calI v + (v - \calI v) |_{H^1(\tilde I)}^2
+    =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 + 2 \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx .
+  \end{equation*}
+  The last term of the expansion vanishes according to
+  \begin{equation*}
+    \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx
+    =
+    - \int_{\tilde I} \underbrace{\dd{^2 \calI v}{x^2}}_{=0\ :\ \text{$\calI v$ is linear}} (v - \calI v) dx
+    + \underbrace{\left[ \dd{\calI v}{x} (v - \calI v) \right]_{x=0}^1}_{=0\ :\ \text{interpolation condition}} = 0,
+  \end{equation*}
+  and hence $ | v |_{H^1(\tilde I)}^2 =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 $.  It follows that
+  \begin{equation*} 
+    \rho_K^2
+    \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2}
+    \leq  \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| v - \calI v |_{H^1(\tilde I)}^2}
+    =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+  \end{equation*}
+  The inequality is sharp for any $v \in H^1_0(\tilde I)$ so that $\calI v = 0$; hence
+   \begin{equation*} 
+     \rho_K^2 =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+  \end{equation*}
+  The constant $\rho_K^2$ is an Rayleigh quotient whose bound is given by the following eigenproblem: find eigenpairs $(u_k,\lambda_k) \in H^1_0(\tilde I) \times \RR$, $k = 1,2,\dots$, such that
+  \begin{equation*}
+    \int_{\tilde I} v u_k dx = \lambda_k \int_{\tilde I} \dd{v}{x} \dd{u_k}{x} dx \quad \forall v \in H^1_0(\tilde I).
+  \end{equation*}
+  The eigenpairs are
+  \begin{equation*}
+    u_k(x) = \sin(k\pi x) \quad \text{and} \quad \lambda_k = \frac{1}{k^2\pi^2}, \quad k = 1,2,\dots.
+  \end{equation*}
+  The maximum eigenvalue is $1/\pi^2$, and hence $\rho_K^2 = 1/\pi^2$.
+\end{proof}
+\end{proposition}
+\begin{corollary}
+  Let $K \equiv I \in \RR^1$ be a line segment of length $h$. By the homogeneity argument,
+  \begin{equation*}
+    \rho_K \equiv \sup_{v \in H^1(I)} \frac{\| v - \calI v \|_{L^2(I)}}{| v |_{H^1(I)}} = \frac{h}{\pi}.
+  \end{equation*}
+\end{corollary}
+

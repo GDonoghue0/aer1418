@@ -1,0 +1,474 @@
+\chapter{Polynomial interpolation: theory}
+
+\section{Motivation}
+As we have seen in the previous lectures, the finite element method seeks the solution to the variational problem in a finite-dimensional approximation space.  In the finite element method based on $h$-refinement, we consider a sequence of piecewise polynomial spaces of various characteristic element diameter $h$.  The accuracy of a given finite element approximation depends on the ability of the underlying piecewise polynomial space to approximation the solution.  In this lecture, we characterize the error associated with piecewise polynomial interpolation of functions in Sobolev spaces.  % As we will see in the next lecture, the error associated with finite element approximations can be related to  
+
+
+\section{Linear interpolation error for $C^k$ functions in $\RR^1$}
+
+\label{sec:fe_interp_1d}
+In this section, we analyze the error associated with the piecewise linear interpolation of $C^k$ functions in one dimension. To this end, we introduce a domain $\Omega \equiv [a,b] \subset \RR^1$ and interpolation nodes $a \equiv z_1 < \cdots < z_n \equiv b$.  Given a function $w$, its piecewise linear polynomial interpolant $\calI_h w$ is a piecewise linear polynomial,
+\begin{equation*}
+  (\calI_h w)|_{[z_i,z_{i+1}]} \in \PP^1([z_i,z_{i+1}]), \quad i = 1,\dots,n-1,
+\end{equation*}
+that satisfies the interpolation conditions,
+\begin{equation*}
+  (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots,n.
+\end{equation*}
+Assuming $w \in C^0([a,b])$, the piecewise polynomial interpolant exists and is unique.  The subscript $h$ on $\calI_h w$ emphasizes that the interpolant depends on the node spacing $h$.
+
+In the context of finite element analysis,  our goal is to establish interpolation error bounds for functions in Sobolev spaces $H^k(\Omega)$, the space of functions whose \emph{weak} derivatives of order up to $k$ are square integrable (in the Lebesgue sense).  But, we first digress and provide a more ``classical'' interpolation error bounds for functions in $C^k(\Omega)$, the space of functions whose (strong) derivatives of order up to $k$ are continuous (in the pointwise sense).
+
+We first analyze the error for a single-segment interpolant $\calI_h w$ over $[a,b]$.
+\begin{proposition}
+  \label{prop:th_poly_Ck_ref}
+  Let $w \in C^2([a,b])$ and $\calI_h w \in \PP^1([a,b])$ be the (single-segment) linear interpolant. Then, the interpolation error is bounded by
+  \begin{equation*}
+    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{s \in [a,b]} |w''(s)| (b-a)^2 \quad \forall x \in [a,b].
+  \end{equation*}
+  \begin{proof}
+    We first introduce an auxiliary function
+    \begin{equation*}
+      g(s) = w(s) - (\calI_h w)(s) - \left( \frac{w(x) - (\calI_h w)(x)}{(x-a)(x-b)} \right) (s-a)(s-b).
+    \end{equation*}
+    We note that $g(x) = 0$ by construction, and $g(a) = g(b) = 0$ because $\calI_h w$ interpolants $w$ at the endpoints. Hence, $g$ has at least three roots in $[a,b]$. By Rolle's theorem, $g'$ has at least two root in $[a,b]$.  Invoking the Rolle's theorem again, $g''$ has at least one root in $[a,b]$. Let $\xi$ be one of these roots: $g''(\xi) = 0$. We now compute $g''$:
+    \begin{equation*}
+      g''(s) = w''(s) -  \left( \frac{w(x) - (\calI_h w)(x)}{(x-a)(x-b)} \right) \cdot 2.
+    \end{equation*}
+    Note that $(\calI_h w)'' = 0$ since $\calI_h w$ is a linear function. We now evaluate the expression at $\xi$ to obtain
+    \begin{equation*}
+      0 = w''(\xi) - \left( \frac{w(x) - (\calI_h w)(x)}{(x-a)(x-b)} \right) \cdot 2,
+    \end{equation*}
+    or, equivalently,
+    \begin{equation*}
+      w(x) - (\calI_h w)(x) \leq \frac{1}{2} w''(\xi) (x-a)(x-b).
+    \end{equation*}
+    We finally note that $|w''(\xi)| \leq \max_{s \in [a,b]}|w''(s)|$ and $| (x-a)(x-b) | \leq (b-a)^2/4$.
+  \end{proof}
+\end{proposition}
+\begin{proposition}
+  \label{prop:th_poly_Ck_multi}
+  Let $w \in C^2([a,b])$ and $\calI_h w$ be the piecewise linear interpolant delineated by nodes $\{z_i\}_{i=1}^n$ with the node spacing $h \equiv \max_{i \in \{ 1,\dots,n-1 \} } |z_{i+1} - z_i|$. Then, the interpolation error is bounded by
+  \begin{equation*}
+    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{s \in [a,b]} |w''(s)| h^2 \quad \forall x \in [a,b].
+  \end{equation*}
+  \begin{proof}
+    Apply Proposition~\ref{prop:th_poly_Ck_ref} to each segment of the piecewise linear interpolant, whose maximum length is $h$.
+  \end{proof}
+\end{proposition}
+Propositions~\ref{prop:th_poly_Ck_ref} and \ref{prop:th_poly_Ck_multi} show that the maximum error in the piecewise linear interpolation is a function of (i) the maximum second derivative $\max_{s \in [a,b]} | w''(s)|$ and (ii) the node spacing $h$.  While this ``classical'' interpolation error bound is useful in many scenarios that involve functions in $C^k$ spaces --- with continuous (strong) derivatives in the pointwise sense  ---, it is not the natural choice for finite element analysis that involves functions in $H^k$ Sobolev spaces --- with square integrable weak derivatives in the Lebesgue sense.  In the following sections, we introduce interpolation error bounds for functions in $H^k$ Sobolev spaces.
+
+\section{Preliminary: Rayleigh quotient}
+By way of preliminary, we first introduce a technical tool required to analyze interpolation error in Sobolev spaces: the \emph{Rayleigh quotient} and the associated bounds.  We first introduce Rayleigh quotients for linear operators in $\RR^n$; i.e., the matrices $\RR^{n \times n}$.
+\begin{definition}[Rayleigh quotient (matrices)]
+  Let $A \in \RR^{n \times n}$ be a symmetric matrix.  The associated Rayleigh quotient is $R_A: \RR^n \to \RR$ such that
+  \begin{equation*}
+    R_A(x) \equiv \frac{x^T A x}{x^T x}.
+  \end{equation*}
+\end{definition}
+\begin{proposition}[Bound of Rayleigh quotient (matrices)]
+  Let $(w_k,\lambda_k) \in \RR^n \times \RR$, $k = 1,\dots,n$, be the eigenpairs of a symmetric matrix $A \in \RR^{n \times n}$.  Without loss of generality, assume $\lambda_1 \leq \cdots \leq \lambda_n$. Then, the Rayleigh quotient of $A$ is bounded by
+  \begin{equation*}
+    \lambda_1 \leq R_A(x) \leq \lambda_n \quad \forall x \in \RR^n.
+  \end{equation*}
+  \begin{proof}
+    Because $A$ is symmetric, the eigenvectors $\{w_k\}_{k=1}^n$ form an orthonormal basis of $\RR^n$.  Hence, $\forall x \in \RR^n$, $\exists \hat x \in \RR^n$ such that $\sum_{k=1}^n \hat x_k w_k$.  The Rayleigh quotient can then be expressed as an weighted sum of eigenvalues
+    \begin{equation*}
+      R_A(x = \sum_{k=1}^n \hat x_k w_k) \equiv \frac{\sum_{k=1}^n \lambda_k \hat x_k^2}{\sum_{k=1}^n \hat x_k^2}.
+    \end{equation*}
+    The minimum value of the weighted sum is obtained for $\hat x_k = e_1 \in \RR^n$, a vector with 1 in the first entry and zero elsewhere, and the associated minimum is $\lambda_1$.  Similarly, the maximum value of the weighted sum is obtained for $\hat x_k = e_n \in \RR^n$, a vector with 1 in the last entry and zero elsewhere, and the associated maximum is $\lambda_n$.
+  \end{proof}
+\end{proposition}
+
+We now generalize Rayleigh quotient to bilinear forms in Hilbert spaces.
+\begin{definition}[Rayleigh quotient (Hilbert spaces)]
+  Let $\calV$ be a Hilbert space endowed with an inner product $(\cdot,\cdot)_\calV : \calV \times \calV \to \RR$, and $a: \calV \times \calV \to \RR$ be a symmetric, positive bilinear form.  The associated Rayleigh quotient is $R_a: \calV \to \RR$ such that
+  \begin{equation*}
+    R_a(v) \equiv \frac{a(v,v)}{(v,v)_\calV}.
+  \end{equation*}
+\end{definition}
+\begin{proposition}[Bounds of Rayleigh quotient (Hilbert spaces)]
+  Let $\calV$ be a Hilbert space endowed with an inner product $(\cdot,\cdot)_\calV : \calV \times \calV \to \RR$, and $a: \calV \times \calV \to \RR$ be a symmetric, positive bilinear form. Consider also the following eigenproblem: find $(w_k,\lambda_k) \in \calV \times \RR$, $k \in \ZZ_{> 0}$, such that $\| w_k \|_\calV = 1$ and 
+  \begin{equation*}
+    a(w_k,v) = \lambda_k (w_k,v)_\calV \quad \forall v \in \calV.
+  \end{equation*}
+  Then, the Rayleigh quotient of $a(\cdot,\cdot)$ is bounded by
+  \begin{equation*}
+    \inf \{ \lambda_k \} \leq R_a(v) \leq \sup \{ \lambda_k \} .
+  \end{equation*}
+  Moreover, if $\inf \{\lambda_k \} > 0$, then 
+  \begin{equation*}
+    \inf \{\lambda_k\} = \alpha,
+  \end{equation*}
+  where $\alpha > 0$ is the $\calV$-coercivity constant; if $\sup \{ \lambda_k \} < \infty$, then
+  \begin{equation*}
+    \sup \{\lambda_k \} = \gamma,
+  \end{equation*}
+  where $\gamma < \infty$ is the $\calV$-coercivity constant.
+%  Let $\calV$ be a Hilbert space and $a: \calV \times \calV \to \RR$ be a symmetric bilinear form, $b: \calV \times \calV \to \RR$ be a symmetric positive bilinear form, and $R: \calV \to \RR$ be the associated Rayleigh quotient so that $R(v) \equiv \frac{a(v,v)}{b(v,v)}$.  We also introduce an eigenproblem:  is the solution to the eigenproblem: find eigenpairs $(u_i,\lambda_i) \in \calV \times \RR$ such that
+%  \begin{equation*}
+%    a(u_i,v) = \lambda_i b(u_i,v) \quad \forall v \in \calV.
+%  \end{equation*}
+%  Then, the Rayleigh quotients are bounded by
+%  \begin{align*}
+%    \inf_{v \in \calV} R(v) = \inf_{i} \lambda_i \\
+%    \sup_{v \in \calV} R(v) = \sup_{i} \lambda_i.
+%  \end{align*}
+  %% Let $i_{\rm min} = \argmin_{i} \lambda_i$ and $i_{\rm max} = \argmax_i \lambda_i$.  Then, 
+  %% \begin{equation*}
+  %%   \lambda_{i_{\rm min}}
+  %%   = \min_{v \in \calV} \frac{a(v,v)}{b(v,v)}
+  %%   = \frac{a(u_{i_{\rm min}},u_{i_{\rm min}})}{b(u_{i_{\rm min}},u_{i_{\rm min}}}
+  %% \end{equation*}
+  %% and
+  %% \begin{equation*}
+  %%   \lambda_{i_{\rm max}}
+  %%   = \max_{v \in \calV} \frac{a(v,v)}{b(v,v)}
+  %%   = \frac{a(u_{i_{\rm max}},u_{i_{\rm max}})}{b(u_{i_{\rm max}},u_{i_{\rm max}}}
+  %% \end{equation*}  
+\end{proposition}
+
+
+\section{The $L^2$ error of linear interpolant of $H^2$ functions in $\RR^1$}
+\label{sec:th_interp_l2_h2}
+We now consider piecewise linear interpolation for functions in $H^2(\Omega)$. To this end, we introduce an approximation space,
+\begin{equation*}
+  \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \},
+\end{equation*}
+for $\Omega \subset \RR^1$ and a triangulation $\calT_h$ delineated by $n$ nodes.  We then define an \emph{interpolant} associated with $\calV_h$.
+\begin{definition}[interpolant]
+Given $w \in \calV$, an interpolant $\calI_h w$ is a member of $\calV_h$ that satisfies the interpolation condition
+\begin{equation*}
+  (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots, n,
+\end{equation*}
+where $\{z_i \}_{i=1}^n$ is the set of interpolation points.
+\end{definition}
+
+We now wish to bound the $L^2$ norm of the interpolation error. We take a three-step strategy: (i) we first introduce an embedding constant between two relevant spaces; (ii) we next derive an interpolation error bound for a unit line segment $\tilde I \equiv (a,b)$; (iii) we finally make a homogeneity argument to establish an interpolation error bound for piecewise linear interpolant.
+\begin{lemma}[$L^2(\tilde I)$-$H^2_0(\tilde I)$ embedding constant]
+  \label{lemma:th_l2_h2_embed}
+  Let $\tilde I \equiv (0,1)$ and $H^2_0(\tilde I) \equiv \{ v \in H^2(\tilde I) \ | \ v(x=0) = v(x=1) = 0 \}$. Then 
+  \begin{equation*}
+    \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} \equiv \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} = \frac{1}{\pi^2}
+  \end{equation*}
+  \begin{proof}
+    We note that the ratio
+    \begin{equation*}
+       \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)}^2 = \frac{\| v \|_{L^2(\tilde I)}^2}{|v|_{H^2(\tilde I)}^2}
+      = \frac{\int_{\tilde I} v^2 dx}{\int_{\tilde I} (\dd{^2v}{x^2})^2 dx}
+    \end{equation*}
+    is a Rayleigh quotient.  The associated eigenproblem is as follows: find eigenpairs $(u_k, \lambda_k) \in H^2_0(\tilde I) \times \RR$, $k \in \ZZ_{>0}$, such that
+    \begin{equation*}
+      \int_{\tilde I} v u_k dx = \lambda_k \int_{\tilde I} \dd{^2v}{x^2}\dd{^2u_k}{x^2}dx \quad \forall v \in H^2_0(\tilde I).
+    \end{equation*}
+    To identify the strong form of the eigenproblem, we integrate by parts twice the right hand side to obtain
+    \begin{align*}
+      \int_{\tilde I} v u_k dx
+      &=
+      \lambda_k \left( -\int_{\tilde I} \dd{v}{x} \dd{^3u_k}{x^3}dx  + [\dd{v}{x} \dd{^2u_k}{x^2}]_{x=0}^1 \right) %\quad \forall v \in H^2_0(\Omega)
+      \\
+      &=\lambda_k \left( \int_{\tilde I} v \dd{^4u_k}{x^4}dx  + [\dd{v}{x} \dd{^2u_k}{x^2}]_{x=0}^1 - [v \dd{^3u_k}{x^3}]_{x=0}^1 \right) \quad \forall v \in H^2_0(\tilde I).
+    \end{align*}
+    Recognizing $v(x=0) = v(x=1) = 0$ and rearranging the expression, we obtain
+    \begin{equation*}
+      \int_{I} v(u_k - \lambda_k \dd{^4u_k}{x^4}) dx - \lambda_k[\dd{v}{x} \dd{^2u_k}{x^2}]_{x=0}^1 = 0 \quad \forall v \in H^2_0(\tilde I).
+    \end{equation*}
+    We recognize that the strong form of the eigenproblem is
+    \begin{equation*}
+      u_k = \lambda_k \dd{^4u_k}{x^4} \quad \text{in } \tilde I
+    \end{equation*}
+    with boundary conditions
+    \begin{equation*}
+      u_k(x=0) = u_k(x=1) = \left. \dd{^2u_k}{x^2} \right|_{x=0}
+      = \left. \dd{^2u_k}{x^2} \right|_{x=1} = 0.
+    \end{equation*}
+    The eigenpairs are
+    \begin{align*}
+      u_k &= \sin(k \pi x),\\
+      \lambda_k &= \frac{1}{k^4 \pi^4}, \quad k \in \ZZ_{>0}.
+    \end{align*}
+    The upper bound of the Rayleigh quotient, which is equal to $ \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)}^2$, is given for $k = 1$ and is $1/\pi^4$.  Hence the embedding constant is $\rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} = 1/\pi^2$.
+    %% To solve the eigenproblem, we consider a sine series expansion
+    %% \begin{align*}
+    %%   u_i &= \sum_{j=1}^\infty \hat u_{i,j} \sin(j\pi x) \\
+    %%   v &= \sum_{k=1}^\infty \hat v_k \sin(k\pi x),
+    %% \end{align*}
+    %% which is convergent for any function in $L^2(\tilde I)$ and hence for any function in $H^2_0(\tilde I)$. The substitution of the series expansion to the eigenproblem yields
+    %% \begin{equation*}
+    %%   \frac{1}{2} \hat v_k \hat u_{i,k} = \lambda_i \pi^4 \frac{1}{2} \hat v_k \hat u_{i,k} \quad \forall \hat v.
+    %% \end{equation*}
+    %% Since the condition must hold for any $\hat v$, the condition is equivalent to
+    %% \begin{equation*}
+    %%   \hat u_{i,k} = \lambda_i (k\pi)^4 \hat u_{i,k} \quad \forall k = 1,2,\dots.
+    %% \end{equation*}
+  \end{proof}
+\end{lemma}
+
+\begin{proposition}[Linear interpolation error on $\tilde I \equiv (0,1)$]
+  \label{prop:th_lin_interp_L2_ref}
+  Let $\tilde I \equiv (0,1)$.  For any $\forall \tilde w \in H^2(\tilde I)$, the linear interpolation error is bounded by 
+  \begin{equation*}
+    \| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}
+    \leq \frac{1}{\pi^2} | \tilde w |_{H^2(\tilde I)},
+  \end{equation*}
+  and this bound is sharp.
+  \begin{proof}
+    For any $\tilde w \in H^2(\tilde I)$, $\tilde w - \calI \tilde w \in H^2_0(\tilde I)$ because the interpolant $\calI \tilde w \in H^2(\tilde I)$ matches the function $w$ at the endpoints. It hence follows that
+    \begin{equation*}
+      \| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}
+%      =
+%      \sup_{v \in H^2_0(\Omega)} \frac{\| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}}{| \tilde w - \calI \tilde w |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
+      \leq \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
+      =
+     \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} | \tilde w |_{H^2(\tilde I)}
+      = \frac{1}{\pi^2} | \tilde w |_{H^2(\tilde I)} .
+    \end{equation*}
+    Here, the equality follows from the definition of $\rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)}$ in Lemma~\ref{lemma:th_l2_h2_embed} and the fact that $(\calI \tilde w)'' = 0$ because $\calI \tilde w$ is linear.  The last inequality follows from Lemma~\ref{lemma:th_l2_h2_embed}.  The bound is sharp for the maximizer of the embedding constant, namely $\tilde w(x) = \sin(\pi x)$.
+  \end{proof}
+\end{proposition}
+We now make a \emph{homogeneity (or scaling) argument} to obtain an interpolation error bound for piecewise linear interpolants. % using Proposition~\ref{prop:th_lin_interp_L2_ref} for $\tilde I \equiv (0,1)$. 
+
+\begin{proposition}[Piecewise linear interpolation error ($L^2$)]
+  \label{prop:th_lin_interp_L2}
+  Let $\Omega \subset \RR^1$, $w \in H^2(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ comprises line segments of maximum length $h$. Then, the interpolation error is bounded by
+  \begin{equation*}
+    \| w - \calI_h w \|_{L^2(I)}
+    \leq \frac{h^2}{\pi^2} | w |_{H^2(I)}.
+  \end{equation*}
+  \begin{proof}
+    We first consider the interpolation error for a single element $K \in \calT_h$ of length $h$. To this end, we map the function $w|_K$ on $K \equiv (z_i,z_i+h)$ to the function $\tilde w$ on $\tilde I \equiv (0,1)$. We associate a point $x \in K$ with $\tilde x \in \tilde K$ according to $x = z_i + h \tilde x$; the functions are related by
+    \begin{equation*}
+      w(x \equiv z_i + h \tilde x) = \tilde w(\tilde x) \quad \forall \tilde x \in \tilde I.
+    \end{equation*}
+    The second derivatives are related by
+    \begin{equation*}
+      \left. \dd{^2 w}{x^2} \right|_{x \equiv z_i + h \tilde x}
+      = \left. \dd{^2 \tilde w}{\tilde x^2} \dd{^2 \tilde x}{x^2} \right|_{\tilde x}
+      = \frac{1}{h^2} \left. \dd{^2 \tilde w}{\tilde x^2} \right|_{\tilde x}.
+    \end{equation*}
+    It hence follows that
+    \begin{align*}
+      \| w - \calI_h w \|_{L^2(K)}^2
+      &\equiv
+      \int_{K} ( w(x) - (\calI_h w)(x) )^2 dx
+      =
+      \int_{\tilde K} (\tilde w(\tilde x) - (\calI \tilde w)(\tilde x))^2 h d \tilde x
+      \\
+      &\leq
+      \frac{1}{\pi^4} \int_{\tilde K} (\left. \pp{^2\tilde w}{\tilde x^2} \right|_{\tilde x})^2 h d \tilde x
+      =
+      \frac{1}{\pi^4} \int_{K} (\left. \pp{^2 w}{x^2} \right|_x h^2 )^2 h h^{-1} d x
+      = \frac{h^4}{\pi^4} | w |_{H^2(K)}^2.
+    \end{align*}
+    We now sum over of the elements in $\calT_h$ to obtain
+    \begin{equation*}
+      \| w - \calI_h w \|_{L^2(\Omega)}^2
+      =
+      \sum_{K \in \calT_h} \| w - \calI_h w \|_{L^2(K)}^2
+      \leq
+      \sum_{K \in \calT_h} \frac{h^4}{\pi^4} | w |^2_{H^2(K)}
+      = \frac{h^4}{\pi^2} | w |^2_{H^2(\Omega)}.
+    \end{equation*}
+    Taking the square root of the equation yields the desired bound.
+  \end{proof}
+\end{proposition}
+Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error associated with the pieceiwse linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h^2$. While the result is similar to Proposition~\ref{prop:th_poly_Ck_multi} for $C^2$ functions, the regularity requirement for the underlying function is weaker for Proposition~\ref{prop:th_lin_interp_L2} for $H^2$ functions.  Indeed, the underlying function need not be twice differentiable in the strong sense; its weak second derivative needs only be square integrable.
+
+
+\section{The $H^1(\Omega)$ error of linear interpolant of $H^2(\Omega)$ functions in $\RR^1$}
+\label{sec:th_interp_h1_h2}
+  We now analyze the error in the piecewise linear interpolation of $H^2(\Omega)$ functions in a norm stronger than the $L^2(\Omega)$ norm: the $H^1(\Omega)$ norm.  The analysis follows essentially the same argument as that used for the $L^2(\Omega)$ norm of the error in the previous section.
+\begin{lemma}[$H^1(\tilde I)$-$H^2_0(\tilde I)$ embedding constant]
+  \label{lemma:th_h1_h2_embed}
+  Let $\tilde I \equiv (0,1)$ and $H^2_0(\tilde I) \equiv \{ v \in H^2(\tilde I) \ | \ v(x=0) = v(x=1) = 0 \}$. Then 
+  \begin{equation*}
+    \rho_{H^1(\tilde I)\text{-}H^2_0(\tilde I)} \equiv \sup_{v \in H^2_0(\Omega)} \frac{| v |_{H^1(\tilde I)}}{| v |_{H^2(\tilde I)}} = \frac{1}{\pi}
+  \end{equation*}
+  \begin{proof}
+    Proof is similar to Proposition~\ref{lemma:th_l2_h2_embed} for the $L^2(\tilde I)$-$H^2_0(\tilde I)$ embedding constant. Here we provide a sketch. The eigenproblem associated with the Rayleigh quotient is as follows: find eigenpairs $(u_k,\lambda_k) \in H^2_0(\tilde I) \times \RR$, $k \in \ZZ_{> 0}$, such that
+    \begin{equation*}
+      \int_{\tilde I} \dd{v}{x} \dd{u_k}{x} dx
+      = \lambda_k \int_{\tilde I} \dd{^2v}{x^2} \dd{^2u_k}{x^2} dx \quad \forall v \in H^2_0(\tilde I).
+    \end{equation*}
+%    The integration by parts yields
+%    \begin{equation*}
+%      -\int_{\tilde I} v \dd{^2u_k}{x^2} dx
+%      + \left[ v \dd{u_k}{x} \right]_{x=0}^1
+%      &=
+%      \lambda_k \left( -\int_{\tilde I} \dd{v}{x} \dd{^3u_k}{x^3}dx  + [\dd{v}{x} \dd{^2u_k}{x^2}]_{x=0}^1 \right) %\quad \forall v \in H^2_0(\Omega)
+%      \\
+%      =\lambda_k \left( \int_{\tilde I} v \dd{^4u_k}{x^4}dx  + [\dd{v}{x} \dd{^2u_k}{x^2}]_{x=0}^1 - [v \dd{^3u_k}{x^3}]_{x=0}^1 \right) \quad \forall v \in H^2_0(\Omega),
+%    \end{equation*}
+%    and we identify the strong form
+%    \begin{align*}
+%      - \dd{^2u_k}{x^2} &= \lambda_k \dd{^4 u_k}{x^4} \quad \text{in } \tilde I , \\
+%      u_k(x=0) &= u_k(x=1) = \left. \dd{^2u_k}{x^2} \right|_{x=0}
+%      = \left. \dd{^2u_k}{x^2} \right|_{x=1} = 0.
+%    \end{align*}
+    We can readily show that the eigenpairs are $u_k = \sin(k \pi x)$ and $\lambda_k = 1/ (k^2 \pi^2)$.  The maximum eigenvalue is $1/\pi^2$, and the embedding constant, which is the square root of the Rayleigh quotient, is bounded by $1/\pi$.
+  \end{proof}
+\end{lemma}
+\begin{proposition}[Piecewise linear interpolation error ($H^1$)]
+  \label{prop:th_lin_interp_H1}
+  Let $\Omega \subset \RR^1$, $w \in H^2(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ that consists of line segments of maximum length $h$. Then, the interpolation error is bounded by
+  \begin{equation*}
+    | w - \calI_h w |_{H^1(\Omega)}
+    \leq \frac{h}{\pi} | w |_{H^2(\Omega)},
+  \end{equation*}
+  \begin{proof}
+    Proof is similar to the analysis for the $L^2$ error in Proposition~\ref{prop:th_lin_interp_L2} and uses the homogeneity argument, except now we appeal to Lemma~\ref{lemma:th_h1_h2_embed}. We here omit the proof for brevity.
+  \end{proof}
+\end{proposition}
+\begin{corollary}
+  In the same setting as Proposition~\ref{prop:th_lin_interp_H1}, the $H^1$ norm of the interpolation error is bounded by
+  \begin{equation*}
+    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \left(  \frac{h^2}{\pi^2} +  \frac{h^4}{\pi^4} \right)^{1/2} | w |_{H^2(\Omega)}.
+  \end{equation*}
+  As $h \to 0$, 
+  \begin{equation*}
+    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \frac{h}{\pi}  | w |_{H^2(\Omega)}.
+  \end{equation*}
+\end{corollary}
+Proposition~\ref{prop:th_lin_interp_H1} shows that the $H^1(\Omega)$ error associated with the pieceiwse linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h$. Note that the $H^1(\Omega)$ norm is a stronger norm than the $L^2(\Omega)$ norm, and hence the $H^1(\Omega)$ error converges at a lower rate than the $L^2(\Omega)$ error.
+
+\section{The $L^2(\Omega)$ error of linear interpolant of $H^1(\Omega)$ functions in $\RR^1$}
+\label{sec:th_interp_l2_h1}
+We now consider the case where the case where the underlying function is only in $H^1(\Omega)$ for $\Omega \subset \RR^1$.  We recall that $H^1(\Omega)$ space includes rather irregular functions; for example, a continuous function with a kink, which would not be in $C^1(\bar \Omega)$, is in $H^1(\Omega)$. 
+\begin{proposition}
+  \label{lemma:th_l2_h1_embed}
+Let $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear interpolant of $v \in H^1(\tilde I)$ so that $(\calI v)(x=0) = v(x=0)$ and $(\calI v)(x=1) = v(x=1)$.  Then,
+\begin{equation*}
+  \rho \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}} = \frac{1}{\pi}.
+\end{equation*}
+\begin{proof}
+  We first expand the denominator to obtain
+  \begin{equation*}
+    | v |_{H^1(\tilde I)}^2
+    = | \calI v + (v - \calI v) |_{H^1(\tilde I)}^2
+    =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 + 2 \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx .
+  \end{equation*}
+  The last term of the expansion vanishes according to
+  \begin{equation*}
+    \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx
+    =
+    - \int_{\tilde I} \underbrace{\dd{^2 \calI v}{x^2}}_{=0\ :\ \text{$\calI v$ is linear}} (v - \calI v) dx
+    + \underbrace{\left[ \dd{\calI v}{x} (v - \calI v) \right]_{x=0}^1}_{=0\ :\ \text{interpolation condition}} = 0,
+  \end{equation*}
+  and hence $ | v |_{H^1(\tilde I)}^2 =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 $.  It follows that
+  \begin{equation*} 
+    \rho^2
+    \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2}
+    \leq  \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| v - \calI v |_{H^1(\tilde I)}^2}
+    =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+  \end{equation*}
+  The inequality is sharp for any $v \in H^1_0(\tilde I)$ so that $\calI v = 0$; hence
+   \begin{equation*} 
+     \rho^2 =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+  \end{equation*}
+  The constant $\rho_K^2$ is an Rayleigh quotient whose bound is given by the following eigenproblem: find eigenpairs $(u_k,\lambda_k) \in H^1_0(\tilde I) \times \RR$, $k = 1,2,\dots$, such that
+  \begin{equation*}
+    \int_{\tilde I} v u_k dx = \lambda_k \int_{\tilde I} \dd{v}{x} \dd{u_k}{x} dx \quad \forall v \in H^1_0(\tilde I).
+  \end{equation*}
+  The eigenpairs are
+  \begin{equation*}
+    u_k(x) = \sin(k\pi x) \quad \text{and} \quad \lambda_k = \frac{1}{k^2\pi^2}, \quad k = 1,2,\dots.
+  \end{equation*}
+  The maximum eigenvalue is $1/\pi^2$, and hence $\rho^2 = 1/\pi^2$.
+\end{proof}
+\end{proposition}
+
+\begin{proposition}[Piecewise linear interpolation error ($L^2$)]
+  \label{prop:th_lin_interp_L2_H1}
+  Let $\Omega \subset \RR^1$, $w \in H^1(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ that consists of line segments of maximum length $h$. Then, the interpolation error is bounded by
+  \begin{equation*}
+    \| w - \calI_h w \|_{L^2(\Omega)}
+    \leq \frac{h}{\pi} | w |_{H^1(\Omega)},
+  \end{equation*}
+  \begin{proof}
+    Proof is similar to the analysis for the $L^2$ interpolation error of $H^2(\Omega)$ functions in Proposition~\ref{prop:th_lin_interp_L2} and uses the homogeneity argument, except now we appeal to Lemma~\ref{lemma:th_l2_h1_embed}. We here omit the proof for brevity.
+  \end{proof}
+\end{proposition}
+The proposition shows that, if the underlying function is in $H^1(\Omega)$ instead of $H^2(\Omega)$, then the $L^2$ error of the piecewise linear interpolant converges as $h^1$ instead of $h^2$; the convergence rate is reduced. 
+
+\section{Generalization: arbitrary-degree interpolation in $\RR^d$}
+The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1} can be generalized to (i) higher dimensions, (ii) higher-degree polynomials, (iii) non-uniform meshes, and (iv) $H^k(\Omega)$ norm for $k \geq 0$.  In order to discuss convergence of polynomial interpolants in higher dimensions, we first introduce the notation of a \emph{shape-regular} or \emph{non-degenerate} family of triangulations.
+
+\begin{definition}[shape-regular meshes]
+  \label{def:th_shape_reg_affine}
+  A family of meshes $\{ \calT_h \}_{h > 0}$ is said to be shape-regular if there exists $r_0 < \infty$ such that 
+  \begin{equation*}
+    r_K \equiv \frac{h_K}{\rho_K} \leq r_0, \quad \forall K \in \calT_h, \quad \forall h ,
+  \end{equation*}
+  where $h_K$ is the diameter of the element $K$, and $\rho_K$ is the maximum diameter of the largest ball that can be inscribed in $K$.
+\end{definition}
+We make a few remarks. First, we note that shape regularity is a property associated with a \emph{family} (or sequence) of triangulations of various $h$, and not a single instance of triangulation.  Second, in one dimension $\rho_K = h_K$, and any triangulation is shape-regular.  Third, for triangles, $\frac{h_K}{\rho_K} \leq \frac{2}{\sin(\theta_K)}$, where $\theta_K$ is the smallest angle; the triangle cannot become too flat as $h \to 0$ for a shape-regular family of triangulations.  
+
+We now state the main result.
+\begin{proposition}[polynomial interpolation error bound]
+  \label{prop:th_interp_gen}
+  Let $w \in H^{s+1}(\Omega)$, $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations, and $\calI_h w$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. Then, the $L^2(\Omega)$ interpolation error is bounded by
+\begin{align*}
+  \| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^{r+1} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$. Similarly, for $k \geq 0$, the $H^k(\Omega)$ interpolation error is bounded by
+\begin{align*}
+  | w - \calI_h w |_{H^k(\Omega)} \leq C_\calI h^{r+1-k} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$.
+\begin{proof}
+  Proof is beyond the scope of this course. We refer to Brenner and Scott (2008).
+\end{proof}
+\end{proposition}
+The proposition summarizes the particular results we obtained in one dimension in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1}.  For a smooth functions, the $L^2(\Omega)$ norm of the error associated with the piecewise degree-$p$ interpolant converges as $h^{p+1}$. If we wish to assess the error in a stronger norm --- say $|\cdot|_{H^k(\Omega)}$ instead of $\| \cdot \|_{L^2(\Omega)}$ --- then we lose one order with every $k$.  Moreover, if the underlying function is not smooth but is only in $H^{r+1}(\Omega)$, then the convergence rate is limited to $r+1$ (in $L^2$).
+
+\section{Isoparametric polynomial interpolation}
+To approximate domains with curved boundaries, we introduced in the previous lecture polynomial-based geometry mappings $\{\calG^K \}_{K \in \calT_h}$, where each $\calG^K$ maps from a reference element $\tilde K$ to the physical (curved) element $K$. We then identified the associated approximation space by
+\begin{equation*}
+  \calV_h \equiv \{ v \in H^1(\Omega_h) \ | \ v|_K \circ \calG^K \in \PP^p(\tilde K), \ \forall K \in \calT_h \}.
+\end{equation*}
+The curved elements yielding a better approximation for curved domains is perhaps rather intuitive. In fact, if a curved domain is approximated using non-curved elements, then we can readily show that using higher-order ($\PP^{p > 1}$) finite elements is not asymptotically more accurate than using linear finite elements ($\PP^{p=1}$). We now wish to understand the approximation properties of the interpolants associated with $\calV_h$.  To this end, we first extend the notion of shape-regular families of triangulations to curved meshes.
+
+\begin{definition}[shape-regular meshes (curved)]
+  \label{def:th_shape_reg_curved}
+  The family of curved meshes $\{ \calT_h \}_{h > 0}$ is said to be shape-regular if it is shape-regular in the sense of Definition~\ref{def:th_shape_reg_affine} and in addition the triangulation $\calT_h \equiv \{ K \equiv \calG^K(\tilde K) \}_{K \in \calT_h }$ and the associated approximation of the domain $\Omega_h \equiv \cup_{K \in \calT_h} K$ satisfy the following properties:
+  \begin{itemize}
+  \item[(i)] The geometry mapping is affine for all elements not on the boundary; i.e., $\calG^K \in \PP^1(\tilde K)$ for all $K$ such that $\partial K \cap \partial \Omega_h = \emptyset$.
+  \item[(ii)] The distance from any point on $\partial \Omega$ to the closest point on $\partial \Omega_h$ is at most $C h^{p+1}$.
+  \item[(iii)] $| J^K(\tilde x) | \leq C$ and $| J^K(\tilde x)^{-1} | \leq C$  for almost everywhere in $\tilde K$  for all $K \in \calT_h$.
+  \end{itemize}
+\end{definition}
+The second condition sets the minimum convergence rate at which the family of domains $\{ \Omega_h \}_{h > 0}$ must approximate the exact domain $\Omega$ as $h \to 0$. If the domain boundary is piecewise $C^{p+1}$, then the required rate can be achieved using $\PP^p$ geometry mapping (assuming the triangulations match the kinks of the domain boundary). Third condition ensures that the geometry mapping does not become singular anywhere in the domain.
+
+For a shape-regular triangulation of the curved domain, we obtain the following interpolation error bound.
+\begin{proposition}[isoparametric polynomial interpolation error bound]
+  \label{prop:th_interp_gen_iso}
+  Let $\Omega \subset \RR^d$ be a curved domain, $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations in the sense of Definition~\ref{def:th_shape_reg_curved}, and $\calI_h w \in \calV_h$ be an interpolant that belongs to
+  \begin{equation*}
+    \calV_h \equiv \{ v \in H^1(\Omega_h) \ | \ v|_K \circ \calG^K \in \PP^p(\tilde K), \ \forall K \in \calT_h \}.
+  \end{equation*}
+  Then, for any $w \in H^{s+1}(\Omega)$,  the $L^2(\Omega)$ interpolation error is bounded by
+\begin{align*}
+  \| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^{r+1} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$. Similarly, for $k \geq 0$, the $H^k(\Omega)$ interpolation error is bounded by
+\begin{align*}
+  | w - \calI_h w |_{H^k(\Omega)} \leq C_\calI h^{r+1-k} | w |_{H^{r+1}(\Omega)}
+\end{align*}
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$.
+\begin{proof}
+  Proof is beyond the scope of this course. We refer to Brenner and Scott (2008).
+\end{proof}
+\end{proposition}
+The proposition shows that we recover the optimal convergence rate on curved domains for shape-regular triangulations (based on isoparametric mapping) that rapidly approximate the domain shape.  As noted above, if affine ($\PP^1$) meshes are used to approximate curved boundaries, then the convergence rate for higher-degree interpolants is asymptotically the same as that for linear interpolants.
+
+\section{Summary}
+We summarize key points of this lecture:
+\begin{enumerate}
+\item The ``classical'' interpolation error bounds for $C^k$ functions can be useful in many contexts, but is not particularly well-suited for the analysis of finite element error as it imposes a strong regularity requirement on the underlying function.
+\item The Rayleigh quotient of a symmetric, positive bilinear form is bounded by the lower and upper bound of the associated eigenproblem.
+\item For $w \in H^2(\Omega)$ and the associated piecewise linear interpolant $\calI_h w$, $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^2 | w |_{H^2(\Omega)}$.
+\item For $w \in H^2(\Omega)$ and the associated piecewise linear interpolant $\calI_h w$, $| w - \calI_h w |_{H^1(\Omega)} \leq C_\calI h | w |_{H^2(\Omega)}$; the convergence rate is one lower than that for the $L^2(\Omega)$ error.
+\item For $w \in H^1(\Omega)$ (but not $H^2(\Omega)$) and the associated piecewise linear interpolant $\calI_h w$,  $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h | w |_{H^1(\Omega)}$; the convergence rate is one lower than that for a smoother function in $H^2(\Omega)$.
+\item In general, for $w \in H^{s+1}(\Omega)$ and the associated degree-$p$ polynomial interpolant on a family of shape-regular triangulations,  $|w - \calI_h w|_{H^k(\Omega)} \leq C_{\calI} h^{r+1-k}|w|_{H^{r+1}}$ for $r = \min\{s,p\}$ and $k > 0$.
+\item For a domain with a curved boundary, the above error bound holds assuming the family of shape-regular triangulations rapidly approximate the curved boundary using isoparametric mapping.
+\end{enumerate}
