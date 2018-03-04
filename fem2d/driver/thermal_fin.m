@@ -23,7 +23,7 @@ if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-for i = 1:3
+for i = 1:1
     mesh = refine_uniform(mesh); 
 end
 size(mesh.tri)

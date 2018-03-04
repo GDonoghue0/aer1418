@@ -5,7 +5,7 @@ function poisson
 
 % discretization parameters
 dim = 2;
-h = 0.3;
+h = 0.6;
 p = 2;
 pquad = 2*p;
 
@@ -16,9 +16,9 @@ ffun = @(x) sin(pi*x(:,1)).*sin(pi*x(:,2));
 ref = make_ref_tri(p,pquad);
 
 % generate a mesh
-mesh = make_square_mesh(h,'unstructured');
+%mesh = make_square_mesh(h,'unstructured');
 %mesh = make_square_mesh(h,'structured');
-%mesh = make_circle_mesh(h); 
+mesh = make_circle_mesh(h); 
 if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
@@ -87,7 +87,7 @@ A = sparse(imat(:),jmat(:),amat(:),ndof,ndof);
 F = accumarray(ivec(:),fvec(:));
 
 % identify internal and boundary nodes
-bnodes = nodes_on_boundary(mesh, ref,[1,2,3,4]);
+bnodes = nodes_on_boundary(mesh, ref, 1:length(mesh.bgrp));
 inodes = setdiff((1:ndof)', bnodes);
 
 % solve linear system
@@ -99,6 +99,8 @@ figure(1), clf,
 plot_field(mesh,ref,U,struct('nref',4,'surf','on','edgecolor',[0.5,0.5,0.5]));
 view(-30,45);
 
+
+mesh.bgrp{1}
 %err = F'*U - 1.266514783536662e-02
 
 end

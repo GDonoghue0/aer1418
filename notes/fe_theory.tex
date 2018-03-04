@@ -1,12 +1,9 @@
-\chapter{Finite element method: theory}
+\chapter{Finite element method: error analysis}
 
 \disclaimer
 
 \section{Motivation}
-We have so far discussed formulation and implementation of the finite element method.  We now study error associated with finite element methods.
-
-
-
+We have so far discussed the formulation and implementation of the finite element method. In this lecture, we analyze the error in the finite element approximations. The ability to carry out rigorous error analysis is one of the strengths of the finite element method.
 %In this section and the following sections, we analyze the error in the finite element solution in various norms. By way of preliminaries, we define conditions that are referenced throughout our analysis:
 %\begin{assumption}[Assumptions on forms]
 %  We make the following assumptions:
@@ -19,20 +16,77 @@ We have so far discussed formulation and implementation of the finite element me
 %  \item $\ell(\cdot)$ is continuous on $\calV$
 %\end{enumerate}
 %\end{assumption}
-\section{Finite element error analysis: preliminary}
-In this section and the following sections, we analyze the error in the finite element approximations in various norms. By way of preliminaries, we introduce a Hilbert space $\calV$ on $\Omega \subset \RR^d$ such that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; the space $\calV$ is endowed with an inner product $(\cdot,\cdot)_\calV$ and the associated induced norm $\| \cdot \|_\calV$. We next introduce the variational problem: find $u \in \calV$ such that
-\begin{equation}
-  a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:th_pde}
-\end{equation}
-We then introduce the finite element approximation problem: find $u_h \in \calV_h$ such that
-\begin{equation}
-  a(u_h,v) = \ell(v) \quad \forall v \in \calV_h. \label{eq:th_fe}
-\end{equation}
-For all error estimates, we assume that the linear form $\ell:\calV \to \RR$ is continuous in $\calV$.  The requirement for the bilinear form $a:\calV \times \calV \to \RR$ varies with the particular form of error estimate; we will clearly state the assumptions for each estimate.
+\section{Preliminary}
+%% By way of preliminaries, we introduce the setting considered throughout this lecture. We first introduce a Lipschitz domain $\Omega \subset \RR^d$.  We next introduce a Hilbert space $\calV$ such that $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; the space $\calV$ is endowed with an inner product $(\cdot,\cdot)_\calV$ and the associated induced norm $\| \cdot \|_\calV$. We then introduce a shape-regular family of triangulations $\{\calT_h\}_{h > 0}$ and the associated approximation spaces 
+%% \begin{equation}
+%%   \calV_h \equiv \{ v \in \calV \ | \ v \circ \calG^K \in \PP^p(\tilde K), \ K \in \calT_h \},
+%%   \label{eq:th_fe_Vh}
+%% \end{equation}
+%% where $\{ \calG^K: \tilde K \to K \}_{K = \calT_h}$ is the geometry mapping associated with the shape-regular triangulations (in the sense of Definitions~\ref{def:th_shape_reg_affine} and \ref{def:th_shape_reg_curved} for polygonal and curved domains, respectively).  We will henceforth refer to the space $\calV_h$ as the $\PP^p$ finite element approximation space (even though the space may contain non-polynomial functions for non-affine meshes).
 
+%% We now introduce a variational problem and the associated finite element approximation.  Throughout this lecture, we assume that the bilinear form $a: \calV \times \calV \to \RR$ is coercive and continuous in $\calV$ and the linear form $\ell: \calV \to \RR$ is continuous in $\calV$.  In addition, \emph{in some cases}, we assume the bilinear form is symmetric; we will clearly state when the symmetry assumption is made.  Our variational problem is as follows: find $u \in \calV$ such that
+%% \begin{equation}
+%%   a(u,v) = \ell(v) \quad \forall v \in \calV. \label{eq:th_pde}
+%% \end{equation}
+%% Our finite element problem is as follows: find $u_h \in \calV_h$ such that
+%% \begin{equation}
+%%   a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
+%% \end{equation}
+%% We will henceforth refer to the solution to~\eqref{eq:th_fe}, associated with the approximation space $\calV_h$ defined in~\ref{eq:th_fe_Vh}, as the $\PP^p$ finite element approximation.  Because the bilinear form is coercive and continuous and the linear form is continuous, the solutions to \ref{eq:th_pde} and \ref{eq:th_fe} exist and are unique by the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}.  For convenience, we group our common assumptions in the following.
+
+By way of preliminaries, we introduce a set of assumptions used throughout this lecture.  The first is a set of assumptions on the (abstract) variational problem.
+\begin{assumption}
+  \label{ass:th_fe_form}
+  We consider the following.
+  \begin{enumerate}
+  \item The domain $\Omega \subset \RR^d$ has a Lipschitz boundary.
+  \item The Hilbert space $\calV$ satisfies $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$; the space $\calV$ is endowed with an inner product $(\cdot,\cdot)_\calV$ and the associated induced norm $\| \cdot \|_\calV$.
+  \item The bilinear form $a: \calV \to \calV \to \RR$ is coercive and continuous in $\calV$ with the coercivity and continuity constants $\alpha > 0$ and $\gamma < \infty$, respectively.
+  \item The linear form $\ell: \calV \to \RR$ is continuous.
+  \end{enumerate}
+\end{assumption}
+Assumption~\ref{ass:th_fe_form} does not assume the bilinear form is symmetric; we will clearly state the symmetry assumption whenever it is required as an additional assumption.  We also note that Assumption~\ref{ass:th_fe_form} is a set of assumptions of the Lax-Milgram theorem, Theorem~\ref{thm:lax_milgram}.
+
+We next introduce the assumptions that define the variational solution and the associated finite element approximation.
+\begin{assumption}
+  \label{ass:th_fe_soln}
+  We consider the following.
+  \begin{enumerate}
+  \item The solution $u \in \calV$ satisfies
+    \begin{equation}
+      \label{eq:th_pde}
+      a(u,v) = \ell(v) \quad \forall v \in \calV.
+    \end{equation}
+  \item The finite element approximation $u_h \in \calV_h$ satisfies
+    \begin{equation}
+      \label{eq:th_fe}
+      a(u_h,v) = \ell(v) \quad \forall v \in \calV_h
+    \end{equation}
+    for some subspace $\calV_h \subset \calV$.
+  \end{enumerate}
+\end{assumption}
+Assumption~\ref{ass:th_fe_soln} does not specify the finite element approximation space $\calV_h$ other than that it is a subspace of $\calV$; in particular, we do not assume the space $\calV_h$ is a space of piecewise polynomials.  Given Assumption~\ref{ass:th_fe_form} is also satisfied, both the variational and finite element problems are well posed thanks to the Lax-Milgram theorem.
+
+We finally introduce a particular family of piecewise polynomial approximation spaces.
+\begin{assumption}
+  \label{ass:th_fe_Vh}
+  We consider the following:
+  \begin{enumerate}
+  \item The family of triangulations $\{ \calT_h \}$ is shape-regular in the in the sense of Definitions~\ref{def:th_shape_reg_affine} and \ref{def:th_shape_reg_curved} for polygonal and curved domains, respectively.
+  \item The approximation spaces are given by 
+  \begin{equation}
+    \calV_h \equiv \{ v \in \calV \ | \ v \circ \calG^K \in \PP^p(\tilde K), \ K \in \calT_h \},
+    \label{eq:th_fe_Vh}
+  \end{equation}
+  where $\{ \calG^K: \tilde K \to K \}_{K = \calT_h}$ is the geometry mapping associated with the shape-regular triangulations.
+  \end{enumerate}
+  \end{assumption}
+  Note that~\eqref{eq:th_fe_Vh} is one particular example of an approximation space for the finite element approximation~\eqref{eq:th_fe}.  We will henceforth refer to the space $\calV_h$ in \eqref{eq:th_fe_Vh} as the $\PP^p$ finite element approximation space (even though the space may contain non-polynomial functions for non-affine meshes). In addition, we will refer to the solution $u_h \in \calV_h$ to \eqref{eq:th_fe} for the approximation space $\calV_h$ in \eqref{eq:th_fe_Vh} as the $\PP^p$ finite element approximation.  
+
+\section{Galerkin orthogonality}
 We now introduce \emph{Galerkin orthogonality}, a relationship that will be used throughout our analysis of error in finite element approximations.
 \begin{lemma}[Galerkin orthogonality]
-  Let $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively.  Then, the error $u - u_h \in \calV$ satisfies 
+  Suppose Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln} hold. The error $u - u_h \in \calV$ satisfies 
   \begin{equation*}
     a(u - u_h, v) = 0 \quad \forall v \in \calV_h.
   \end{equation*}
@@ -45,8 +99,7 @@ We now introduce \emph{Galerkin orthogonality}, a relationship that will be used
   \end{proof}
 \end{lemma}
 
-
-\section{Finite element error: energy norm}
+\section{Error bounds in energy norm}
 In this section we consider a symmetric, coercive bilinear form and assess our error in \emph{energy norm}.
 \begin{definition}[energy norm]
   Given a symmetric, coercive, and continuous bilinear form $a: \calV \times \calV \to \RR$, the energy norm $\enorm{\cdot} : \calV \to \RR_{\geq 0}$ is defined by
@@ -54,19 +107,19 @@ In this section we consider a symmetric, coercive bilinear form and assess our e
     \enorm{v} \equiv \sqrt{a(v,v)} \quad \forall v \in \calV.
   \end{equation*}
 \end{definition}
-Because the bilinear form is symmetric and coercive, the bilinear form $a(\cdot,\cdot)$ is in fact an inner product that satisfies the requirement on the (i) linearity, (ii) symmetry, and (iii) Cauchy-Shwarz inequality.  The energy norm is the induced norm associated with this inner product; the norm hence satisfies the requirement on the (i) linearity, (ii) positivity, and (iii) triangle inequality.
+Because the bilinear form is symmetric and coercive, the bilinear form $a(\cdot,\cdot)$ is in fact an inner product that satisfies the requirements on (i) the linearity, (ii) symmetry, and (iii) Cauchy-Shwarz inequality.  The energy norm is the induced norm associated with this inner product; the norm hence satisfies the requirements on (i) the linearity, (ii) positivity, and (iii) triangle inequality.
 
 The energy norm is \emph{equivalent} to $\| \cdot \|_{H^1(\Omega)}$ in the following sense.
 \begin{definition}[equivalence of norms]
-  Given a Hilbert space $\calV$, a norm $\| \cdot \|_A$ is said to be equivalent to a norm $\| \cdot \|_B$ if there exists $c > 0$ and $C < \infty$ such that
+  Given a Hilbert space $\calV$, a norm $\| \cdot \|_A$ is said to be equivalent to a norm $\| \cdot \|_B$ if there exist $c > 0$ and $C < \infty$ such that
   \begin{equation*}
     c \| v \|_{B} \leq \| v \|_A \leq C \| v \|_{B} \quad \forall v \in \calV.
   \end{equation*}
 \end{definition}
 \begin{lemma}[equivalence of energy and $H^1$ norm]
-  Given a symmetric, coercive, continuous bilinear form $a:\calV \times \calV \to \RR$, the energy norm $\enorm{\cdot}$ is equivalent to the $H^1$ norm $\| \cdot \|_{H^1(\Omega)}$.
+  Suppose Assumption~\ref{ass:th_fe_form} holds for a symmetric bilinear form.  The energy norm $\enorm{\cdot}$ is equivalent to the $H^1$ norm $\| \cdot \|_{H^1(\Omega)}$.
   \begin{proof}
-    From coercivity and continuity of $a(\cdot,cdot)$ in $\calV$, we immediately obtain
+    From coercivity and continuity of $a(\cdot,\cdot)$ in $\calV$, we immediately obtain
     \begin{equation*}
       \alpha \| v \|_\calV^2 \leq a(v,v) \equiv \enorm{v}^2 \leq \gamma \| v \|_\calV^2 \quad \forall v \in \calV,
     \end{equation*}
@@ -74,10 +127,12 @@ The energy norm is \emph{equivalent} to $\| \cdot \|_{H^1(\Omega)}$ in the follo
   \end{proof}
 \end{lemma}
 
-We now show that the finite element approximation is optimal in energy norm.
-\begin{proposition}[energy-error bound]
+We now show that the finite element approximation is optimal in the energy norm.
+\begin{proposition}[energy-norm error bound]
   \label{prop:th_energy_bound}
-  Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, and continuous bilinear form, $\enorm{\cdot}$ be the associated energy norm, and $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, the finite element approximation is optimal in the energy norm in the sense that
+  Suppose Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln} hold for a symmetric bilinear form. 
+  %Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, and continuous bilinear form, $\enorm{\cdot}$ be the associated energy norm, and $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively.
+  The finite element approximation is optimal in the energy norm in the sense that
   \begin{equation}
     \enorm{ u - u_h } = \inf_{w_h \in \calV_h} \enorm{ u - w_h }.
     \label{eq:th_energy_bound}
@@ -94,63 +149,65 @@ We now show that the finite element approximation is optimal in energy norm.
 or, equivalently, $\forall w_h \neq u_h$.
   \end{proof}
 \end{proposition}
-In words, the optimality of the finite element error in the energy norm implies the following: even \emph{if} we knew the exact solution $u \in \calV$ to~\eqref{eq:th_pde}, we could not find a $w_h \in \calV_h$ that is more accurate than $u_h \in \calV_h$. This optimality result is a direct consequence of Galerkin orthogonality, which states that the error $u - u_h \in \calV$ is orthogonal to the space $\calV_h$ in the inner product associated with the bilinear form $a: \calV \times \calV \to \RR$.
+The optimality of the finite element error in the energy norm implies the following: even \emph{if} we knew the exact solution $u \in \calV$ to~\eqref{eq:th_pde}, we could not find a $w_h \in \calV_h$ that is more accurate in the energy norm than $u_h \in \calV_h$. This optimality result is a direct consequence of Galerkin orthogonality, which states that the error $u - u_h \in \calV$ is orthogonal to the space $\calV_h$ in the inner product associated with the bilinear form $a: \calV \times \calV \to \RR$.
 
-We may obtain a particular result for finite element approximations based on piecewise polynomial spaces.
-\begin{proposition}(energy-error $h$-convergence)
+We may obtain a particular $h$-convergence result for $\PP^p$ finite element approximations.
+\begin{proposition}[energy-norm error bound: $h$ convergence]
   \label{prop:th_energy_bound_poly}
-  Consider a finite element approximation associated with $\PP^p$ approximation space, and suppose $u \in H^{p+1}(\Omega)$.  Then, the energy norm of the error is bounded by
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold for a symmetric bilinear form. If $u \in H^{s+1}(\Omega)$, then
   \begin{equation*}
-    \enorm{u - u_h} \leq C h^p | u |_{H^{p+1}(\Omega)},
+    \enorm{u - u_h} \leq C h^r | u |_{H^{r+1}(\Omega)}
   \end{equation*}
-  for some constant $C$ independent of $h$.
+  for $r \equiv \min\{s,p\}$ and some constant $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
-    We invoke the energy-error bound in Proposition~\eqref{prop:th_energy_bound}, set $w_h$ to be the polynomial interpolant of $u$, $\calI_h u \in \calV_h$, and invoke the polynomial interpolation error bound in Proposition \ref{prop:th_interp_gen}, to obtain
+    The bound follows from the energy-norm error bound in Proposition~\eqref{prop:th_energy_bound} and the polynomial interpolation error bound in Proposition~\ref{prop:th_interp_gen}:
     \begin{align*}
       \enorm{ u - u_h } &= \inf_{w_h \in \calV_h} \enorm{ u - w_h }
-      & \text{(energy-error bound \eqref{eq:th_energy_bound})}  \\
+      & \text{(energy-norm error bound)}  \\
       &\leq \enorm{ u - \calI_h u } &\text{($w_h = \calI_h u$)} \\
       &\leq \gamma \| u - \calI_h u \|_{H^1(\Omega)} &\text{(continuity of $a(\cdot,\cdot)$)} \\
-      &\leq \gamma C_\calI | u |_{H^{p+1}(\Omega)}. &\text{(interpolation error bound)}
+      &\leq \gamma C_\calI h^r | u |_{H^{r+1}(\Omega)}. &\text{(interpolation error bound)}
     \end{align*}
     We set $C \equiv \gamma C_\calI$ to obtain the desired relationship.
   \end{proof}
 \end{proposition}
 
-\section{Finite element error: $\calV$ norm}
-In this section we obtain error bound in the $\calV$ norm.  We assume $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$, and $\| \cdot \|_\calV$ is equivalent to $\| \cdot \|_{H^1(\Omega)}$.  The first bound is for a variational problem with a symmetric, coercive bilinear form.
-\begin{lemma}[Cea's lemma (symmetric)]
+We observe that, if the solution is smooth, then the error in $\PP^p$ finite element approximations converges as $h^p$ in the energy norm.  If the solution is not smooth, then the convergence of the finite element approximations may be limited by the regularity of the solution. 
+
+\section{Error bounds in $\calV$ and $H^1(\Omega)$ norms}
+In this section we obtain error bound in the $\calV$ and $H^1(\Omega)$ norms.  We assume $H^1_0(\Omega) \subset \calV \subset H^1(\Omega)$ so that $\| \cdot \|_\calV$ is equivalent to $\| \cdot \|_{H^1(\Omega)}$.  The first bound is for a variational problem with a symmetric, coercive bilinear form.
+\begin{lemma}[C\'ea's lemma (symmetric)]
   \label{lemma:th_cea_sym}
-  Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, and continuous bilinear form and $u \in \calV$ be $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, the error $u - u_h$ satisfies
+   Suppose Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln} hold for a symmetric bilinear form. Then, 
   \begin{equation}
-    \| u - u_h \|_\calV \leq \sqrt{\frac{\gamma}{\alpha}} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV,
+    \| u - u_h \|_\calV \leq \sqrt{\frac{\gamma}{\alpha}} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV.
     \label{eq:th_cea_sym}
   \end{equation}
-  for the coercivity constant $\alpha$ and the continuity constant $\gamma$
+%  for the coercivity constant $\alpha$ and the continuity constant $\gamma$
   \begin{proof}
-    The bound is a consequence of the energy-error optimality:
+    The bound follows from the coercivity and continuity of the bilinear form and the energy-norm error bound in Proposition~\eqref{prop:th_energy_bound}:
     \begin{align*}
       \alpha \| u - u_h \|^2_\calV
       &\leq a(u - u_h, u - u_h) & \text{(coercivity)} \\
       &\leq \enorm{ u - u_h }^2 & \text{(energy norm)} \\
-      & = \inf_{w_h \in \calV_h} \enorm{ u - u_h }^2 & \text{(energy-error optimality)} \\
-      & = \gamma \| u - u_h \|^2_\calV & \text{(continuity)}
+      & = \inf_{w_h \in \calV_h} \enorm{ u - u_h }^2 & \text{(energy-norm error bound)} \\
+      & = \gamma \| u - u_h \|^2_\calV & \text{(continuity)}.
     \end{align*}
-    Taking the square root yields the desired inequality.
+    The division by $\alpha > 0$ yields the desired inequality.
   \end{proof}
 \end{lemma}
 
 The second bound is for a variational problem with a bilinear form that is coercive but not necessarily symmetric.
-\begin{lemma}[Cea's lemma (nonsymmetric)]
+\begin{lemma}[C\'ea's lemma (nonsymmetric)]
   \label{lemma:th_cea_nonsym}
-  Let $a: \calV \times \calV \to \RR$ be a coercive and continuous (but not necessarily symmetric) bilinear form, and $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, the error $u - u_h$ satisfies
+   Suppose Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln} hold. Then, 
   \begin{equation}
-    \| u - u_h \|_\calV \leq \frac{\gamma}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV,
+    \| u - u_h \|_\calV \leq \frac{\gamma}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV.
     \label{eq:th_cea}
   \end{equation}
-  for the coercivity constant $\alpha$ and the continuity constant $\gamma$.
+%  for the coercivity constant $\alpha$ and the continuity constant $\gamma$.
   \begin{proof}
-    We observe
+    The result is trivial for $\| u - u_h \|_\calV = 0$.  For $\| u - u_h \|_\calV \neq 0$, we observe
     \begin{align*}
       \alpha \| u - u_h \|^2_\calV
       &\leq a(u - u_h, u - u_h) & \text{(coercivity)} \\
@@ -158,32 +215,39 @@ The second bound is for a variational problem with a bilinear form that is coerc
       &= a(u - u_h, u - w_h) &\text{(Galerkin orthogonality)} \\
       &\leq \gamma \| u - u_h \|_\calV \| u - w_h \|_\calV &\text{(continuity)}.
     \end{align*}
-    The division by $\| u - u_h \|_\calV$ yields the desired result.
+    The division by $\alpha \| u - u_h \|_\calV > 0$ yields the desired result.
   \end{proof}
 \end{lemma}
-Because $\gamma/\alpha \geq 1$ by the definition of the continuity and coercivity constants, the bound~\eqref{eq:th_cea} for nonsymmetric bilinear forms is looser than the bound~\eqref{eq:th_cea_sym} for symmetric bilinear forms.  In both cases, we observe that the finite element approximation is quasi-optimal in the sense that $\| u - u_h \|_\calV$ is at most a constant multiple of the best-fit error $\inf_{w_h \in \calV_h} \| u - w_h \|_\calV$, where the constant is independent of $h$.
+Because $\gamma/\alpha \geq 1$ by the definition of the continuity and coercivity constants, the bound~\eqref{eq:th_cea} for nonsymmetric bilinear forms is looser than the bound~\eqref{eq:th_cea_sym} for symmetric bilinear forms.  In both cases, we observe that the finite element approximation is quasi-optimal in the sense that $\| u - u_h \|_\calV$ is at most a constant multiple of the best-fit error $\inf_{w_h \in \calV_h} \| u - w_h \|_\calV$, where the constant is independent of the approximation space $\calV_h$.
 
-Given these quasi-optimality results, we can readily obtain particular results for finite element approximations based on piecewise polynomial spaces.
-\begin{proposition}[$\calV$-norm convergence]
-  Consider the same setting as Lemma~\ref{lemma:th_cea_nonsym} and suppose $u \in H^{p+1}(\Omega)$.  Then, 
+Given the quasi-optimality results of C\'ea's lemma, we can readily obtain particular $h$-convergence results for $\PP^p$ finite element approximations.
+\begin{proposition}[$\calV$-norm error bound: $h$ convergence]
+  \label{prop:th_fe_vnorm_hconv}
+   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\Omega)$, then
   \begin{equation}
-    \| u - u_h \|_\calV \leq C h^{p} | u |_{H^{p+1}(\Omega)}
+    \| u - u_h \|_\calV \leq C h^{r} | u |_{H^{r+1}(\Omega)}
   \end{equation}
-  for some $C < \infty$ independent of $u$ and $h$. Moreover,
-  \begin{equation}
-    \| u - u_h \|_{H^1(\Omega)} \leq C h^{p} | u |_{H^{p+1}(\Omega)}
-  \end{equation}
-  for some $C < \infty$ independent of $u$ and $h$.
+  for $r \equiv \min\{ s,p \}$ and some $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
-    We invoke Cea's lemma~\ref{lemma:th_cea_sym}, the equivalence of $\| \cdot \|_{\calV}$ and $\| \cdot \|_{H^1(\Omega)}$, an the polynomial interpolation error bound in Proposition~\ref{prop:th_interp_gen}.
-    The second result follows from the equivalence of $\| \cdot \|_{\calV}$ and $\| \cdot \|_{H^1(\Omega)}$.
+    We invoke C\'ea's lemma~\ref{lemma:th_cea_sym}, the equivalence of $\| \cdot \|_{\calV}$ and $\| \cdot \|_{H^1(\Omega)}$, an the polynomial interpolation error bound in Proposition~\ref{prop:th_interp_gen}.
+  \end{proof}
+\end{proposition}
+\begin{proposition}[$H^1(\Omega)$-norm $h$ convergence]
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\Omega)$, then
+  \begin{equation}
+    \| u - u_h \|_{H^1(\Omega)} \leq C h^{r} | u |_{H^{r+1}(\Omega)}
+  \end{equation}
+  for $r \equiv \min\{ s,p \}$ and some $C < \infty$ independent of $u$ and $h$.
+  \begin{proof}
+    The second result follows from Proposition~\ref{prop:th_fe_vnorm_hconv} and the equivalence of $\| \cdot \|_{\calV}$ and $\| \cdot \|_{H^1(\Omega)}$.
   \end{proof}
 \end{proposition}
 
+Similar to the energy norm of the error, we observe that, if the solution is smooth, then the error in $\PP^p$ finite element approximations converges as $h^p$ in the $\calV$ or $H^1(\Omega)$ norm.  If the solution is not smooth, then the convergence of the finite element approximations may be limited by the regularity of the solution. 
 
 
-\section{Finite element error: $L^2$ norm}
-We now analyze the convergence of finite element approximations in $L^2(\Omega)$ norm.  Unfortunately, the $L^2(\Omega)$ error analysis relies on an equation-specific result called the \emph{elliptic regularity estimate}.  Hence, in this section, unlike in the previous sections, we restrict ourselves to (variable coefficients) advection-reaction-diffusion equation.
+\section{Error bounds in $L^2(\Omega)$ norm}
+We now analyze the convergence of finite element approximations in $L^2(\Omega)$ norm.  Unfortunately, the $L^2(\Omega)$ error analysis relies on an equation-specific result called the \emph{elliptic regularity estimate}.  Hence, in this section, unlike in the previous sections, we restrict ourselves to (variable coefficients) advection-reaction-diffusion equation.  (The regularity estimate holds also for other equations, but we here state a concrete result for the specific equation.)
 
 \begin{lemma}[elliptic regularity estimate]
   \label{lemma:th_elliptic_reg}
@@ -201,17 +265,18 @@ We now analyze the convergence of finite element approximations in $L^2(\Omega)$
   \end{equation*}
   for some $C_{\rm reg} < \infty$.
   \begin{proof}
-    Proof is beyond the scope of this course.  See, e.g., Ern and Guermond, \emph{Theory and practice of finite element method}, Theorem 3.10.
+    Proof is beyond the scope of this course.  See, e.g., Ern and Guermond (2004). %, \emph{Theory and practice of finite element method}, Theorem 3.10.
   \end{proof}
 \end{lemma}
-\begin{theorem}[$L^2$ error bound (Aubin-Nitsche)]
-  Suppose the conditions of the elliptic regularity estimate, Lemma~\ref{lemma:th_elliptic_reg}, are satisfied, and $u \in \calV$ and $u_h \in \calV_h$ are the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively. Then, 
+\begin{proposition}[$L^2$-norm error bound (Aubin-Nitsche)]
+  \label{prop:th_aubin_nitsche}
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} as well as the conditions of the elliptic regularity estimate, Lemma~\ref{lemma:th_elliptic_reg}, hold. Then, 
   \begin{equation*}
     \| u - u_h \|_{L^2(\Omega)} \leq C h \| u-u_h \|_\calV,
   \end{equation*}
-  for $C < \infty$ independent of $h$.
+  for some $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
-    The proof by so-called \emph{Aubin-Nitsche trick}. We first pose a dual problem: find $\psi \in \calV$ such that
+    The proof is by so-called \emph{Aubin-Nitsche trick}. We first pose a dual problem: find $\psi \in \calV$ such that
     \begin{equation*}
       a(w,\psi) = (w,e)_{L^2(\Omega)} \quad \forall w \in \calV
     \end{equation*}
@@ -219,34 +284,62 @@ We now analyze the convergence of finite element approximations in $L^2(\Omega)$
     \begin{equation*}
       \| e \|_{L^2(\Omega)}^2 = a(e, \psi)
       = a(e, \psi - \Pi_{H^1(\Omega)} \psi)
-      \leq \gamma \| e \|_\calV \| \psi - \calI_h \psi \|_\calV
+      \leq \gamma \| e \|_\calV \| \psi - \calI_h \psi \|_\calV.
     \end{equation*}
-    We note that, since $u \in H^1(\Omega)$ and $u_h \in H^1(\Omega)$,  $e \equiv u - u_h \in \calV \subset H^1(\Omega) \subset L^2(\Omega)$; by the elliptic regularity estimate, $\| \psi \|_{H^2(\Omega)} \leq C \| e \|_{L^2(\Omega)}$. It hence follows that
+    We note that, since $u \in H^1(\Omega)$ and $u_h \in H^1(\Omega)$,  $e \equiv u - u_h \in \calV \subset H^1(\Omega) \subset L^2(\Omega)$; by the elliptic regularity estimate, $\| \psi \|_{H^2(\Omega)} \leq C_{\rm reg} \| e \|_{L^2(\Omega)}$. We hence obtain
     \begin{align*}
       \| \psi - \calI_h \psi \|_\calV
       &=\| \psi - \calI_h \psi \|_{H^1(\Omega)} & \text{(definition of $\calV$ norm)} \\
       &\leq C_\calI h \| \psi \|_{H^2(\Omega)} & \text{(interpolation error bound)}\\
-      &\leq C_\calI C_{\rm reg} h  \| e \|_{L^2(\Omega)} & \text{(elliptic regularity estimate)}
+      &\leq C_\calI C_{\rm reg} h  \| e \|_{L^2(\Omega)}. & \text{(elliptic regularity estimate)}
+    \end{align*}
+    It follows
+    \begin{equation*}
+      \| e \|_{L^2(\Omega)}^2 \leq \gamma C_\calI C_{\rm reg} h \| e \|_{L^2(\Omega)} \| e \|_\calV .
+    \end{equation*}
+    The division by $\| e \|_{L^2(\Omega)}$ yields the desired bound.
+  \end{proof}
+\end{proposition}
+
+\begin{proposition}[$L^2(\Omega)$-norm error bound: $h$ convergence]
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} as well as the conditions of the elliptic regularity estimate, Lemma~\ref{lemma:th_elliptic_reg}, hold. If $u \in H^{s+1}(\Omega)$, then
+  \begin{equation*}
+    \| u - u_h \|_{L^2(\Omega)} \leq C h^{r+1} | u |_{H^{r+1}(\Omega)}
+  \end{equation*}
+  for $r \equiv \min\{ s,p\}$ and some $C < \infty$ independent of $u$ and $h$.
+  \begin{proof}
+    The result is a direct consequence of Propositions~\ref{prop:th_aubin_nitsche} and \ref{prop:th_fe_vnorm_hconv}:
+    \begin{align*}
+      \| u - u_h \|_{L^2(\Omega)}
+      &\leq C h \| u-u_h \|_\calV & \text{(Aubin-Nitsche)} \\
+      &\leq C' h^{r+1} | u |_{H^{r+1}(\Omega)} . &\text{($h$ convergence in $\| \cdot \|_\calV$)} 
     \end{align*}
   \end{proof}
-\end{theorem}
+\end{proposition}
+The proposition shows that, if the solution is smooth, then the $L^2(\Omega)$ norm of the error converges at a rate one higher than the $H^1(\Omega)$ or $\calV$ norm of the error.  In particular, we note that the $L^2(\Omega)$ norm of the error in the linear ($\PP^1$) finite element approximations converge as $h^2$; because the $L^2(\Omega)$ norm is arguably the most popular metric for assessing the error in engineering, the linear finite element method is often quoted as a second-order method in the field.
 
-\begin{corollary}
-  
-  \begin{equation*}
-    \| u - u_h \|_{L^2(\Omega)} \leq C h^{p+1} \| u \|_{H^{p+1}(\Omega)}
-  \end{equation*}
-\end{corollary}
+\section{Error bounds for functional outputs}
+In this section we consider the error in an \emph{output} or \emph{quantity of interest}. To begin, we introduce a linear functional associated with the output,
+\begin{equation*}
+  \ell^o : \calV \to \RR;
+\end{equation*}
+we assume that the functional is continuous in $\calV$: $\exists c < \infty$ such that $| \ell^o(w) | \leq c \| w \|_\calV$ $\forall w \in \calV$.
 
-\section{Finite element error: functional output}
-In this section we consider the error in an \emph{output} or \emph{quantity of interest}.  We assume that the output is defined by a linear functional $\ell^o \in \calV'$ and that the functional is continuous in $\calV$: $\exists c < \infty$ such that $|\ell^o(w)| \leq c \| w \|_\calV$ $\forall w \in \calV$. 
+In order to characterize output error, we first introduce the \emph{dual problem}: find $\psi \in \calV$ such that
+\begin{equation}
+  \label{eq:th_dual}
+  a(w,\psi) = \ell^o(w) \quad \forall w \in \calV,
+\end{equation}
+The well-posedness of the dual problem follows from the Lax-Milgram theorem~\ref{thm:lax_milgram} for a $\calV$-coercive, $\calV$-continuous (but not necessarily symmetric) bilinear form $a(\cdot,\cdot)$, and $\calV$-continuous linear form $\ell^o(\cdot)$.  The solution $\psi \in \calV$ is called the \emph{dual solution} or \emph{adjoint}.
+
 \begin{proposition}[output error bound (symmetric)]
   \label{prop:th_output_sym}
-  Let $a: \calV \times \calV \to \RR$ be a symmetric, coercive, continuous bilinear form, $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively, and $\ell^o: \calV \to \RR$ be a linear functional. Then, the error in the functional output is bounded by 
+  Suppose Assumptions~\eqref{ass:th_fe_form} and \eqref{ass:th_fe_soln} hold for a symmetric bilinear form. Let $\ell^o: \calV \to \RR$ be a continuous linear functional. Then,
 \begin{equation*}
   |\ell^o(u) - \ell^o(u_h)| \leq
-  \inf_{w_h \in \calV_h} \enorm{u - w_h} \inf_{v_h \in \calV_h} \enorm{\psi - v_h}
+  \inf_{w_h \in \calV_h} \enorm{u - w_h} \inf_{v_h \in \calV_h} \enorm{\psi - v_h},
 \end{equation*}
+where $\psi$ is the solution to the dual problem~\ref{eq:th_dual}.
 \begin{proof}
   We observe that, $\forall v_h \in \calV_h$, 
 \begin{align*}
@@ -257,18 +350,18 @@ In this section we consider the error in an \emph{output} or \emph{quantity of i
   &\leq \enorm{ u - u_h }\enorm{ \psi - v_h } & \text{(Cauchy-Schwarz)} \\
   &\leq \inf_{w_h \in \calV_h} \enorm{ u - w_h }\enorm{ \psi - v_h }. & \text{(energy-error optimality of $u_h$)}
 \end{align*}
-We then take $v_h \in \calV_h$ to be the minimizer of $\enorm{\psi - v_h}$.
+We then take $v_h \in \calV_h$ to be the minimizer of $\enorm{\psi - v_h}$ to obtain the desired result.
 \end{proof}
 \end{proposition}
 
 \begin{proposition}[output error bound (nonsymmetric)]
   \label{prop:th_output_nonsym}
-  Let $a: \calV \times \calV \to \RR$ be a coercive, continuous (but not necessarily symmetric) bilinear form, $u \in \calV$ and $u_h \in \calV_h$ be the solutions to~\eqref{eq:th_pde} and \eqref{eq:th_fe}, respectively, and $\ell^o: \calV \to \RR$ be a linear functional. Then, the error in the functional output is bounded by 
+   Suppose Assumptions~\eqref{ass:th_fe_form} and \eqref{ass:th_fe_soln} hold. Let $\ell^o: \calV \to \RR$ be a continuous linear functional.  Then,
 \begin{equation*}
   |\ell^o(u) - \ell^o(u_h)|
   \leq \frac{\gamma^2}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV \inf_{v_h \in \calV_h} \| \psi - v_h \|_\calV,
 \end{equation*}
-where $\alpha$ and $\gamma$ are the coercivity and continuity constants of $a : \calV \times \calV \to \RR$, respectively.
+where $\psi$ is the solution to the dual problem~\ref{eq:th_dual}.
 \begin{proof}
   We observe that, $\forall v_h \in \calV_h$, 
   \begin{align*}
@@ -279,98 +372,37 @@ where $\alpha$ and $\gamma$ are the coercivity and continuity constants of $a : 
     &\leq \gamma \| u - u_h \|_\calV \| \psi - v_h \|_\calV & \text{(continuity of $a(\cdot,\cdot)$)} \\
     &\leq \frac{\gamma^2}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV \| \psi - v_h \|_\calV. & \text{($\| \cdot \|_\calV$ error bound of $u_h$)}
   \end{align*}
-  We then take $v_h \in \calV_h$ to be the minimizer of $\enorm{\psi - v_h}$.
+  We then take $v_h \in \calV_h$ to be the minimizer of $\enorm{\psi - v_h}$ to obtain the desired result.
 \end{proof}
 \end{proposition}
 
-\begin{remark}[output superconvergence]
-  We observe in both Propositions~\ref{prop:th_output_sym} and \ref{prop:th_output_nonsym} that the output converges faster than the 
-\end{remark}
-%% We now focus on the piecewise linear space in one dimension.  To this end, given $\Omega \subset \RR$, we introduce an approximation space
-%% \begin{equation*}
-%%   \calV_h = \{ v \in \calV \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \}.
-%% \end{equation*}
+\begin{proposition}[output error bound: $h$ convergence]
+   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. Let $\ell^o: \calV \to \RR$ be a continuous linear functional.  If $u \in H^{s+1}(\Omega)$ and $\psi \in H^{s'+1}(\Omega)$ for $\psi$ the solution to the dual problem~\ref{eq:th_dual}, then
+  \begin{equation*}
+    | \ell^o(u) - \ell^o(u_h) | \leq C h^{r + r'} | u |_{H^{r+1}(\Omega)} | \psi |_{H^{r'+1}(\Omega)}
+  \end{equation*}
+  for $r \equiv \min\{ s,p \}$, $r' \equiv \min\{ s',p \}$, and some constant $C < \infty$ independent of $u$, $\psi$, and $h$.
+\end{proposition}
+The proposition shows that for a smooth solution $u$ \emph{and} adjoint $\psi$, the output converges as $h^{2p}$. The convergence rate for the output error is \emph{twice} that for the $\calV$ or $H^1(\Omega)$ norm of the error.  This result is often referred to as \emph{output superconvergence}.  (The output superconverges because the finite element approximation is by construction \emph{dual consistent}; the dual of the discrete problem is the discretization of the continuous dual problem.  Not all discretizations for boundary value problems have this property.)
 
-%% \begin{lemma}[One-dimensional linear interpolation error bound for $K$]
-%%   Let $K \equiv [a,b]$ be the domain of length $h \equiv b - a$, $w \in C^2(K)$ be a function we wish to interpolate, and $\calI_h w \in \PP^1(K)$ be the linear interpolant based on the interpolation points $\{a,b\}$. Then, the interpolation error satisfies
-%%   \begin{align}
-%%     \| w - \calI_h w \|_{L^2(K)} &\leq \frac{1}{2} h^{5/2} \| w'' \|_{L^\infty(K)} \label{eq:fe_interp_lin_l2_elem} \\
-%%     | w - \calI_h w |_{H^1(K)} &\leq h^{3/2} \| w '' \|_{L^\infty(K)}. \label{eq:fe_interp_lin_h1_elem}
-%%   \end{align}
-%%   \begin{proof}
-%%     We first introduce an auxiliary function
-%%     \begin{equation*}
-%%       g(s) \equiv (w - \calI_hw)(s) - \left(
-%%       \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
-%%       \right)(s - a)(s-b).
-%%     \end{equation*}
-%%   We note that $g(x) = g(a) = g(b) = 0$ by construction. Hence $g$ has at least three roots in $K \equiv[a,b]$.  By Rolle's theorem, $g'$ has at least two roots in $K$.  Invoking Rolle's theorem one more time, we conclude that $g''$ has at least one root in $K$; let $\xi \in K$ be one of the roots of $g''$: i.e., $g''(\xi) = 0$.  We now compute the second derivative of $g$:
-%%   \begin{equation*}
-%%     g''(s) = w''(s) - \left(
-%%       \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
-%%       \right) \cdot 2;
-%%   \end{equation*}
-%%   note that $(\calI_h w)'' = 0$ since $\calI_h w$ is a linear function.  We now evaluate the expression at $\xi$ to obtain
-%%   \begin{equation*}
-%%     0 = w''(\xi) - \left(
-%%       \frac{(w - \calI_h w)(x)}{(x - a)(x-b)}
-%%       \right) \cdot 2, \quad \forall x \in K
-%%   \end{equation*}
-%%   or, equivalently,
-%%   \begin{equation*}
-%%     (w - \calI_h w)(x) = \frac{1}{2} w''(\xi) (x - a)(x - b).
-%%   \end{equation*}
-%%   The $L^2$ error bound follows from
-%%   \begin{align*}
-%%     \| w - \calI_h w \|^2_{L^2(K)}
-%%     &= \int_K (w - \calI_h w)^2 dx
-%%     = \frac{1}{4} \int_K w''(\xi)^2 (x-a)^2 (x-b)^2 dx
-%%     \\
-%%     &\leq\frac{1}{4} \| w'' \|_{L^\infty(K)}^2 \int_K (x-a)^2(x-b)^2 dx
-%%     \leq \frac{1}{4} h^5 \| w'' \|_{L^\infty(K)}^2,
-%%   \end{align*}
-%%   where the inequality follows from $|x-a| < h$ and $|x-b| < h$.  To obtain the $H^1$ error bound, we first note
-%%   \begin{equation*}
-%%     (w - \calI_hw)'(x) = \frac{1}{2} w''(\xi) ((x-a) + (x-b));
-%%   \end{equation*}
-%%   it thus follows
-%%   \begin{align*}
-%%     | w - \calI_h w |^2_{H^1(K)}
-%%     &= \int_K ((w - \calI_h w)')^2 dx
-%%     = \int_K w''(\xi)^2 \frac{1}{4} ((x-a) + (x-b))^2 dx
-%%     \\
-%%     &\leq \| w'' \|_{L^\infty(K)}^2 \int_K \frac{1}{4} ((x-a) + (x-b))^2 dx
-%%     \leq h^3\| w'' \|_{L^2(K)}^2,
-%%   \end{align*}
-%%   where the inequality again follows from $|x - a| < h$ and $|x - b| < h$.
-%%     \end{proof}
-%% \end{lemma}
 
-%% \begin{proposition}[One-dimensional linear interpolation error bound for $\Omega$]
-%%   Let $\Omega \subset \RR^1$ be the domain, $\calT_h$ be a uniform triangulation over $\Omega$ of characteristic length $h$, $w \in \oplus_{K \in \calT_h}  C^2(K)$ be a function we wish to interpolate, and $\calI_h w \in \calV_h$ be the linear interpolant associated with $\calV_h \equiv \{ v \in C^0(\Omega) \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \}$. Then, the interpolation error satisfies
-%%   \begin{align}
-%%     \| w - \calI_h w \|_{L^2(\Omega)} &\leq \frac{1}{2} h^2 \| w'' \|_{L^\infty(\Omega)} \label{eq:fe_interp_lin_l2} \\
-%%     | w - \calI_h w |_{H^1(\Omega)} &\leq h \| w'' \|_{L^\infty(\Omega)} \label{eq:fe_interp_lin_h1}
-%%   \end{align}
-%%   \begin{proof}
-%%     The $L^2$ error bound follows from the application of~\eqref{eq:fe_interp_lin_l2_elem} to each element:
-%%     \begin{equation*}
-%%       \| w - \calI_h w \|^2_{L^2(\Omega)}
-%%       =
-%%       \sum_{K \in \calT_h} \| w - \calI_h w \|^2_{L^2(K)}
-%%       \leq
-%%       \frac{1}{h} \frac{1}{4} h^5 \| w'' \|_{L^\infty(\Omega)}^2
-%%       = \frac{1}{4} h^4 \| w'' \|_{L^\infty(\Omega)}^2.
-%%     \end{equation*}
-%%     The $H^1$ error bound similarly follows from the application of~\eqref{eq:fe_interp_lin_h1_elem} to each element:
-%%         \begin{equation*}
-%%       \| w - \calI_h w \|^2_{L^2(\Omega)}
-%%       =
-%%       \sum_{K \in \calT_h} \| w - \calI_h w \|^2_{L^2(K)}
-%%       \leq
-%%       \frac{1}{h} h^3 \| w'' \|_{L^\infty(\Omega)}^2
-%%       = h^2 \| w'' \|_{L^\infty(\Omega)}^2.
-%%     \end{equation*}
-%%   \end{proof}
-%% \end{proposition}
-%% The proposition shows that the $L^2$ interpolation error (i) depends on the maximum value of the second derivative $\| w '' \|_{L^\infty(\Omega)}$ and (ii) decreases as $h^2$.  The $H^1$ interpolation error similarly depends on $\| w'' \|_{L^\infty(\Omega)}$ but decreases as $h^1$. 
+\section{Generalization: other approximation spaces}
+Throughout this lecture, we presented two types of error bounds. First, under Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln}, we obtained the (quasi-)optimality results that show the Galerkin finite element method achieves errors that are only some fixed constant away from the best-fit solution in a given approximation space (e.g., C\'ea's lemma, Lemma~\ref{lemma:th_cea_nonsym}).  Second, under Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh}, we obtained the particular $h$-convergence results for $\PP^p$ finite element approximation spaces. The results of the first type, such as C\'ea's lemma
+\begin{equation*}
+  \| u - u_n \|_{\calV} \leq \frac{\gamma}{\alpha} \inf_{w_n \in \calV_n} \| u - w_n \|_{\calV},
+\end{equation*}
+applies to any (family of) finite-dimensional approximation spaces $\{ \calV_n \}_{n > 1}$.  The key observation is that the Galerkin finite element method will find a quasi-optimal approximations $\{u_n\}_{n > 1}$ in any family of approximation spaces $\{\calV_n \}_{n > 1}$. %; given an approximation space $\calV_n$ in which the solution $u$ can be well-approximated, the Galerkin finite element method will find a good member of $\calV_n$ that well approximates $u$.  
+
+We can derive various methods based on the Galerkin projection by choosing different approximation spaces. The ``standard'' finite element method based on $h$ refinement considers $\{ \calV_h \}_{h > 0}$ defined by Assumption~\ref{ass:th_fe_Vh}; if the exact solution is in $H^{p+1}(\Omega)$, the $\calV$-norm of the error converges as $h^p$. The spectral method considers the approximation spaces of the form $\calV_p \equiv \{ v \in \calV \ | \ v \in \PP^p(\Omega) \}$; if the exact solution is analytic, then the $\calV$-norm of the error converges as $\exp(-Cp)$ for some $C$ independent of $p$, achieving the so-called \emph{exponential convergence}. The $hp$ adaptive finite element method constructs a sequence of piecewise polynomial spaces of varying $h$ and $p$ tailored for the specific solution we wish to approximate. The extended finite element method (XEFM) or generalized finite element method (GFEM) considers a family of approximation spaces comprise specialized (non-polynomial) functions tailored for the specific features (e.g., corner singularity).  The reduced-basis method, a model reduction method for parametrized PDEs, considers approximation spaces comprise specialized (non-polynomial) functions tailored for the parametric manifold.  All of these techniques rely on the Galerkin projection which identifies a quasi-optimal approximation in a given approximation space.
+
+\section{Summary}
+We summarize key points of this lecture:
+\begin{enumerate}
+%\item The Galerkin orthogonality, $a(e,v) = 0$ $\forall v \in \calV_h$, is a key ingredient of finite element error analysis.
+\item For a symmetric, coercive problem, the energy norm is given by $\enorm{\cdot} \equiv \sqrt{a(\cdot,\cdot)}$.  The finite element approximation is optimal in the energy norm in the sense that $\enorm{u - u_h} \leq \inf_{w_h \in \calV_h} \enorm{u - w_h}$.  If the solution is smooth, the energy norm of the error for the $\PP^p$ finite element approximation converges as $h^p$.
+\item C\'ea's lemma shows that the finite element approximation is quasi-optimal in the $\calV$ norm in the sense that $\| u - u_h \|_\calV \leq \frac{\gamma}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV$.  If the solution is smooth, the $\calV$  norm of the error for the $\PP^p$ finite element approximation converges as $h^p$.
+\item The error bounds for $H^1(\Omega)$ norm is the same as that for $\calV$ norm of the error up to a constant.
+\item If the solution is smooth, then the $L^2(\Omega)$ norm of the error for the $\PP^p$ finite element approximation converges as $h^{p+1}$.  The result follows from the Aubin-Nitsche trick.
+\item The error in a linear functional output is a (scaled) product of the error in the primal and dual approximations. If both the primal and dual solutions are smooth, then the error in a linear functional output superconverges as $h^{2p}$.
+\item For all of the above cases, if the solution is not smooth, then the converge rate may be limited by the regularity of the solution.
+\end{enumerate}

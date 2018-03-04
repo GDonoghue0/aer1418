@@ -44,8 +44,10 @@ edge = [tri(:,[2,3])
 for ibgrp = 1:length(mesh.bgrp)
     bvert = sort(mesh.bgrp{ibgrp}(:,1:2),2);
     edge = sort(edge,2);
-    [~,ib] = intersect(edge,bvert,'rows');
+    [~,ib,ic] = intersect(edge,bvert,'rows');
     [belem,bledge] = ind2sub([ntri,3],ib);
+    belem(ic) = belem; % fix order since intersect does not preserve bvert order
+    bledge(ic) = bledge;
     mesh.bgrp{ibgrp} = [mesh.bgrp{ibgrp}(:,1:2), belem, bledge];
 end
 end

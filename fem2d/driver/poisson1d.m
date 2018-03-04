@@ -29,6 +29,11 @@ end
 mesh = make_bgrp(mesh);
 mesh = refine_uniform(mesh);
 
+for i = 1:10
+    tmark = rand(size(mesh.tri,1),1) < 0.15;
+    mesh = refine_mesh_adapt(mesh,tmark);
+end
+
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);
 
