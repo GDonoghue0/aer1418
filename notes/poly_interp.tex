@@ -1,7 +1,13 @@
 \chapter{Polynomial interpolation in Sobolev spaces}
 
 \section{Motivation}
-As we have seen in the previous lectures, the finite element method seeks the solution to the variational problem in a finite-dimensional approximation space.  In the finite element method based on $h$-refinement, we consider a sequence of piecewise polynomial spaces of various characteristic element diameter $h$.  The accuracy of a given finite element approximation depends on the ability of the underlying piecewise polynomial space to approximation the solution.  In this lecture, we characterize the error associated with piecewise polynomial interpolation of functions in Sobolev spaces.  % As we will see in the next lecture, the error associated with finite element approximations can be related to  
+As we have seen in the previous lectures, the finite element method seeks the solution to the variational problem in a finite-dimensional approximation space.  In the finite element method based on $h$-refinement, we consider a sequence of piecewise polynomial spaces of various characteristic element diameter $h$.  The accuracy of a given finite element approximation depends on the ability of the underlying piecewise polynomial space to approximate the solution.  In this lecture, we characterize the error associated with piecewise polynomial interpolation of functions in Sobolev spaces.
+
+For the majority of the lecture, we consider linear polynomial interpolation in $\RR^1$; the simplified setting allows us to analyze interpolation errors without introducing technical tools that are beyond the scope of this course while still capturing the essence of interpolation error theory. In Section~\ref{sec:th_poly_gen}, we introduce, without proofs, more general results for higher-degree polynomial interpolation in $\RR^{d \geq 1}$.
+
+
+% As we will see in the next lecture, the error associated with finite element approximations can be related to  
+
 
 
 \section{Linear interpolation error for $C^k$ functions in $\RR^1$}
@@ -104,7 +110,7 @@ We now generalize Rayleigh quotient to bilinear forms in Hilbert spaces.
   \begin{equation*}
     \sup \{\lambda_k \} = \gamma,
   \end{equation*}
-  where $\gamma < \infty$ is the $\calV$-coercivity constant.
+  where $\gamma < \infty$ is the $\calV$-continuity constant.
 %  Let $\calV$ be a Hilbert space and $a: \calV \times \calV \to \RR$ be a symmetric bilinear form, $b: \calV \times \calV \to \RR$ be a symmetric positive bilinear form, and $R: \calV \to \RR$ be the associated Rayleigh quotient so that $R(v) \equiv \frac{a(v,v)}{b(v,v)}$.  We also introduce an eigenproblem:  is the solution to the eigenproblem: find eigenpairs $(u_i,\lambda_i) \in \calV \times \RR$ such that
 %  \begin{equation*}
 %    a(u_i,v) = \lambda_i b(u_i,v) \quad \forall v \in \calV.
@@ -214,16 +220,23 @@ We now wish to bound the $L^2$ norm of the interpolation error. We take a three-
   and this bound is sharp.
   \begin{proof}
     For any $\tilde w \in H^2(\tilde I)$, $\tilde w - \calI \tilde w \in H^2_0(\tilde I)$ because the interpolant $\calI \tilde w \in H^2(\tilde I)$ matches the function $w$ at the endpoints. It hence follows that
-    \begin{equation*}
+    \begin{align*}
       \| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}
-%      =
-%      \sup_{v \in H^2_0(\Omega)} \frac{\| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}}{| \tilde w - \calI \tilde w |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
-      \leq \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
-      =
-     \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} | \tilde w |_{H^2(\tilde I)}
-      = \frac{1}{\pi^2} | \tilde w |_{H^2(\tilde I)} .
-    \end{equation*}
-    Here, the equality follows from the definition of $\rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)}$ in Lemma~\ref{lemma:th_l2_h2_embed} and the fact that $(\calI \tilde w)'' = 0$ because $\calI \tilde w$ is linear.  The last inequality follows from Lemma~\ref{lemma:th_l2_h2_embed}.  The bound is sharp for the maximizer of the embedding constant, namely $\tilde w(x) = \sin(\pi x)$.
+      &=
+      \frac{\| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}}{| \tilde w - \calI \tilde w |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
+      \\
+      &\leq \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
+      & \text{(maximization of the ratio)}\\
+%      &=
+%      \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} | \tilde w - \calI \tilde w |_{H^2(\tilde I)}
+%      & \text{(definition of $\rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)}$)}\\
+      &= \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} | \tilde w |_{H^2(\tilde I)}
+      & \text{($(\calI \tilde w)'' = 0$ since $\calI \tilde w \in \PP^1(\tilde I)$)} \\
+      &= \frac{1}{\pi^2} | \tilde w |_{H^2(\tilde I)},
+      & \text{(Lemma~\ref{lemma:th_l2_h2_embed})}
+    \end{align*}
+    which is the desired bound.
+%    Here, the equality follows from the definition of  in Lemma~\ref{lemma:th_l2_h2_embed} and the fact that $(\calI \tilde w)'' = 0$ because $\calI \tilde w$ is linear.  The last inequality follows from Lemma~\ref{lemma:th_l2_h2_embed}.  The bound is sharp for the maximizer of the embedding constant, namely $\tilde w(x) = \sin(\pi x)$.
   \end{proof}
 \end{proposition}
 We now make a \emph{homogeneity (or scaling) argument} to obtain an interpolation error bound for piecewise linear interpolants. % using Proposition~\ref{prop:th_lin_interp_L2_ref} for $\tilde I \equiv (0,1)$. 
@@ -272,7 +285,7 @@ We now make a \emph{homogeneity (or scaling) argument} to obtain an interpolatio
     Taking the square root of the equation yields the desired bound.
   \end{proof}
 \end{proposition}
-Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error associated with the pieceiwse linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h^2$. While the result is similar to Proposition~\ref{prop:th_poly_Ck_multi} for $C^2$ functions, the regularity requirement for the underlying function is weaker for Proposition~\ref{prop:th_lin_interp_L2} for $H^2$ functions.  Indeed, the underlying function need not be twice differentiable in the strong sense; its weak second derivative needs only be square integrable.
+Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error associated with the piecewise linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h^2$. While the result is similar to Proposition~\ref{prop:th_poly_Ck_multi} for $C^2$ functions, the regularity requirement for the underlying function is weaker for Proposition~\ref{prop:th_lin_interp_L2} for $H^2$ functions.  Indeed, the underlying function need not be twice differentiable in the strong sense; its weak second derivative needs only be square integrable.
 
 
 \section{The $H^1(\Omega)$ error of linear interpolant of $H^2(\Omega)$ functions in $\RR^1$}
@@ -391,6 +404,7 @@ Let $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear inter
 The proposition shows that, if the underlying function is in $H^1(\Omega)$ instead of $H^2(\Omega)$, then the $L^2$ error of the piecewise linear interpolant converges as $h^1$ instead of $h^2$; the convergence rate is reduced. 
 
 \section{Generalization: arbitrary-degree interpolation in $\RR^d$}
+\label{sec:th_poly_gen}
 The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1} can be generalized to (i) higher dimensions, (ii) higher-degree polynomials, (iii) non-uniform meshes, and (iv) $H^k(\Omega)$ norm for $k \geq 0$.  In order to discuss convergence of polynomial interpolants in higher dimensions, we first introduce the notation of a \emph{shape-regular} or \emph{non-degenerate} family of triangulations.
 
 \begin{definition}[shape-regular meshes]

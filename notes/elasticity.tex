@@ -1,0 +1,50 @@
+\chapter{Linear elasticity}
+
+
+
+for $w \in H^1(\Omega)^2$, 
+\begin{equation*}
+  \nabla w = \bmat{cc}
+  \pp{w_1}{x_1} & \pp{w_1}{x_2} \\
+  \pp{w_2}{x_1} & \pp{w_2}{x_2}
+  \emat
+\end{equation*}
+
+
+\begin{equation*}
+  \epsilon(w) = \frac{1}{2} (\nabla w + \nabla w^T)
+\end{equation*}
+
+\begin{equation*}
+  \sigma(u) = 2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u)) I
+\end{equation*}
+
+\begin{align*}
+  - \nabla \cdot \sigma(u) &= f \quad \text{in } f \\
+  u &= u^B \quad \text{on } \Gamma_{D}, \\
+  n \cdot \sigma(u) &= g \quad \text{on } \Gamma_{N}.
+\end{align*}
+
+\begin{align*}
+  0 &= 
+  \int_{\Omega} v \cdot (-\nabla \cdot \sigma(u) ) dx - \int_{\Omega} v \cdot f dx \\
+  &=
+  \int_{\Omega} \nabla v : \sigma (u) dx - \underbrace{ \int_{\Gamma_D} v n \cdot \sigma(u) ds}_{= 0 \ : \ \text{Dirichlet BC}} - \int_{\Gamma_{N}} v \underbrace{ n \cdot \sigma(u)}_{g \ : \ \text{Neumann BC}} ds - \int_{\Omega} v \cdot f dx \\
+  &=
+  \int_{\Omega} \nabla v : \sigma (u) dx - \sum_{i=1}^d \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx \\
+\end{align*}
+
+Let
+\begin{equation*}
+  \calV \equiv \{ v \in H^1(\Omega)^d \ | \ v|_{\Gamma_D} = 0 \}
+\end{equation*}
+We introduce an affine space $\calV^E \equiv u^E + \calV$, where $u^E \in H^1(\Omega)^d$ satisfies $u^E|_{\Gamma_D} = u^B$.
+
+find $u \in \calV^E$ such that
+\begin{equation*}
+  a(u,v) = \ell(v) \quad \forall v \in \calV,
+\end{equation*}
+where
+\begin{align*}
+  a(w,v) &= \int_{\Omega} \nabla v : \sigma (w) dx 
+\end{align*}
