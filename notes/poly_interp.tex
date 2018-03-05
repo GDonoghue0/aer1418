@@ -429,7 +429,7 @@ The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \r
   \begin{equation*}
     \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^p(K), \ \forall K \in \calT_h \} 
   \end{equation*}
-  associated with a triangulation $\calT_h \equiv \{ K_i\}_{i=1}^{n_e}$ delineated by $n$ nodes $\{z_i\}_{i=1}^n$. Given a space, we define the piecewise $\PP^p$ interpolant is a function that satisfies the interpolation condition
+  associated with a triangulation $\calT_h \equiv \{ K_i\}_{i=1}^{n_e}$ delineated by $n$ nodes $\{z_i\}_{i=1}^n$. Given $w \in C^0(\bar \Omega)$, the piecewise $\PP^p$ interpolant is the function in $\calV_h$ that satisfies the interpolation condition
   \begin{equation*}
     (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots, n.
   \end{equation*}
@@ -450,7 +450,7 @@ We make a few remarks. First, we note that shape regularity is a property associ
 We now state the main result.
 \begin{proposition}[polynomial interpolation error bound]
   \label{prop:th_interp_gen}
-  Let $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations, and $\calI_h w$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. If $w \in H^{s+1}(\calT_h)$, then % the $L^2(\Omega)$ interpolation error is bounded by
+  Let $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations, and $\calI_h w$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. If $w \in C^0(\bar \Omega) \cap H^{s+1}(\calT_h)$, then % the $L^2(\Omega)$ interpolation error is bounded by
 \begin{align*}
   \| w - \calI_h w \|_{L^2(\Omega)} &\leq C_\calI h^{r+1} | w |_{H^{r+1}(\calT_h)} \\
   | w - \calI_h w |_{H^1(\Omega)} &\leq C'_\calI h^{r} | w |_{H^{r+1}(\calT_h)}
@@ -461,6 +461,8 @@ for $r = \min\{ s,p \}$ and some $C_{\calI}$ and $C'_{\calI}$ independent of $w$
 \end{proof}
 \end{proposition}
 The proposition summarizes the particular results we obtained in one dimension in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1}.  For functions in $H^{p+1}(\calT_h)$, the $L^2(\Omega)$ and $H^1(\Omega)$ norm of the errors associated with the piecewise degree-$p$ interpolant converge as $h^{p+1}$ and $h^p$, respectively.  If the underlying function is not smooth but is only in $H^{s+1}(\calT_h)$ for $s < p$, then the convergence is limited to $h^{s+1}$ in $L^2(\Omega)$ and $h^s$ in $H^1(\Omega)$.
+
+(The condition $C^0(\bar \Omega) \cap H^{s+1}(\calT_h)$, instead of $H^1(\Omega) \cap H^{s+1}(\calT_h)$, is necessary because $C^0(\bar \Omega) \subset H^1(\Omega)$ does not hold in $\RR^{d > 1}$; hence, the point-wise evaluation of a function, which is required to construct the interpolant, is in general ill-defined for $H^1(\Omega)$ functions in $\RR^{d > 1}$ (unlike in $\RR^1$). This condition can be relaxed by considering so-called quasi-interpolants; however, the discussion is beyond the scope of this course.)
 
 \section{Isoparametric polynomial interpolation}
 To approximate domains with curved boundaries, we introduced in the previous lecture polynomial-based geometry mappings $\{\calG^K \}_{K \in \calT_h}$, where each $\calG^K$ maps from a reference element $\tilde K$ to the physical (curved) element $K$. We then identified the associated approximation space by
@@ -487,7 +489,7 @@ For a shape-regular triangulation of the curved domain, we obtain the following 
   \begin{equation*}
     \calV_h \equiv \{ v \in H^1(\Omega_h) \ | \ v|_K \circ \calG^K \in \PP^p(\tilde K), \ \forall K \in \calT_h \}.
   \end{equation*}
-  If $w \in H^{s+1}(\calT_h)$, then
+  If $w \in C^0(\bar \Omega) \cap H^{s+1}(\calT_h)$, then
 \begin{align*}
   \| w - \calI_h w \|_{L^2(\Omega)} &\leq C_\calI h^{r+1} | w |_{H^{r+1}(\calT_h)} \\
   | w - \calI_h w |_{H^1(\Omega)} &\leq C'_\calI h^{r} | w |_{H^{r+1}(\calT_h)}
