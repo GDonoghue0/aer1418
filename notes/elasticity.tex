@@ -1,43 +1,106 @@
 \chapter{Linear elasticity}
 
+\section{Motivation}
+In this lecture we consider approximation of linear-elasticity problems by the finite element method.
 
-
-for $w \in H^1(\Omega)^2$, 
+\section{Vector-valued Sobolev spaces}
+The Navier-Cauchy equation in $\RR^d$ is a system of equations with $d$ components. By way of preliminaries, we introduce vector-valued Sobolev spaces.
+\begin{definition}[$H^1(\Omega)^d$ space]
+  Given $\Omega \subset \RR^d$, the space of vector-valued functions $H^1(\Omega)^d$ is endowed with an inner product
+  \begin{equation*}
+    (w,v)_{H^1(\Omega)} \equiv \sum_{i=1}^d (w_i,v_i)_{H^1(\Omega)},
+  \end{equation*}
+  equipped with the associated induced norm $\| w \|_{H^1(\Omega)} \equiv \sqrt{(w,w)_{H^1(\Omega)}}$, and comprises function
+  \begin{equation*}
+    H^1(\Omega)^d \equiv \{ v \ | \ \| v \|_{H^1(\Omega)} < \infty \}.
+  \end{equation*}
+  Here, $v_i$ denotes the $i$-th component of the vector-valued field for $i = 1,\dots,d$. In other words, for $v \in H^1(\Omega)^d$, we have $v: \Omega \to \RR^d$ and $v_i \in H^1(\Omega)$.
+\end{definition}
+\begin{definition}[gradient of $H^1(\Omega)^d$ functions]
+  For $v \in H^1(\Omega)^d$, the gradient $\nabla v L^2(\Omega)^{d \times d}$ is a tensor-valued field in such that
 \begin{equation*}
-  \nabla w = \bmat{cc}
-  \pp{w_1}{x_1} & \pp{w_1}{x_2} \\
-  \pp{w_2}{x_1} & \pp{w_2}{x_2}
-  \emat
+  (\nabla v)_{ij} = \pp{v_i}{x_j}, \quad i,j = 1,\dots,d;
 \end{equation*}
-
-
+\end{definition}
+\begin{corollary}
+  For $v \in H^1(\Omega)^2$, the gradient $\nabla v \in L^2(\Omega)^{2 \times 2}$ is given by
 \begin{equation*}
-  \epsilon(w) = \frac{1}{2} (\nabla w + \nabla w^T)
+  \nabla v = \bmat{cc}
+  \pp{v_1}{x_1} & \pp{v_1}{x_2} \\
+  \pp{v_2}{x_1} & \pp{v_2}{x_2}
+  \emat.
 \end{equation*}
-
+\end{corollary}
+\begin{definition}[divergence of $H^1(\Omega)^d$ functions]
+For $v \in H^1(\Omega)^d$, the divergence of $v \in L^2(\Omega)$ is a scalar-valued field such that
 \begin{equation*}
-  \sigma(u) = 2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u)) I
+  \nabla \cdot v = \sum_{i = 1}^d \dd{v_i}{x_i};
 \end{equation*}
+\end{definition}
+\begin{corollary}
+  For $v \in H^1(\Omega)^2$, the divergence $\nabla \cdot v \in L^2(\Omega)$ is given by
+\begin{equation*}
+  \nabla \cdot v = \pp{v_1}{x_1} + \pp{v_2}{x_2}.
+\end{equation*}
+\end{corollary}
+\begin{definition}[divergence of $H^1(\Omega)^{d \times d}$ functions]
+For $\sigma \in H^1(\Omega)^{d \times d}$, its divergence $\nabla \cdot \sigma \in L^2(\Omega)^d$ is a vectors-valued field such that
+\begin{equation*}
+  (\nabla \cdot \sigma)_i = \sum_{i=1}^d \pp{\sigma_{ij}}{x_j}.
+\end{equation*}
+\end{definition}
+\begin{corollary}
+  For $\sigma \in H^1(\Omega)^{2 \times 2}$, the divergence $\nabla \cdot \sigma \in L^2(\Omega)^2$ is given by
+  \begin{equation*}
+    \nabla \cdot \sigma =
+    \bmat{c}
+    \pp{\sigma_{11}}{x_1} + \pp{\sigma_{12}}{x_2} \\
+    \pp{\sigma_{21}}{x_1} + \pp{\sigma_{22}}{x_2}
+    \emat
+  \end{equation*}
+\end{corollary}
+\section{Formulation}
+We now formulate the linear elasticity problem.  Given a displacement field $v \in H^1(\Omega)^d$, we first introduce the strain tensor (field) $\epsilon(v) \in L^2(\Omega)^{d \times d}$ such that
+\begin{equation*}
+  \epsilon(v) = \frac{1}{2} (\nabla v + \nabla v^T).
+\end{equation*}
+We next introduce the associated stress tensor (field) $\sigma(v) \in L^2(\Omega)^{d \times d}$ such that
+\begin{equation*}
+  \sigma(v) = 2 \mu \epsilon(v) + \lambda \text{tr}(\epsilon(v)) I,
+\end{equation*}
+where $\lambda \in \RR_{>0}$ and $\mu \in \RR_{>0}$ are the Lam\'e constants.
 
+Let $\Omega \subset \RR^d$ be a Lipschitz domain. We partition the boundary of $\Omega$ to the Dirichlet boundary $\Gamma_D$ and the Neumann boundary $\Gamma_N$ such that $\partial \Omega = \bar{\Gamma}_D \cup \bar{\Gamma}_N$. We then introduce the strong form of the linear elasticity problem: find $u$ such that
 \begin{align*}
   - \nabla \cdot \sigma(u) &= f \quad \text{in } f \\
   u &= u^B \quad \text{on } \Gamma_{D}, \\
-  n \cdot \sigma(u) &= g \quad \text{on } \Gamma_{N}.
+  n \cdot \sigma(u) &= g \quad \text{on } \Gamma_{N},
 \end{align*}
+where $f: \Omega \to \RR^d$ is the body force field and $g: \Gamma_N \to \RR^d$ is the traction force field.
 
+We now derive a weak formulation for the linear elasticity problem.  To this end, we first introduce a Hilbert space
+\begin{equation}
+  \calV \equiv \{ v \in H^1(\Omega)^d \ | \ v|_{\Gamma_D} = 0 \}
+  \label{eq:le_calV}
+\end{equation}
+and an affine space
+\begin{equation*}
+  \calV^E \equiv u^E + \calV,
+\end{equation*}
+where $u^E$ is any function in $H^1(\Omega)^d$ such that $u^E|_{\Gamma_D} = u^B$ on $\Gamma_D$; we recall that Dirichlet boundary conditions are essential boundary conditions that must be explicitly through the construction of the space.  We now take an arbitrary test function $v \in \calV$, multiply the equation by $v$, integrate by parts, and make appropriate substitutions for the natural boundary conditions: 
 \begin{align*}
   0 &= 
   \int_{\Omega} v \cdot (-\nabla \cdot \sigma(u) ) dx - \int_{\Omega} v \cdot f dx \\
   &=
   \int_{\Omega} \nabla v : \sigma (u) dx - \underbrace{ \int_{\Gamma_D} v n \cdot \sigma(u) ds}_{= 0 \ : \ \text{Dirichlet BC}} - \int_{\Gamma_{N}} v \underbrace{ n \cdot \sigma(u)}_{g \ : \ \text{Neumann BC}} ds - \int_{\Omega} v \cdot f dx \\
   &=
-  \int_{\Omega} \nabla v : \sigma (u) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx \\
+  \int_{\Omega} \nabla v : \sigma (u) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx 
 \end{align*}
-We can further simplify the integral term.  We first note that because $\epsilon(u)$ is symmetric we can also symmetrize $\nabla v$ to obtain
+We can further simplify the term involving integration over $\Omega$.  We first note that, because $\epsilon(u)$ is symmetric,
 \begin{equation*}
   \nabla v : \epsilon(u) = \epsilon(v) : \epsilon(u) .
 \end{equation*}
-We next note that $\nabla v: I = \text{tr}(\nabla v)$ and $\text{tr}(\nabla v) = \text{tr}(\epsilon(v))$ because $\epsilon(\cdot)$ preserves the diagonal terms to obtain
+We next note that $\nabla v: I = \text{tr}(\nabla v)$ and $\text{tr}(\nabla v) = \text{tr}(\epsilon(v))$ because $\epsilon(\cdot)$ preserves the diagonal terms:
 \begin{equation*}
   = \nabla v : \text{tr}(\epsilon(u)) I 
   = (\nabla v : I) \text{tr}(\epsilon(u)) 
@@ -48,26 +111,39 @@ It hence follows that
   \nabla v : \sigma(u) = \nabla v : (2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u)) I )
   = 2 \mu \epsilon(v) : \epsilon(u) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u))
 \end{equation*}
-Let
-\begin{equation*}
-  \calV \equiv \{ v \in H^1(\Omega)^d \ | \ v|_{\Gamma_D} = 0 \}
-\end{equation*}
-We introduce an affine space $\calV^E \equiv u^E + \calV$, where $u^E \in H^1(\Omega)^d$ satisfies $u^E|_{\Gamma_D} = u^B$.
-
-find $u \in \calV^E$ such that
-\begin{equation*}
+Our weak formulation is as follows: find $u \in \calV^E$ such that
+\begin{equation}
   a(u,v) = \ell(v) \quad \forall v \in \calV,
-\end{equation*}
+  \label{eq:le_weak}
+\end{equation}
 where
-\begin{align*}
-  a(w,v) &= \int_{\Omega} ( 2 \mu \epsilon(v) : \epsilon(w) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(w)) ) dx \quad \forall w, v \in \calV \\
-  \ell(v) &=   \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \quad \forall v \in \calV.
-\end{align*}
+\begin{align}
+  a(w,v) &= \int_{\Omega} ( 2 \mu \epsilon(v) : \epsilon(w) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(w)) ) dx \quad \forall w, v \in \calV \label{eq:le_a} \\
+  \ell(v) &=   \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \quad \forall v \in \calV \label{eq:le_ell}.
+\end{align}
 
+\section{Well-posedness}
+We now wish to understand if a solution to the variational problem~\eqref{eq:le_weak} exists and, if so, is unique.  To this end, we introduce the \emph{Korn's inequality}.
 \begin{theorem}[Korn's inequality]
-  There exists $\alpha > 0$ such that
+  Let $\calV \subset H^1(\Omega)^d$ be given by~\eqref{eq:le_calV}.  There exists $\alpha > 0$ such that
   \begin{equation*}
-    \| \epsilon(v) \|_{L^2(\Omega)} + \| v \|_{L^2(\Omega)} \geq \alpha \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega)^d.
+    %    \| \epsilon(v) \|_{L^2(\Omega)} + \| v \|_{L^2(\Omega)} \geq \alpha \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega)^d.
+    \| \epsilon(v) \|_{L^2(\Omega)} \geq C_{\rm Korn} \| v \|_{H^1(\Omega)} \quad \forall v \in \calV.
   \end{equation*}
-
 \end{theorem}
+\begin{proposition}
+  The bilinear form~\eqref{eq:le_a} associated with the linear elasticity problem is symmetric, coercive, and continuous in $\calV$ given by~\eqref{eq:le_calV}.
+  \begin{proof}
+    The symmetry of $a(\cdot,\cdot)$ is obvious from inspection. The coercivity of $a(\cdot,\cdot)$ is a consequence of the Korn's inequality: for any $v \in \calV$
+    \begin{equation*}
+      a(v,v) = 2 \mu \| \epsilon(v) \|_{L^2(\Omega)} + \lambda \| \text{tr}(\epsilon(v)) \|_{L^2(\Omega)}
+      \geq 2 \mu \| \epsilon(v) \|_{L^2(\Omega)}
+      \geq 2 \mu C_{\rm Korn} \| v \|_{H^1(\Omega)}.
+    \end{equation*}
+    It follows that $a(\cdot,\cdot)$ is coercive with the coercivity constant $\alpha \equiv 2 \mu C_{\rm Korn}$. The continuity
+    \begin{equation*}
+      a(w,v) = 2\mu (\epsilon(w), \epsilon(v))
+    \end{equation*}
+  \end{proof}
+\end{proposition}
+
