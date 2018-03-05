@@ -10,10 +10,10 @@ For the majority of the lecture, we consider linear polynomial interpolation in 
 
 
 
-\section{Linear interpolation error for $C^k$ functions in $\RR^1$}
+\section{Linear interpolation error for $C^2$ functions in $\RR^1$}
 
 \label{sec:fe_interp_1d}
-In this section, we analyze the error associated with the piecewise linear interpolation of $C^k$ functions in one dimension. To this end, we introduce a domain $\Omega \equiv [a,b] \subset \RR^1$ and interpolation nodes $a \equiv z_1 < \cdots < z_n \equiv b$.  Given a function $w$, its piecewise linear polynomial interpolant $\calI_h w$ is a piecewise linear polynomial,
+In this section, we analyze the error associated with the piecewise linear interpolation of $C^2$ functions in one dimension. To this end, we introduce a domain $\Omega \equiv [a,b] \subset \RR^1$ and interpolation nodes $a \equiv z_1 < \cdots < z_n \equiv b$.  Given a function $w$, its piecewise linear polynomial interpolant $\calI_h w$ is a piecewise linear polynomial,
 \begin{equation*}
   (\calI_h w)|_{[z_i,z_{i+1}]} \in \PP^1([z_i,z_{i+1}]), \quad i = 1,\dots,n-1,
 \end{equation*}
@@ -52,17 +52,21 @@ We first analyze the error for a single-segment interpolant $\calI_h w$ over $[a
     We finally note that $|w''(\xi)| \leq \max_{s \in [a,b]}|w''(s)|$ and $| (x-a)(x-b) | \leq (b-a)^2/4$.
   \end{proof}
 \end{proposition}
+
 \begin{proposition}
   \label{prop:th_poly_Ck_multi}
-  Let $w \in C^2([a,b])$ and $\calI_h w$ be the piecewise linear interpolant delineated by nodes $\{z_i\}_{i=1}^n$ with the node spacing $h \equiv \max_{i \in \{ 1,\dots,n-1 \} } |z_{i+1} - z_i|$. Then, the interpolation error is bounded by
+  Let $\bar \Omega \equiv (a,b) \subset \RR^1$ and $\calI_h w$ be the piecewise linear interpolant associated with a triangulation $\calT_h \equiv \{ K \}$ with $h \equiv \max_{K \in \calT_h} |K|$.
+  %delineated by nodes $\{z_i\}_{i=1}^n$ with the node spacing $h \equiv \max_{i \in \{ 1,\dots,n-1 \} } |z_{i+1} - z_i|$.
+  If $w \in C^0(\bar \Omega) \cap C^2(\calT_h)$, then the interpolation error is bounded by
   \begin{equation*}
-    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{s \in [a,b]} |w''(s)| h^2 \quad \forall x \in [a,b].
+    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{K \in \calT_h} \max_{s \in K} |w''(s)| h^2 \quad \forall x \in [a,b],
   \end{equation*}
+  where $C^2(\calT_h) \equiv \oplus_{K \in \calT_h} C^2(\bar K)$, the space of piecewise $C^2$ functions.
   \begin{proof}
-    Apply Proposition~\ref{prop:th_poly_Ck_ref} to each segment of the piecewise linear interpolant, whose maximum length is $h$.
+    Apply Proposition~\ref{prop:th_poly_Ck_ref} to each segment of the piecewise linear interpolant.
   \end{proof}
 \end{proposition}
-Propositions~\ref{prop:th_poly_Ck_ref} and \ref{prop:th_poly_Ck_multi} show that the maximum error in the piecewise linear interpolation is a function of (i) the maximum second derivative $\max_{s \in [a,b]} | w''(s)|$ and (ii) the node spacing $h$.  While this ``classical'' interpolation error bound is useful in many scenarios that involve functions in $C^k$ spaces --- with continuous (strong) derivatives in the pointwise sense  ---, it is not the natural choice for finite element analysis that involves functions in $H^k$ Sobolev spaces --- with square integrable weak derivatives in the Lebesgue sense.  In the following sections, we introduce interpolation error bounds for functions in $H^k$ Sobolev spaces.
+Proposition~\ref{prop:th_poly_Ck_multi} shows that the maximum error in the piecewise linear interpolation is a function of (i) the maximum second derivative $\max_{K \in \calT_h} \max_{s \in K} |w''(s)|$ in the ``broken'' space and (ii) the node spacing $h$.  Note that we require the underlying function to be only \emph{piecewise} $C^2(\calT_h)$ continuous, instead of \emph{global} $C^2(\Omega)$ continuous, because the interpolant is constructed independently for each segment.  While this ``classical'' interpolation error bound is useful in many scenarios that involve functions in $C^k$ spaces --- with continuous (strong) derivatives in the pointwise sense  ---, it is not the natural choice for finite element analysis that involves functions in $H^k$ Sobolev spaces --- with square integrable weak derivatives in the Lebesgue sense.  In the following sections, we introduce interpolation error bounds for functions in $H^k$ Sobolev spaces.
 
 \section{Preliminary: Rayleigh quotient}
 By way of preliminary, we first introduce a technical tool required to analyze interpolation error in Sobolev spaces: the \emph{Rayleigh quotient} and the associated bounds.  We first introduce Rayleigh quotients for linear operators in $\RR^n$; i.e., the matrices $\RR^{n \times n}$.
@@ -135,20 +139,21 @@ We now generalize Rayleigh quotient to bilinear forms in Hilbert spaces.
 \end{proposition}
 
 
-\section{The $L^2$ error of linear interpolant of $H^2$ functions in $\RR^1$}
+\section{The $L^2(\Omega)$ error of linear interpolant of $H^2(\calT_h)$ functions in $\RR^1$}
 \label{sec:th_interp_l2_h2}
-We now consider piecewise linear interpolation for functions in $H^2(\Omega)$. To this end, we introduce an approximation space,
+We now consider piecewise linear interpolation for $H^2(\Omega)$ functions in $\RR^1$.  (More precisely, we consider functions in a broken space $H^2(\calT_h) \supset H^2(\Omega)$, which will be introduced shortly.)  We first provide a definition of the interpolant.
+\begin{definition}[piecewise linear interpolant in $\RR^1$]
+  \label{def:th_lin_interp_1d}
+  Let $\Omega \subset \RR^1$.  Consider a triangulation $\calT_h \equiv \{K_i\}_{i=1}^{n_e}$ delineated by $n = n_e + 1$ nodes $\{z_i\}_{i=1}^{n}$ such that $K_i \equiv (z_i,z_{i+1})$ and $h \equiv \max_{K \in \calT_h} |K|$.  Consider the associated approximation space
 \begin{equation*}
-  \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \},
+  \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^1(K), \ \forall K \in \calT_h \} .
 \end{equation*}
-for $\Omega \subset \RR^1$ and a triangulation $\calT_h$ delineated by $n$ nodes.  We then define an \emph{interpolant} associated with $\calV_h$.
-\begin{definition}[interpolant]
-Given $w \in \calV$, an interpolant $\calI_h w$ is a member of $\calV_h$ that satisfies the interpolation condition
+For $w \in H^1(\Omega)$, the interpolant $\calI_h w$ is a unique member of $\calV_h$ that satisfies the interpolation condition
 \begin{equation*}
-  (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots, n,
+  (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots, n.
 \end{equation*}
-where $\{z_i \}_{i=1}^n$ is the set of interpolation points.
 \end{definition}
+Note that the construction of the interpolant is straightforward given a Lagrange basis $\{\phi_i\}_{i=1}^n$ of $\calV_h$: $\calI_h w = \sum_{i=1}^n w(z_i) \phi_i$.
 
 We now wish to bound the $L^2$ norm of the interpolation error. We take a three-step strategy: (i) we first introduce an embedding constant between two relevant spaces; (ii) we next derive an interpolation error bound for a unit line segment $\tilde I \equiv (a,b)$; (iii) we finally make a homogeneity argument to establish an interpolation error bound for piecewise linear interpolant.
 \begin{lemma}[$L^2(\tilde I)$-$H^2_0(\tilde I)$ embedding constant]
@@ -210,7 +215,7 @@ We now wish to bound the $L^2$ norm of the interpolation error. We take a three-
   \end{proof}
 \end{lemma}
 
-\begin{proposition}[Linear interpolation error on $\tilde I \equiv (0,1)$]
+\begin{proposition}[linear interpolation error on $\tilde I \equiv (0,1)$]
   \label{prop:th_lin_interp_L2_ref}
   Let $\tilde I \equiv (0,1)$.  For any $\forall \tilde w \in H^2(\tilde I)$, the linear interpolation error is bounded by 
   \begin{equation*}
@@ -239,14 +244,29 @@ We now wish to bound the $L^2$ norm of the interpolation error. We take a three-
 %    Here, the equality follows from the definition of  in Lemma~\ref{lemma:th_l2_h2_embed} and the fact that $(\calI \tilde w)'' = 0$ because $\calI \tilde w$ is linear.  The last inequality follows from Lemma~\ref{lemma:th_l2_h2_embed}.  The bound is sharp for the maximizer of the embedding constant, namely $\tilde w(x) = \sin(\pi x)$.
   \end{proof}
 \end{proposition}
-We now make a \emph{homogeneity (or scaling) argument} to obtain an interpolation error bound for piecewise linear interpolants. % using Proposition~\ref{prop:th_lin_interp_L2_ref} for $\tilde I \equiv (0,1)$. 
-
-\begin{proposition}[Piecewise linear interpolation error ($L^2$)]
-  \label{prop:th_lin_interp_L2}
-  Let $\Omega \subset \RR^1$, $w \in H^2(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ comprises line segments of maximum length $h$. Then, the interpolation error is bounded by
+We now define \emph{broken} Sobolev spaces suitable for the analysis of piecewise polynomial interpolants.
+\begin{definition}[broken Sobolev space $H^k(\calT_h)$]
+  \label{def:th_broken_Hk}
+  Consider $\Omega \subset \RR^d$ and an associated triangulation $\calT_h \equiv \{ K_i \}_{i=1}^{n_e}$ comprises $n_e$ (open) elements such that (i) $K_i \cap K_j = \emptyset$, $i \neq j$, and (ii) $\cup_{K \in \calT_h} \bar K = \bar \Omega$.  The space $H^k(\calT_h)$ is endowed with an inner product
   \begin{equation*}
-    \| w - \calI_h w \|_{L^2(I)}
-    \leq \frac{h^2}{\pi^2} | w |_{H^2(I)}.
+    (w,v)_{H^k(\calT_h)} \equiv \sum_{K \in \calT_h} (w,v)_{H^k(K)},
+  \end{equation*}
+  the associated induced norm $\| w \|_{H^k(\calT_h)} \equiv \sqrt{(w,w)_{H^k(\calT_h)}}$, and comprises functions
+  \begin{equation*}
+    H^k(\calT_h) \equiv \{ v \ | \ \| v \|_{H^k(\calT_h)} < \infty \}.
+  \end{equation*}
+  We also introduce the associated semi-norm
+  \begin{equation*}
+    | w |_{H^k(\calT_h)}^2 \equiv \sum_{K \in \calT_h} | w |_{H^k(K)}^2.
+  \end{equation*}
+\end{definition}
+We finally make a \emph{homogeneity (or scaling) argument} to obtain an interpolation error bound for piecewise linear interpolants. % using Proposition~\ref{prop:th_lin_interp_L2_ref} for $\tilde I \equiv (0,1)$.
+\begin{proposition}[piecewise linear interpolation error in $\RR^1$ ($L^2$)]
+  \label{prop:th_lin_interp_L2}
+  Let $\calI_h w$ be the piecewise linear interpolant in~Definition~\ref{def:th_lin_interp_1d}. If $w \in H^1(\Omega) \cap H^2(\calT_h)$, then
+  \begin{equation*}
+    \| w - \calI_h w \|_{L^2(\Omega)}
+    \leq \frac{h^2}{\pi^2} | w |_{H^2(\calT_h)}.
   \end{equation*}
   \begin{proof}
     We first consider the interpolation error for a single element $K \in \calT_h$ of length $h$. To this end, we map the function $w|_K$ on $K \equiv (z_i,z_i+h)$ to the function $\tilde w$ on $\tilde I \equiv (0,1)$. We associate a point $x \in K$ with $\tilde x \in \tilde K$ according to $x = z_i + h \tilde x$; the functions are related by
@@ -280,17 +300,17 @@ We now make a \emph{homogeneity (or scaling) argument} to obtain an interpolatio
       \sum_{K \in \calT_h} \| w - \calI_h w \|_{L^2(K)}^2
       \leq
       \sum_{K \in \calT_h} \frac{h^4}{\pi^4} | w |^2_{H^2(K)}
-      = \frac{h^4}{\pi^2} | w |^2_{H^2(\Omega)}.
+      = \frac{h^4}{\pi^2} | w |^2_{H^2(\calT_h)}.
     \end{equation*}
     Taking the square root of the equation yields the desired bound.
   \end{proof}
 \end{proposition}
-Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error associated with the piecewise linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h^2$. While the result is similar to Proposition~\ref{prop:th_poly_Ck_multi} for $C^2$ functions, the regularity requirement for the underlying function is weaker for Proposition~\ref{prop:th_lin_interp_L2} for $H^2$ functions.  Indeed, the underlying function need not be twice differentiable in the strong sense; its weak second derivative needs only be square integrable.
+Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error associated with the piecewise linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\calT_h)$ semi-norm of the underlying function and (ii) converges as $h^2$.  While the result is similar to Proposition~\ref{prop:th_poly_Ck_multi} for $C^2$ functions, the regularity requirement for the underlying function is weaker for Proposition~\ref{prop:th_lin_interp_L2} for $H^2$ functions.  Indeed, the underlying function need not be twice differentiable in the strong sense; its weak second derivative needs only be square integrable (in the broken space).  The fact that the function needs only be in $H^2(\calT_h) \supset H^2(\Omega)$ is a direct consequence of the piecewise construction of the interpolant; this relaxation will play an important role for solutions that are only piecewise smooth, which arise in the presence of, for example, discontinuous interior/boundary heat source or discontinuous conductivity for the heat equation.
 
 
-\section{The $H^1(\Omega)$ error of linear interpolant of $H^2(\Omega)$ functions in $\RR^1$}
+\section{The $H^1(\Omega)$ error of linear interpolant of $H^2(\calT_h)$ functions in $\RR^1$}
 \label{sec:th_interp_h1_h2}
-  We now analyze the error in the piecewise linear interpolation of $H^2(\Omega)$ functions in a norm stronger than the $L^2(\Omega)$ norm: the $H^1(\Omega)$ norm.  The analysis follows essentially the same argument as that used for the $L^2(\Omega)$ norm of the error in the previous section.
+  We now analyze the error in the piecewise linear interpolation of $H^2(\calT_h)$ functions in a norm stronger than the $L^2(\Omega)$ norm: the $H^1(\Omega)$ norm.  The analysis follows essentially the same argument as that used for the $L^2(\Omega)$ norm of the error in the previous section.
 \begin{lemma}[$H^1(\tilde I)$-$H^2_0(\tilde I)$ embedding constant]
   \label{lemma:th_h1_h2_embed}
   Let $\tilde I \equiv (0,1)$ and $H^2_0(\tilde I) \equiv \{ v \in H^2(\tilde I) \ | \ v(x=0) = v(x=1) = 0 \}$. Then 
@@ -321,32 +341,32 @@ Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error assoc
     We can readily show that the eigenpairs are $u_k = \sin(k \pi x)$ and $\lambda_k = 1/ (k^2 \pi^2)$.  The maximum eigenvalue is $1/\pi^2$, and the embedding constant, which is the square root of the Rayleigh quotient, is bounded by $1/\pi$.
   \end{proof}
 \end{lemma}
-\begin{proposition}[Piecewise linear interpolation error ($H^1$)]
+\begin{proposition}[piecewise linear interpolation error in $\RR^1$ ($H^1$)]
   \label{prop:th_lin_interp_H1}
-  Let $\Omega \subset \RR^1$, $w \in H^2(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ that consists of line segments of maximum length $h$. Then, the interpolation error is bounded by
+    Let $\calI_h w$ be the piecewise linear interpolant in~Definition~\ref{def:th_lin_interp_1d}. If $w \in H^1(\Omega) \cap H^2(\calT_h)$, then
   \begin{equation*}
     | w - \calI_h w |_{H^1(\Omega)}
-    \leq \frac{h}{\pi} | w |_{H^2(\Omega)},
+    \leq \frac{h}{\pi} | w |_{H^2(\calT_h)},
   \end{equation*}
   \begin{proof}
     Proof is similar to the analysis for the $L^2$ error in Proposition~\ref{prop:th_lin_interp_L2} and uses the homogeneity argument, except now we appeal to Lemma~\ref{lemma:th_h1_h2_embed}. We here omit the proof for brevity.
   \end{proof}
 \end{proposition}
 \begin{corollary}
-  In the same setting as Proposition~\ref{prop:th_lin_interp_H1}, the $H^1$ norm of the interpolation error is bounded by
+  In the same setting as Proposition~\ref{prop:th_lin_interp_H1}, the $H^1(\Omega)$ norm of the interpolation error is bounded by
   \begin{equation*}
-    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \left(  \frac{h^2}{\pi^2} +  \frac{h^4}{\pi^4} \right)^{1/2} | w |_{H^2(\Omega)}.
+    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \left(  \frac{h^2}{\pi^2} +  \frac{h^4}{\pi^4} \right)^{1/2} | w |_{H^2(\calT_h)}.
   \end{equation*}
   As $h \to 0$, 
   \begin{equation*}
-    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \frac{h}{\pi}  | w |_{H^2(\Omega)}.
+    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \frac{h}{\pi}  | w |_{H^2(\calT_h)}.
   \end{equation*}
 \end{corollary}
 Proposition~\ref{prop:th_lin_interp_H1} shows that the $H^1(\Omega)$ error associated with the pieceiwse linear interpolation of $H^2(\Omega)$ functions (i) depends on the $H^2(\Omega)$ semi-norm of the underlying function and (ii) converges as $h$. Note that the $H^1(\Omega)$ norm is a stronger norm than the $L^2(\Omega)$ norm, and hence the $H^1(\Omega)$ error converges at a lower rate than the $L^2(\Omega)$ error.
 
 \section{The $L^2(\Omega)$ error of linear interpolant of $H^1(\Omega)$ functions in $\RR^1$}
 \label{sec:th_interp_l2_h1}
-We now consider the case where the case where the underlying function is only in $H^1(\Omega)$ for $\Omega \subset \RR^1$.  We recall that $H^1(\Omega)$ space includes rather irregular functions; for example, a continuous function with a kink, which would not be in $C^1(\bar \Omega)$, is in $H^1(\Omega)$. 
+We now consider the case where the underlying function is only in $H^1(\Omega)$ for $\Omega \subset \RR^1$.  We recall that $H^1(\Omega)$ space includes rather irregular functions; for example, a continuous function with a kink, which would not be in $C^1(\bar \Omega)$, is in $H^1(\Omega)$. 
 \begin{proposition}
   \label{lemma:th_l2_h1_embed}
 Let $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear interpolant of $v \in H^1(\tilde I)$ so that $(\calI v)(x=0) = v(x=0)$ and $(\calI v)(x=1) = v(x=1)$.  Then,
@@ -390,9 +410,9 @@ Let $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear inter
 \end{proof}
 \end{proposition}
 
-\begin{proposition}[Piecewise linear interpolation error ($L^2$)]
+\begin{proposition}[piecewise linear interpolation error in $\RR^1$ ($L^2$)]
   \label{prop:th_lin_interp_L2_H1}
-  Let $\Omega \subset \RR^1$, $w \in H^1(\Omega)$, and $\calI_h w$ be the piecewise linear interpolant associated with the triangulation $\calT_h$ that consists of line segments of maximum length $h$. Then, the interpolation error is bounded by
+  Let $\calI_h w$ be the piecewise linear interpolant in~Definition~\ref{def:th_lin_interp_1d}. If $w \in H^1(\Omega)$, then
   \begin{equation*}
     \| w - \calI_h w \|_{L^2(\Omega)}
     \leq \frac{h}{\pi} | w |_{H^1(\Omega)},
@@ -401,12 +421,21 @@ Let $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear inter
     Proof is similar to the analysis for the $L^2$ interpolation error of $H^2(\Omega)$ functions in Proposition~\ref{prop:th_lin_interp_L2} and uses the homogeneity argument, except now we appeal to Lemma~\ref{lemma:th_l2_h1_embed}. We here omit the proof for brevity.
   \end{proof}
 \end{proposition}
-The proposition shows that, if the underlying function is in $H^1(\Omega)$ instead of $H^2(\Omega)$, then the $L^2$ error of the piecewise linear interpolant converges as $h^1$ instead of $h^2$; the convergence rate is reduced. 
+The proposition shows that, if the underlying function is in $H^1(\Omega)$ instead of $H^1(\Omega) \cap H^2(\calT_h)$, then the $L^2$ error of the piecewise linear interpolant converges as $h^1$ instead of $h^2$; the convergence rate is reduced. 
 
-\section{Generalization: arbitrary-degree interpolation in $\RR^d$}
+\section{Generalization: piecewise $\PP^p$ interpolation in $\RR^d$}
 \label{sec:th_poly_gen}
-The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1} can be generalized to (i) higher dimensions, (ii) higher-degree polynomials, (iii) non-uniform meshes, and (iv) $H^k(\Omega)$ norm for $k \geq 0$.  In order to discuss convergence of polynomial interpolants in higher dimensions, we first introduce the notation of a \emph{shape-regular} or \emph{non-degenerate} family of triangulations.
-
+The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \ref{sec:th_interp_h1_h2}, and \ref{sec:th_interp_l2_h1} can be generalized to (i) higher dimensions, (ii) higher-degree polynomials, and (iii) non-uniform meshes.  To this end, we consider piecewise degree-$p$ polynomial spaces of the form
+  \begin{equation*}
+    \calV_h \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^p(K), \ \forall K \in \calT_h \} 
+  \end{equation*}
+  associated with a triangulation $\calT_h \equiv \{ K_i\}_{i=1}^{n_e}$ delineated by $n$ nodes $\{z_i\}_{i=1}^n$. Given a space, we define the piecewise $\PP^p$ interpolant is a function that satisfies the interpolation condition
+  \begin{equation*}
+    (\calI_h w)(z_i) = w(z_i), \quad i = 1,\dots, n.
+  \end{equation*}
+  Given a Lagrange basis $\{\phi_i\}_{i=1}^n$ of $\calV_h$, we can readily construct the interpolant: $\calI_h w = \sum_{i=1}^n w(z_i) \phi_i$.
+  
+In order to discuss the convergence of polynomial interpolants in higher dimensions, we first introduce the notation of a \emph{shape-regular} or \emph{non-degenerate} family of triangulations.
 \begin{definition}[shape-regular meshes]
   \label{def:th_shape_reg_affine}
   A family of meshes $\{ \calT_h \}_{h > 0}$ is said to be shape-regular if there exists $r_0 < \infty$ such that 
@@ -415,20 +444,18 @@ The interpolation error bound obtained in Sections~\ref{sec:th_interp_l2_h2}, \r
   \end{equation*}
   where $h_K$ is the diameter of the element $K$, and $\rho_K$ is the maximum diameter of the largest ball that can be inscribed in $K$.
 \end{definition}
-We make a few remarks. First, we note that shape regularity is a property associated with a \emph{family} (or sequence) of triangulations of various $h$, and not a single instance of triangulation.  Second, in one dimension $\rho_K = h_K$, and any triangulation is shape-regular.  Third, for triangles, $\frac{h_K}{\rho_K} \leq \frac{2}{\sin(\theta_K)}$, where $\theta_K$ is the smallest angle; the triangle cannot become too flat as $h \to 0$ for a shape-regular family of triangulations.  
+We make a few remarks. First, we note that shape regularity is a property associated with a \emph{family} (or sequence) of triangulations of various $h$, and not a single instance of triangulation.  Second, in one dimension $\rho_K = h_K$, and any triangulation is shape-regular.  Third, for triangles, $\frac{h_K}{\rho_K} \leq \frac{2}{\sin(\theta_K)}$, where $\theta_K$ is the smallest angle; the triangle cannot become too flat as $h \to 0$ for a shape-regular family of triangulations.
+
 
 We now state the main result.
 \begin{proposition}[polynomial interpolation error bound]
   \label{prop:th_interp_gen}
-  Let $w \in H^{s+1}(\Omega)$, $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations, and $\calI_h w$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. Then, the $L^2(\Omega)$ interpolation error is bounded by
+  Let $w \in H^{s+1}(\Omega)$, $\{\calT_h\}_{h > 0}$ be a family of shape-regular triangulations, and $\calI_h w$ be the piecewise polynomial interpolant of degree $p$ associated with $\calT_h$. If $w \in H^{s+1}(\Omega)$, then % the $L^2(\Omega)$ interpolation error is bounded by
 \begin{align*}
-  \| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^{r+1} | w |_{H^{r+1}(\Omega)}
+  \| w - \calI_h w \|_{L^2(\Omega)} &\leq C_\calI h^{r+1} | w |_{H^{r+1}(\calT_h)} \\
+  | w - \calI_h w |_{H^1(\Omega)} &\leq C'_\calI h^{r} | w |_{H^{r+1}(\calT_h)}
 \end{align*}
-for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$. Similarly, for $k \geq 0$, the $H^k(\Omega)$ interpolation error is bounded by
-\begin{align*}
-  | w - \calI_h w |_{H^k(\Omega)} \leq C_\calI h^{r+1-k} | w |_{H^{r+1}(\Omega)}
-\end{align*}
-for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$.
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ and $C'_{\calI}$ independent of $w$ and $h$.
 \begin{proof}
   Proof is beyond the scope of this course. We refer to Brenner and Scott (2008).
 \end{proof}
@@ -460,15 +487,12 @@ For a shape-regular triangulation of the curved domain, we obtain the following 
   \begin{equation*}
     \calV_h \equiv \{ v \in H^1(\Omega_h) \ | \ v|_K \circ \calG^K \in \PP^p(\tilde K), \ \forall K \in \calT_h \}.
   \end{equation*}
-  Then, for any $w \in H^{s+1}(\Omega)$,  the $L^2(\Omega)$ interpolation error is bounded by
+  If $w \in H^{s+1}(\Omega)$, then
 \begin{align*}
-  \| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^{r+1} | w |_{H^{r+1}(\Omega)}
+  \| w - \calI_h w \|_{L^2(\Omega)} &\leq C_\calI h^{r+1} | w |_{H^{r+1}(\calT_h)} \\
+  | w - \calI_h w |_{H^1(\Omega)} &\leq C'_\calI h^{r} | w |_{H^{r+1}(\calT_h)}
 \end{align*}
-for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$. Similarly, for $k \geq 0$, the $H^k(\Omega)$ interpolation error is bounded by
-\begin{align*}
-  | w - \calI_h w |_{H^k(\Omega)} \leq C_\calI h^{r+1-k} | w |_{H^{r+1}(\Omega)}
-\end{align*}
-for $r = \min\{ s,p \}$ and some $C_{\calI}$ independent of $h$.
+for $r = \min\{ s,p \}$ and some $C_{\calI}$ and $C_{\calI}'$ independent of $w$ and $h$. 
 \begin{proof}
   Proof is beyond the scope of this course. We refer to Brenner and Scott (2008).
 \end{proof}

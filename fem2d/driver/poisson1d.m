@@ -10,9 +10,10 @@ function poisson1d
 %   inhomogeneous Neumann condition du/dx = 3/4*pi*cos(3/4*pi*1) at x = 1.
 
 % discretization parameters
-h = 0.3;
+%h = 0.3;
+h = 1/4;
 p = 2;
-pquad = 2*p;
+pquad = 60; %2*p;
 
 % set the source function
 ffun = @(x) 9/16*pi^2*sin(3/4*pi*x(:,1));
@@ -27,12 +28,12 @@ if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-mesh = refine_uniform(mesh);
+%mesh = refine_uniform(mesh);
 
-for i = 1:10
-    tmark = rand(size(mesh.tri,1),1) < 0.15;
-    mesh = refine_mesh_adapt(mesh,tmark);
-end
+%for i = 1:10
+%    tmark = rand(size(mesh.tri,1),1) < 0.15;
+%    mesh = refine_mesh_adapt(mesh,tmark);
+%end
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);

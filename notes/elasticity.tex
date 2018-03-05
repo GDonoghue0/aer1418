@@ -31,9 +31,23 @@ for $w \in H^1(\Omega)^2$,
   &=
   \int_{\Omega} \nabla v : \sigma (u) dx - \underbrace{ \int_{\Gamma_D} v n \cdot \sigma(u) ds}_{= 0 \ : \ \text{Dirichlet BC}} - \int_{\Gamma_{N}} v \underbrace{ n \cdot \sigma(u)}_{g \ : \ \text{Neumann BC}} ds - \int_{\Omega} v \cdot f dx \\
   &=
-  \int_{\Omega} \nabla v : \sigma (u) dx - \sum_{i=1}^d \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx \\
+  \int_{\Omega} \nabla v : \sigma (u) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx \\
 \end{align*}
-
+We can further simplify the integral term.  We first note that because $\epsilon(u)$ is symmetric we can also symmetrize $\nabla v$ to obtain
+\begin{equation*}
+  \nabla v : \epsilon(u) = \epsilon(v) : \epsilon(u) .
+\end{equation*}
+We next note that $\nabla v: I = \text{tr}(\nabla v)$ and $\text{tr}(\nabla v) = \text{tr}(\epsilon(v))$ because $\epsilon(\cdot)$ preserves the diagonal terms to obtain
+\begin{equation*}
+  = \nabla v : \text{tr}(\epsilon(u)) I 
+  = (\nabla v : I) \text{tr}(\epsilon(u)) 
+  = \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u)).
+\end{equation*}
+It hence follows that
+\begin{equation*}
+  \nabla v : \sigma(u) = \nabla v : (2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u)) I )
+  = 2 \mu \epsilon(v) : \epsilon(u) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u))
+\end{equation*}
 Let
 \begin{equation*}
   \calV \equiv \{ v \in H^1(\Omega)^d \ | \ v|_{\Gamma_D} = 0 \}
@@ -46,5 +60,14 @@ find $u \in \calV^E$ such that
 \end{equation*}
 where
 \begin{align*}
-  a(w,v) &= \int_{\Omega} \nabla v : \sigma (w) dx 
+  a(w,v) &= \int_{\Omega} ( 2 \mu \epsilon(v) : \epsilon(w) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(w)) ) dx \quad \forall w, v \in \calV \\
+  \ell(v) &=   \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \quad \forall v \in \calV.
 \end{align*}
+
+\begin{theorem}[Korn's inequality]
+  There exists $\alpha > 0$ such that
+  \begin{equation*}
+    \| \epsilon(v) \|_{L^2(\Omega)} + \| v \|_{L^2(\Omega)} \geq \alpha \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega)^d.
+  \end{equation*}
+
+\end{theorem}
