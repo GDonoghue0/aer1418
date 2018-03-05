@@ -154,11 +154,11 @@ The optimality of the finite element error in the energy norm implies the follow
 We may obtain a particular $h$-convergence result for $\PP^p$ finite element approximations.
 \begin{proposition}[energy-norm error bound: $h$ convergence]
   \label{prop:th_energy_bound_poly}
-  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold for a symmetric bilinear form. If $u \in H^{s+1}(\Omega)$, then
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold for a symmetric bilinear form. If $u \in H^{s+1}(\calT_h)$, then
   \begin{equation*}
-    \enorm{u - u_h} \leq C h^r | u |_{H^{r+1}(\Omega)}
+    \enorm{u - u_h} \leq C h^r | u |_{H^{r+1}(\calT_h)}
   \end{equation*}
-  for $r \equiv \min\{s,p\}$ and some constant $C < \infty$ independent of $u$ and $h$.
+  for $r \equiv \min\{s,p\}$ and some constant $C < \infty$ independent of $u$ and $h$.  (Here, $H^k(\calT_h)$ and $| \cdot |_{H^{k}(\calT_h)}$ are the broken space and semi-norm, respectively, in Definition~\ref{def:th_broken_Hk}.)
   \begin{proof}
     The bound follows from the energy-norm error bound in Proposition~\eqref{prop:th_energy_bound} and the polynomial interpolation error bound in Proposition~\ref{prop:th_interp_gen}:
     \begin{align*}
@@ -166,7 +166,7 @@ We may obtain a particular $h$-convergence result for $\PP^p$ finite element app
       & \text{(energy-norm error bound)}  \\
       &\leq \enorm{ u - \calI_h u } &\text{($w_h = \calI_h u$)} \\
       &\leq \gamma \| u - \calI_h u \|_{H^1(\Omega)} &\text{(continuity of $a(\cdot,\cdot)$)} \\
-      &\leq \gamma C_\calI h^r | u |_{H^{r+1}(\Omega)}. &\text{(interpolation error bound)}
+      &\leq \gamma C_\calI h^r | u |_{H^{r+1}(\calT_h)}. &\text{(interpolation error bound)}
     \end{align*}
     We set $C \equiv \gamma C_\calI$ to obtain the desired relationship.
   \end{proof}
@@ -223,9 +223,9 @@ Because $\gamma/\alpha \geq 1$ by the definition of the continuity and coercivit
 Given the quasi-optimality results of C\'ea's lemma, we can readily obtain particular $h$-convergence results for $\PP^p$ finite element approximations.
 \begin{proposition}[$\calV$-norm error bound: $h$ convergence]
   \label{prop:th_fe_vnorm_hconv}
-   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\Omega)$, then
+   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\calT_h)$, then
   \begin{equation}
-    \| u - u_h \|_\calV \leq C h^{r} | u |_{H^{r+1}(\Omega)}
+    \| u - u_h \|_\calV \leq C h^{r} | u |_{H^{r+1}(\calT_h)}
   \end{equation}
   for $r \equiv \min\{ s,p \}$ and some $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
@@ -233,9 +233,9 @@ Given the quasi-optimality results of C\'ea's lemma, we can readily obtain parti
   \end{proof}
 \end{proposition}
 \begin{proposition}[$H^1(\Omega)$-norm $h$ convergence]
-  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\Omega)$, then
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. If $u \in H^{s+1}(\calT_h)$, then
   \begin{equation}
-    \| u - u_h \|_{H^1(\Omega)} \leq C h^{r} | u |_{H^{r+1}(\Omega)}
+    \| u - u_h \|_{H^1(\Omega)} \leq C h^{r} | u |_{H^{r+1}(\calT_h)}
   \end{equation}
   for $r \equiv \min\{ s,p \}$ and some $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
@@ -302,9 +302,9 @@ We now analyze the convergence of finite element approximations in $L^2(\Omega)$
 \end{proposition}
 
 \begin{proposition}[$L^2(\Omega)$-norm error bound: $h$ convergence]
-  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} as well as the conditions of the elliptic regularity estimate, Lemma~\ref{lemma:th_elliptic_reg}, hold. If $u \in H^{s+1}(\Omega)$, then
+  Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} as well as the conditions of the elliptic regularity estimate, Lemma~\ref{lemma:th_elliptic_reg}, hold. If $u \in H^{s+1}(\calT_h)$, then
   \begin{equation*}
-    \| u - u_h \|_{L^2(\Omega)} \leq C h^{r+1} | u |_{H^{r+1}(\Omega)}
+    \| u - u_h \|_{L^2(\Omega)} \leq C h^{r+1} | u |_{H^{r+1}(\calT_h)}
   \end{equation*}
   for $r \equiv \min\{ s,p\}$ and some $C < \infty$ independent of $u$ and $h$.
   \begin{proof}
@@ -312,7 +312,7 @@ We now analyze the convergence of finite element approximations in $L^2(\Omega)$
     \begin{align*}
       \| u - u_h \|_{L^2(\Omega)}
       &\leq C h \| u-u_h \|_\calV & \text{(Aubin-Nitsche)} \\
-      &\leq C' h^{r+1} | u |_{H^{r+1}(\Omega)} . &\text{($h$ convergence in $\| \cdot \|_\calV$)} 
+      &\leq C' h^{r+1} | u |_{H^{r+1}(\calT_h)} . &\text{($h$ convergence in $\| \cdot \|_\calV$)} 
     \end{align*}
   \end{proof}
 \end{proposition}
@@ -377,11 +377,14 @@ where $\psi$ is the solution to the dual problem~\ref{eq:th_dual}.
 \end{proposition}
 
 \begin{proposition}[output error bound: $h$ convergence]
-   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. Let $\ell^o: \calV \to \RR$ be a continuous linear functional.  If $u \in H^{s+1}(\Omega)$ and $\psi \in H^{s'+1}(\Omega)$ for $\psi$ the solution to the dual problem~\ref{eq:th_dual}, then
+   Suppose Assumptions~\ref{ass:th_fe_form}, \ref{ass:th_fe_soln}, and \ref{ass:th_fe_Vh} hold. Let $\ell^o: \calV \to \RR$ be a continuous linear functional.  If $u \in H^{s+1}(\calT_h)$ and $\psi \in H^{s'+1}(\calT_h)$ for $\psi$ the solution to the dual problem~\ref{eq:th_dual}, then
   \begin{equation*}
-    | \ell^o(u) - \ell^o(u_h) | \leq C h^{r + r'} | u |_{H^{r+1}(\Omega)} | \psi |_{H^{r'+1}(\Omega)}
+    | \ell^o(u) - \ell^o(u_h) | \leq C h^{r + r'} | u |_{H^{r+1}(\calT_h)} | \psi |_{H^{r'+1}(\calT_h)}
   \end{equation*}
   for $r \equiv \min\{ s,p \}$, $r' \equiv \min\{ s',p \}$, and some constant $C < \infty$ independent of $u$, $\psi$, and $h$.
+  \begin{proof}
+    The result follows from (i) Proposition~\ref{prop:th_output_nonsym},  (ii) the equivalence of $\|\cdot\|_\calV$ and $\| \cdot \|_{H^1(\Omega)}$, and (iii) the polynomial interpolation error bound in Proposition~\ref{prop:th_interp_gen}.
+  \end{proof}
 \end{proposition}
 The proposition shows that for a smooth solution $u$ \emph{and} adjoint $\psi$, the output converges as $h^{2p}$. The convergence rate for the output error is \emph{twice} that for the $\calV$ or $H^1(\Omega)$ norm of the error.  This result is often referred to as \emph{output superconvergence}.  (The output superconverges because the finite element approximation is by construction \emph{dual consistent}; the dual of the discrete problem is the discretization of the continuous dual problem.  Not all discretizations for boundary value problems have this property.)
 
