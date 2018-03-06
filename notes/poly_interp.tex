@@ -55,11 +55,11 @@ We first analyze the error for a single-segment interpolant $\calI_h w$ over $[a
 
 \begin{proposition}
   \label{prop:th_poly_Ck_multi}
-  Let $\bar \Omega \equiv (a,b) \subset \RR^1$ and $\calI_h w$ be the piecewise linear interpolant associated with a triangulation $\calT_h \equiv \{ K \}$ with $h \equiv \max_{K \in \calT_h} |K|$.
+  Let $\bar \Omega \subset \RR^1$ and $\calI_h w$ be the piecewise linear interpolant associated with a triangulation $\calT_h \equiv \{ K \}$ with $h \equiv \max_{K \in \calT_h} |K|$.
   %delineated by nodes $\{z_i\}_{i=1}^n$ with the node spacing $h \equiv \max_{i \in \{ 1,\dots,n-1 \} } |z_{i+1} - z_i|$.
   If $w \in C^0(\bar \Omega) \cap C^2(\calT_h)$, then the interpolation error is bounded by
   \begin{equation*}
-    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{K \in \calT_h} \max_{s \in K} |w''(s)| h^2 \quad \forall x \in [a,b],
+    | w(x) - (\calI_h w)(x) | \leq \frac{1}{8} \max_{K \in \calT_h} \max_{s \in K} |w''(s)| h^2 \quad \forall x \in \bar \Omega,
   \end{equation*}
   where $C^2(\calT_h) \equiv \oplus_{K \in \calT_h} C^2(\bar K)$, the space of piecewise $C^2$ functions.
   \begin{proof}
@@ -160,7 +160,7 @@ We now wish to bound the $L^2$ norm of the interpolation error. We take a three-
   \label{lemma:th_l2_h2_embed}
   Let $\tilde I \equiv (0,1)$ and $H^2_0(\tilde I) \equiv \{ v \in H^2(\tilde I) \ | \ v(x=0) = v(x=1) = 0 \}$. Then 
   \begin{equation*}
-    \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} \equiv \sup_{v \in H^2_0(\Omega)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} = \frac{1}{\pi^2}
+    \rho_{L^2(\tilde I)\text{-}H^2_0(\tilde I)} \equiv \sup_{v \in H^2_0(\tilde I)} \frac{\| v \|_{L^2(\tilde I)}}{| v |_{H^2(\tilde I)}} = \frac{1}{\pi^2}
   \end{equation*}
   \begin{proof}
     We note that the ratio
@@ -217,7 +217,7 @@ We now wish to bound the $L^2$ norm of the interpolation error. We take a three-
 
 \begin{proposition}[linear interpolation error on $\tilde I \equiv (0,1)$]
   \label{prop:th_lin_interp_L2_ref}
-  Let $\tilde I \equiv (0,1)$.  For any $\forall \tilde w \in H^2(\tilde I)$, the linear interpolation error is bounded by 
+  Let $\tilde I \equiv (0,1)$.  If $\tilde w \in H^2(\tilde I)$, then the linear interpolation error is bounded by 
   \begin{equation*}
     \| \tilde w - \calI \tilde w \|_{L^2(\tilde I)}
     \leq \frac{1}{\pi^2} | \tilde w |_{H^2(\tilde I)},
@@ -276,7 +276,7 @@ We finally make a \emph{homogeneity (or scaling) argument} to obtain an interpol
     The second derivatives are related by
     \begin{equation*}
       \left. \dd{^2 w}{x^2} \right|_{x \equiv z_i + h \tilde x}
-      = \left. \dd{^2 \tilde w}{\tilde x^2} \dd{^2 \tilde x}{x^2} \right|_{\tilde x}
+      = \left. \dd{^2 \tilde w}{\tilde x^2} \left( \dd{\tilde x}{x} \right)^2\right|_{\tilde x}
       = \frac{1}{h^2} \left. \dd{^2 \tilde w}{\tilde x^2} \right|_{\tilde x}.
     \end{equation*}
     It hence follows that
@@ -285,12 +285,12 @@ We finally make a \emph{homogeneity (or scaling) argument} to obtain an interpol
       &\equiv
       \int_{K} ( w(x) - (\calI_h w)(x) )^2 dx
       =
-      \int_{\tilde K} (\tilde w(\tilde x) - (\calI \tilde w)(\tilde x))^2 h d \tilde x
+      \int_{\tilde I} (\tilde w(\tilde x) - (\calI \tilde w)(\tilde x))^2 h d \tilde x
       \\
       &\leq
-      \frac{1}{\pi^4} \int_{\tilde K} (\left. \pp{^2\tilde w}{\tilde x^2} \right|_{\tilde x})^2 h d \tilde x
+      \frac{1}{\pi^4} \int_{\tilde I} (\left. \dd{^2\tilde w}{\tilde x^2} \right|_{\tilde x})^2 h d \tilde x
       =
-      \frac{1}{\pi^4} \int_{K} (\left. \pp{^2 w}{x^2} \right|_x h^2 )^2 h h^{-1} d x
+      \frac{1}{\pi^4} \int_{K} (\left. \dd{^2 w}{x^2} \right|_x h^2 )^2 h h^{-1} d x
       = \frac{h^4}{\pi^4} | w |_{H^2(K)}^2.
     \end{align*}
     We now sum over of the elements in $\calT_h$ to obtain
@@ -357,9 +357,9 @@ Proposition~\ref{prop:th_lin_interp_L2} shows that the $L^2(\Omega)$ error assoc
   \begin{equation*}
     \|w - \calI_h w \|_{H^1(\Omega)} \leq  \left(  \frac{h^2}{\pi^2} +  \frac{h^4}{\pi^4} \right)^{1/2} | w |_{H^2(\calT_h)}.
   \end{equation*}
-  As $h \to 0$, 
+  For $h$ sufficiently small, $\exists C < \infty$ such that
   \begin{equation*}
-    \|w - \calI_h w \|_{H^1(\Omega)} \leq  \frac{h}{\pi}  | w |_{H^2(\calT_h)}.
+    \|w - \calI_h w \|_{H^1(\Omega)} \leq  C h | w |_{H^2(\calT_h)}.
   \end{equation*}
 \end{corollary}
 Proposition~\ref{prop:th_lin_interp_H1} shows that the $H^1(\Omega)$ error associated with the pieceiwse linear interpolation of $H^2(\calT_h)$ functions (i) depends on the $H^2(\calT_h)$ semi-norm of the underlying function and (ii) converges as $h^1$. Note that the $H^1(\Omega)$ norm is a stronger norm than the $L^2(\Omega)$ norm, and hence the $H^1(\Omega)$ error converges at a lower rate than the $L^2(\Omega)$ error.
