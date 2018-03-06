@@ -504,11 +504,11 @@ The proposition shows that we recover the optimal convergence rate on curved dom
 \section{Summary}
 We summarize key points of this lecture:
 \begin{enumerate}
-\item The ``classical'' interpolation error bounds for $C^k$ functions can be useful in many contexts, but is not particularly well-suited for the analysis of finite element error as it imposes a strong regularity requirement on the underlying function.
+\item The ``classical'' interpolation error bounds for $C^k$ functions can be useful in many contexts but are not particularly well-suited for the analysis of finite element errors as it imposes a strong regularity requirement on the underlying function.
 \item The Rayleigh quotient of a symmetric, positive bilinear form is bounded by the lower and upper bound of the associated eigenproblem.
-\item For $w \in H^2(\Omega)$ and the associated piecewise linear interpolant $\calI_h w$, $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^2 | w |_{H^2(\Omega)}$.
-\item For $w \in H^2(\Omega)$ and the associated piecewise linear interpolant $\calI_h w$, $| w - \calI_h w |_{H^1(\Omega)} \leq C_\calI h | w |_{H^2(\Omega)}$; the convergence rate is one lower than that for the $L^2(\Omega)$ error.
-\item For $w \in H^1(\Omega)$ (but not $H^2(\Omega)$) and the associated piecewise linear interpolant $\calI_h w$,  $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h | w |_{H^1(\Omega)}$; the convergence rate is one lower than that for a smoother function in $H^2(\Omega)$.
-\item In general, for $w \in H^{s+1}(\Omega)$ and the associated degree-$p$ polynomial interpolant on a family of shape-regular triangulations,  $|w - \calI_h w|_{H^k(\Omega)} \leq C_{\calI} h^{r+1-k}|w|_{H^{r+1}}$ for $r = \min\{s,p\}$ and $k > 0$.
+\item For $w \in H^1(\Omega) \cap H^2(\calT_h)$ and the associated piecewise linear interpolant $\calI_h w$, $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h^2 | w |_{H^2(\Omega)}$.
+\item For $w \in H^1(\Omega) \cap H^2(\calT_h)$ and the associated piecewise linear interpolant $\calI_h w$, $| w - \calI_h w |_{H^1(\Omega)} \leq C_\calI h | w |_{H^2(\Omega)}$; the convergence rate is one lower than that for the $L^2(\Omega)$ error.
+\item For $w \in H^1(\Omega)$ (but not $H^1(\Omega) \cap H^2(\calT_h)$) and the associated piecewise linear interpolant $\calI_h w$,  $\| w - \calI_h w \|_{L^2(\Omega)} \leq C_\calI h | w |_{H^1(\Omega)}$; the convergence rate is one lower than that for a smoother function in $H^1(\Omega) \cap H^2(\calT_h)$.
+\item For $w \in C^0(\bar \Omega) \cap H^{s+1}(\Omega)$ and the associated piecewise degree-$p$ polynomial interpolants on a family of shape-regular triangulations in $\RR^d$,  $\|w - \calI_h w \|_{L^2(\Omega)} \leq C_{\calI} h^{r+1} |w|_{H^{r+1}}$ and $|w - \calI_h w|_{H^1(\Omega)} \leq C_{\calI}' h^{r}|w|_{H^{r+1}}$ for $r = \min\{s,p\}$.
 \item For a domain with a curved boundary, the above error bound holds assuming the family of shape-regular triangulations rapidly approximate the curved boundary using isoparametric mapping.
 \end{enumerate}
