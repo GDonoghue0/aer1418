@@ -12,7 +12,7 @@ loadmag = 0.01;
 
 % set discretization parameters
 dim = 2;
-h = 0.1;
+h = 0.15/1;
 p = 2;
 pquad = 2*p;
 
@@ -25,7 +25,10 @@ if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-mesh = fix_holes(mesh); % fix iso-parametric holes
+mesh = fix_holes(mesh,ref); % fix holes past refiement or for p=2 mesh
+
+%mesh = refine_uniform(mesh);
+%mesh = fix_holes(mesh,ref);
 
 % useful variables
 [nelem,nshp] = size(mesh.tri);
@@ -147,13 +150,16 @@ U = zeros(ndof,1);
 U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
+if (true)
 figure(2), clf,
 Uv = reshape(U,[nnode,2]);
 mesh2 = mesh;
 mesh2.coord = mesh2.coord + Uv;
 plot_field(mesh2,ref,sqrt(sum(Uv.^2,2)),struct('edgecolor',[0.5,0.5,0.5]));
+end
 
 J = F'*U;
+fprintf('ndof: %d\n', length(U));
 fprintf('compliance output: %.8e\n', J);
 
 end
@@ -175,7 +181,7 @@ function mesh = make_beam_mesh(h)
 %     7: hole centered at (2.5,0.5)
 %     8: hole centered at (3.5,0.5)
 if (nargin < 1)
-    h = 0.25;
+    h = 0.15;
 end
 L = 4;
 
@@ -222,31 +228,24 @@ ii = abs(xe(:,2) - 1.0) < tol;
 mesh.bgrp{4} = edge(ii,:);
 
 % holes
+xeb = reshape(coord(edge(:),:),[size(edge),2]);
 for ihole = 1:length(xholes)
-    ii = sqrt(sum(bsxfun(@minus,xe,[xholes(ihole),0.5]).^2,2)) <  0.4;
+    ii = all(abs(sqrt(sum(bsxfun(@minus,xeb,reshape([xholes(ihole),0.5],[1,1,2])).^2,3))-0.25) < 1e-6,2);
+    %ii = sqrt(sum(bsxfun(@minus,xe,[xholes(ihole),0.5]).^2,2)) <  0.4;
     mesh.bgrp{4+ihole} = edge(ii,:);
 end
 
 end
 
-function mesh = fix_holes(mesh)
-if size(mesh.tri,2) == 3
-    return; % nothing to do for linear mesh
-end
-ref = make_ref_tri(2,1); % make quad element
+function mesh = fix_holes(mesh,ref)
 xholes = 0.5:1.0:3.5;
 for ihole = 1:length(xholes)
-    bgrp = mesh.bgrp{4+ihole};
     xh = [xholes(ihole),0.5];
-    for edge = 1:size(bgrp,1)
-        elem = bgrp(edge,3);
-        ledge = bgrp(edge,4);
-        lnode = ref.f2n(3,ledge);
-        node = mesh.tri(elem,lnode);
-        xnode = mesh.coord(node,:);
-        r0 = sqrt(sum((xnode - xh).^2));
-        xnode = xh + 0.25/r0*(xnode-xh);
-        mesh.coord(node,:) = xnode;
-    end
+    bnodes = nodes_on_boundary(mesh,ref,4+ihole);
+    xnodes = mesh.coord(bnodes,:);
+    xdiffs = bsxfun(@minus,xnodes,xh);
+    r0 = sqrt(sum(xdiffs.^2,2));
+    xnodes = bsxfun(@plus,xh,bsxfun(@times,0.25./r0,xdiffs));
+    mesh.coord(bnodes,:) = xnodes;
 end
 end
