@@ -1,23 +1,48 @@
 \chapter{Linear elasticity}
 
+\disclaimer
+
 \section{Motivation}
 In this lecture we consider approximation of linear-elasticity problems by the finite element method.
 
-\section{Vector-valued Sobolev spaces}
-The Navier-Cauchy equation in $\RR^d$ is a system of equations with $d$ components. By way of preliminaries, we introduce vector-valued Sobolev spaces.
-\begin{definition}[$H^1(\Omega)^d$ space]
-  Given $\Omega \subset \RR^d$, the space of vector-valued functions $H^1(\Omega)^d$ is endowed with an inner product
+\section{Vector- and matrix-valued Sobolev spaces}
+The linear elasticity problem in $\RR^d$ is governed by a system of equations with $d$ components. By way of preliminaries, we introduce vector-valued and matrix-valued Sobolev spaces, which are required to describe the system of equations.
+\begin{definition}[$H^k(\Omega)^d$ space]
+  Given $\Omega \subset \RR^d$ and an integer $k \geq 0$, the space of vector-valued functions $H^k(\Omega)^d$ is endowed with an inner product
   \begin{equation*}
-    (w,v)_{H^1(\Omega)} \equiv \sum_{i=1}^d (w_i,v_i)_{H^1(\Omega)},
+    (w,v)_{H^k(\Omega)} \equiv \sum_{i=1}^d (w_i,v_i)_{H^k(\Omega)},
   \end{equation*}
-  equipped with the associated induced norm $\| w \|_{H^1(\Omega)} \equiv \sqrt{(w,w)_{H^1(\Omega)}}$, and comprises function
+  equipped with the associated induced norm $\| w \|_{H^k(\Omega)} \equiv \sqrt{(w,w)_{H^k(\Omega)}}$, and comprises function
   \begin{equation*}
-    H^1(\Omega)^d \equiv \{ v \ | \ \| v \|_{H^1(\Omega)} < \infty \}.
+    H^k(\Omega)^{d \times d} \equiv \{ v \ | \ \| v \|_{H^k(\Omega)} < \infty \}.
   \end{equation*}
-  Here, $v_i$ denotes the $i$-th component of the vector-valued field for $i = 1,\dots,d$. In other words, for $v \in H^1(\Omega)^d$, we have $v: \Omega \to \RR^d$ and $v_i \in H^1(\Omega)$.
+  Here, $v_i$ denotes the $i$-th component of the vector-valued field for $i = 1,\dots,d$. In other words, for $v \in H^k(\Omega)^d$, we have $v: \Omega \to \RR^d$ and $v_i \in H^k(\Omega)$.  For $k = 0$, the space is denoted $L^2(\Omega)^d$.  (Note that for notational brevity, we abbreviate $\| \cdot \|_{H^k(\Omega)^d}$ as $\| \cdot \|_{H^k(\Omega)}$.)
+\end{definition}
+\begin{definition}[$H^k(\Omega)^{d \times d}$ space]
+  Given $\Omega \subset \RR^d$ and an integer $k \geq 0$, the space of matrix-valued functions $H^k(\Omega)^{d \times d}$ is endowed with an inner product
+  \begin{equation*}
+    (w,v)_{H^k(\Omega)} \equiv \sum_{i,j=1}^d (w_{ij},v_{ij})_{H^k(\Omega)},
+  \end{equation*}
+  equipped with the associated induced norm $\| w \|_{H^k(\Omega)} \equiv \sqrt{(w,w)_{H^k(\Omega)}}$, and comprises function
+  \begin{equation*}
+    H^k(\Omega)^d \equiv \{ v \ | \ \| v \|_{H^k(\Omega)} < \infty \}.
+  \end{equation*}
+  Here, $v_{ij}$ denotes the $(i,j)$-th component of the matrix-valued field for $i,j = 1,\dots,d$. For $k = 0$, the space is denoted $L^2(\Omega)^{d \times d}$.
+\end{definition}
+\begin{definition}[dot product (vector field)]
+  Given $w,v \in L^2(\Omega)^d$, the dot product is $v \cdot w \in L^1(\Omega)$ such that
+  \begin{equation*}
+    v \cdot w = \sum_{i=1}^d v_i w_i .
+  \end{equation*}
+\end{definition}
+\begin{definition}[dot product (matrix field)]
+  Given $w,v \in L^2(\Omega)^d$, the dot product is $v : w \in L^1(\Omega)$ such that
+  \begin{equation*}
+    v : w = \sum_{i,j=1}^d v_{ij} w_{ij} .
+  \end{equation*}
 \end{definition}
 \begin{definition}[gradient of $H^1(\Omega)^d$ functions]
-  For $v \in H^1(\Omega)^d$, the gradient $\nabla v L^2(\Omega)^{d \times d}$ is a tensor-valued field in such that
+  For $v \in H^1(\Omega)^d$, the gradient $\nabla v \in L^2(\Omega)^{d \times d}$ is a matrix-valued field such that
 \begin{equation*}
   (\nabla v)_{ij} = \pp{v_i}{x_j}, \quad i,j = 1,\dots,d;
 \end{equation*}
@@ -59,8 +84,8 @@ For $\sigma \in H^1(\Omega)^{d \times d}$, its divergence $\nabla \cdot \sigma \
     \emat
   \end{equation*}
 \end{corollary}
-\section{Formulation}
-We now formulate the linear elasticity problem.  Given a displacement field $v \in H^1(\Omega)^d$, we first introduce the strain tensor (field) $\epsilon(v) \in L^2(\Omega)^{d \times d}$ such that
+\section{Variational formulation}
+We now formulate the linear elasticity problem. Let $\Omega \subset \RR^d$ be a Lipschitz domain. We partition the boundary $\partial \Omega$ into a Dirichlet boundary $\Gamma_D$ and a Neumann boundary $\Gamma_N$ such that $\partial \Omega = \bar{\Gamma}_D \cup \bar{\Gamma}_N$. We assume that the Dirichlet boundary is non-empty: $\Gamma_D \neq \emptyset$. Given a displacement field $v \in H^1(\Omega)^d$, we introduce the strain tensor (field) $\epsilon(v) \in L^2(\Omega)^{d \times d}$ such that
 \begin{equation*}
   \epsilon(v) = \frac{1}{2} (\nabla v + \nabla v^T).
 \end{equation*}
@@ -68,15 +93,18 @@ We next introduce the associated stress tensor (field) $\sigma(v) \in L^2(\Omega
 \begin{equation*}
   \sigma(v) = 2 \mu \epsilon(v) + \lambda \text{tr}(\epsilon(v)) I,
 \end{equation*}
-where $\lambda \in \RR_{>0}$ and $\mu \in \RR_{>0}$ are the Lam\'e constants.
-
-Let $\Omega \subset \RR^d$ be a Lipschitz domain. We partition the boundary of $\Omega$ to the Dirichlet boundary $\Gamma_D$ and the Neumann boundary $\Gamma_N$ such that $\partial \Omega = \bar{\Gamma}_D \cup \bar{\Gamma}_N$. We then introduce the strong form of the linear elasticity problem: find $u$ such that
+where $\lambda \in L^\infty(\Omega)$ and $\mu \in L^\infty(\Omega)$ are the first and second Lam\'e parameters (fields) such that
+\begin{align*}
+  0 &\leq \lambda(x) < \lambda_{\rm max} < \infty \quad \text{a.e. in } \Omega,\\
+  0 < \mu_{\rm min} &\leq \mu(x) \leq \mu_{\rm max} < \infty \quad \text{a.e. in } \Omega.
+\end{align*}
+ We now introduce the strong form of the linear elasticity problem: find $u$ such that
 \begin{align*}
   - \nabla \cdot \sigma(u) &= f \quad \text{in } f \\
   u &= u^B \quad \text{on } \Gamma_{D}, \\
   n \cdot \sigma(u) &= g \quad \text{on } \Gamma_{N},
 \end{align*}
-where $f: \Omega \to \RR^d$ is the body force field and $g: \Gamma_N \to \RR^d$ is the traction force field.
+where $f: \Omega \to \RR^d$ is the body force field and $g: \Gamma_N \to \RR^d$ is the traction force field. 
 
 We now derive a weak formulation for the linear elasticity problem.  To this end, we first introduce a Hilbert space
 \begin{equation}
@@ -87,29 +115,21 @@ and an affine space
 \begin{equation*}
   \calV^E \equiv u^E + \calV,
 \end{equation*}
-where $u^E$ is any function in $H^1(\Omega)^d$ such that $u^E|_{\Gamma_D} = u^B$ on $\Gamma_D$; we recall that Dirichlet boundary conditions are essential boundary conditions that must be explicitly through the construction of the space.  We now take an arbitrary test function $v \in \calV$, multiply the equation by $v$, integrate by parts, and make appropriate substitutions for the natural boundary conditions: 
+where $u^E$ is any function in $H^1(\Omega)^d$ such that $u^E|_{\Gamma_D} = u^B$ on $\Gamma_D$; we recall that Dirichlet boundary conditions are essential boundary conditions that must be enforced explicitly through the choice of the space.  We now take an arbitrary test function $v \in \calV$, multiply the equation by $v$, integrate by parts, and make appropriate substitutions for the natural boundary conditions: 
 \begin{align*}
   0 &= 
   \int_{\Omega} v \cdot (-\nabla \cdot \sigma(u) ) dx - \int_{\Omega} v \cdot f dx \\
   &=
   \int_{\Omega} \nabla v : \sigma (u) dx - \underbrace{ \int_{\Gamma_D} v n \cdot \sigma(u) ds}_{= 0 \ : \ \text{Dirichlet BC}} - \int_{\Gamma_{N}} v \underbrace{ n \cdot \sigma(u)}_{g \ : \ \text{Neumann BC}} ds - \int_{\Omega} v \cdot f dx \\
   &=
-  \int_{\Omega} \nabla v : \sigma (u) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx 
+  \int_{\Omega} \nabla v : \sigma (u) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx  \\
+  &=
+  \int_{\Omega} \nabla v : (2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u))I ) dx - \int_{\Gamma_N} v \cdot g ds - \int_{\Omega} v \cdot f dx .
 \end{align*}
-We can further simplify the term involving integration over $\Omega$.  We first note that, because $\epsilon(u)$ is symmetric,
-\begin{equation*}
-  \nabla v : \epsilon(u) = \epsilon(v) : \epsilon(u) .
-\end{equation*}
-We next note that $\nabla v: I = \text{tr}(\nabla v)$ and $\text{tr}(\nabla v) = \text{tr}(\epsilon(v))$ because $\epsilon(\cdot)$ preserves the diagonal terms:
-\begin{equation*}
-  = \nabla v : \text{tr}(\epsilon(u)) I 
-  = (\nabla v : I) \text{tr}(\epsilon(u)) 
-  = \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u)).
-\end{equation*}
-It hence follows that
+We can further simplify the term involving the integration over $\Omega$.  We first note that, because $\epsilon(u)$ is symmetric, $\nabla v : \epsilon(u) = \epsilon(v) : \epsilon(u)$. We next note that,  because $\epsilon(\cdot)$ preserves the diagonal terms, $\nabla v: I = \text{tr}(\nabla v) =  \text{tr}(\epsilon(v))$. It hence follows that
 \begin{equation*}
   \nabla v : \sigma(u) = \nabla v : (2 \mu \epsilon(u) + \lambda \text{tr}(\epsilon(u)) I )
-  = 2 \mu \epsilon(v) : \epsilon(u) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u))
+  = 2 \mu \epsilon(v) : \epsilon(u) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(u)) .
 \end{equation*}
 Our weak formulation is as follows: find $u \in \calV^E$ such that
 \begin{equation}
@@ -118,32 +138,233 @@ Our weak formulation is as follows: find $u \in \calV^E$ such that
 \end{equation}
 where
 \begin{align}
-  a(w,v) &= \int_{\Omega} ( 2 \mu \epsilon(v) : \epsilon(w) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(w)) ) dx \quad \forall w, v \in \calV \label{eq:le_a} \\
-  \ell(v) &=   \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \quad \forall v \in \calV \label{eq:le_ell}.
+  a(w,v) &= \int_{\Omega} ( 2 \mu \epsilon(v) : \epsilon(w) + \lambda \text{tr}(\epsilon(v)) \text{tr}(\epsilon(w)) ) dx \quad \forall w, v \in \calV, \label{eq:le_a} \\
+  \ell(v) &=   \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \quad \forall v \in \calV \label{eq:le_ell};
 \end{align}
+we assume $f \in L^2(\Omega)$ and $g \in L^2(\Gamma_N)$.  (These requirements can be relaxed to $f \in H^{-1}(\Omega)$ and $g \in H^{-1/2}(\Gamma_N)$.) We also note that the bilinear form is symmetric.
+
+As we will see shortly, the bilinear form~\eqref{eq:le_a} is coercive and symmetric.  Hence, we may also consider the minimization formulation.  Let $J : \calV \to \RR$ such that
+\begin{equation}
+  J(v) \equiv \frac{1}{2} a(v,v) - \ell(v) \quad \forall v \in \calV.
+  \label{eq:le_J}
+\end{equation}
+Our minimization formulation is as follows: find $u \in \calV$ such that
+\begin{equation*}
+  u = \argmin_{w \in \calV} J(w).
+\end{equation*}
+
+
 
 \section{Well-posedness}
-We now wish to understand if a solution to the variational problem~\eqref{eq:le_weak} exists and, if so, is unique.  To this end, we introduce the \emph{Korn's inequality}.
+\label{sec:le_wellposed}
+We now wish to understand if a solution to the variational problem~\eqref{eq:le_weak} exists and, if so, is unique.  To this end, we with to verify if the conditions of the Lax-Milgram theorem, and in particular the $\calV$-coercivity of the bilinear form~\eqref{eq:le_a}, is satisfied.  (The continuity of the bilinear and linear forms are relatively straightforward to prove.)
+
+The challenge in proving the coercivity of the bilinear form~\eqref{eq:le_a} lies in the fact that our strain operator $\epsilon: H^1(\Omega)^d \to L^2(\Omega)^{d \times d}$ has a non-trivial kernel. For instance, in $\RR^2$, 
+\begin{equation*}
+  \calV_{\rm RM} \equiv \left\{ w \ | \ w = a + b \bmat{c} -x_2 \\ x_1 \emat, \ a \in \RR^2, \ b \in \RR \right\}
+\end{equation*}
+is  the space of infinitesimal rigid-body motion.  We can readily show that
+\begin{equation*}
+  \epsilon(v) = 0 \quad \forall v \in \calV_{\rm RM}.
+\end{equation*}
+In other words, we obtain zero strain for any displacement that is (i) rigid-body translation or (ii) (infinitesimal) rigid-body rotation.  This is consistent with our physical interpretation of strain; rigid-body motion does not cause strain (or stress) in the material.  This result can be contrasted to the Poisson equation, where the kernel comprises only constant functions and the Poincar\'e-Friedrich's inequality was used to prove coercivity. The analysis of coercivity of the linear elasticity problem, which include also (infinitesimal) rigid-body rotation, requires the \emph{Korn's inequality}.
 \begin{theorem}[Korn's inequality]
-  Let $\calV \subset H^1(\Omega)^d$ be given by~\eqref{eq:le_calV}.  There exists $\alpha > 0$ such that
+  Let $\calV \subset H^1(\Omega)^d$ be given by~\eqref{eq:le_calV}.  There exists $C_{\rm Korn} > 0$ such that
   \begin{equation*}
     %    \| \epsilon(v) \|_{L^2(\Omega)} + \| v \|_{L^2(\Omega)} \geq \alpha \| v \|_{H^1(\Omega)} \quad \forall v \in H^1(\Omega)^d.
     \| \epsilon(v) \|_{L^2(\Omega)} \geq C_{\rm Korn} \| v \|_{H^1(\Omega)} \quad \forall v \in \calV.
   \end{equation*}
+  \begin{proof}
+    Proof is beyond the scope of this course.  We refer to Brenner and Scott (2008).
+  \end{proof}
 \end{theorem}
+While a formal proof of Korn's inequality is beyond the scope of this course, we provide some intuition.  
+
 \begin{proposition}
   The bilinear form~\eqref{eq:le_a} associated with the linear elasticity problem is symmetric, coercive, and continuous in $\calV$ given by~\eqref{eq:le_calV}.
   \begin{proof}
     The symmetry of $a(\cdot,\cdot)$ is obvious from inspection. The coercivity of $a(\cdot,\cdot)$ is a consequence of the Korn's inequality: for any $v \in \calV$
-    \begin{equation*}
-      a(v,v) = 2 \mu \| \epsilon(v) \|_{L^2(\Omega)} + \lambda \| \text{tr}(\epsilon(v)) \|_{L^2(\Omega)}
-      \geq 2 \mu \| \epsilon(v) \|_{L^2(\Omega)}
-      \geq 2 \mu C_{\rm Korn} \| v \|_{H^1(\Omega)}.
-    \end{equation*}
-    It follows that $a(\cdot,\cdot)$ is coercive with the coercivity constant $\alpha \equiv 2 \mu C_{\rm Korn}$. The continuity
-    \begin{equation*}
-      a(w,v) = 2\mu (\epsilon(w), \epsilon(v))
-    \end{equation*}
+    \begin{align*}
+      a(v,v)
+      &= 2 \int_{\Omega} \mu \epsilon(v) : \epsilon(v) dx
+      + \int_\Omega  \lambda \text{tr}(\epsilon(v))^2 dx
+      \geq 2 \mu_{\rm min} \| \epsilon(v) \|_{L^2(\Omega)}
+      \geq 2 \mu_{\rm min} C_{\rm Korn} \| v \|_{H^1(\Omega)}.
+    \end{align*}
+    It follows that $a(\cdot,\cdot)$ is coercive with the coercivity constant $\alpha \equiv 2 \mu_{\rm min} C_{\rm Korn} > 0$. The continuity
+    \begin{align*}
+      |a(w,v)|
+      &= 2 \int_{\Omega} \mu \epsilon(v) : \epsilon(w) dx
+      + \int_\Omega  \lambda \text{tr}(\epsilon(v))\text{tr}(\epsilon(w)) dx
+      \\
+      &\leq 2 \mu_{\rm max} \| \epsilon(v) \|_{L^2(\Omega)} \| \epsilon(w) \|_{L^2(\Omega)}
+      + \lambda_{\rm max} \| \text{tr}(\epsilon(v)) \|_{L^2(\Omega)} \| \text{tr}(\epsilon(w) \|
+      \\
+      &\leq \max \{ 2\mu_{\rm max} \lambda_{\rm max} \} \| \epsilon(v) \|_{L^2(\Omega)} \| \epsilon(w) \|_{L^2(\Omega)}
+      \\
+      &\leq 4 \max \{ 2\mu_{\rm max} \lambda_{\rm max} \} \| v \|_{H^1(\Omega)} \| w \|_{H^1(\Omega)}.
+    \end{align*}
+    It follows that $a(\cdot,\cdot)$ is continuous with the continuity constant $\gamma = 4 \max \{ 2\mu_{\rm max} \lambda_{\rm max} \} < \infty$.
+  \end{proof}
+\end{proposition}
+\begin{proposition}
+  If $f \in L^2(\Omega)^d$ and $g \in L^2(\Gamma_N)^d$, then the linear form~\eqref{eq:le_ell} associated with the linear elasticity problem is continuous in $\calV$ given by~\eqref{eq:le_calV}.
+  \begin{proof}
+    We observe
+    \begin{align*}
+    | \ell(v) | &= \left| \int_{\Omega} v \cdot f dx + \int_{\Gamma_N} v \cdot g ds \right|\\
+    &\leq \| v \|_{L^2(\Omega)} \| f \|_{L^2(\Omega)} + \| v \|_{L^2(\Gamma_N)} \| g \|_{L^2(\Gamma_N)}\\
+    &\leq \| v \|_{H^1(\Omega)} \| f \|_{L^2(\Omega)} + C_{\rm tr} \| v \|_{H^1(\Omega)} \| g \|_{L^2(\Gamma_N)}\\
+    &\leq \max\{ \| f \|_{L^2(\Omega)}, C_{\rm tr} \| g \|_{L^2(\Gamma_N)} \} \| v \|_{H^1(\Omega)}.
+    \end{align*}
+    Hence $\ell(\cdot)$ is continuous with a continuity constant $c = \max\{ \| f \|_{L^2(\Omega)}, C_{\rm tr} \| g \|_{L^2(\Gamma_N)} \}$.
+  \end{proof}
+\end{proposition}
+\begin{proposition}
+  The solution to the elasticity problem~\eqref{eq:le_weak} exist and is unique.
+  \begin{proof}
+    The bilinear form~\eqref{eq:le_a} is coercive and continuous in $\calV$, and the linear form~\eqref{eq:le_ell} is continuous in $\calV$.  The existence and  uniqueness of the solution follows from the Lax-Milgram theorem.
   \end{proof}
 \end{proposition}
 
+\section{Finite element approximation: formulation}
+To seek a finite element approximation, we introduced a vector-valued finite element space
+\begin{equation*}
+  \calV_h \equiv \{ v \in \calV \ | \ v|_K \oplus \calG^K \in \PP^p(K)^d, \ \forall K \in \calT_h \},
+\end{equation*}
+where $\calG^K: \tilde K \to K$ is the geometry mapping (for potentially curved domains) and $\PP^p(K)^d$ is the space of vector-valued polynomials of degree $p$ over $K$. We then consider the following finite element problem: find $u_h \in \calV_h$ such that
+\begin{equation}
+  a(u_h,v) = \ell(v) \quad \forall v \in \calV_h
+  \label{eq:le_fe}
+\end{equation}
+for the bilinear form~\eqref{eq:le_a} and the linear form~\eqref{eq:le_ell}. Because the bilinear form is coercive and continuous in $\calV_h \subset \calV$ and the linear form in continuous in $\calV_h \subset \calV$, the finite element problem has a unique solution by the Lax-Milgram theorem. Because the bilinear form is symmetric and coercive, we may also consider the minimization formulation: find $u_h \in \calV_h$ such that
+\begin{equation*}
+  u_h = \argmin_{w_h \in \calV_h} J(w_h),
+\end{equation*}
+where $J: \calV \to \RR$ is the functional defined in~\eqref{eq:le_J}.
+
+
+\section{Finite element approximation: analysis}
+
+We can also readily analyze the error in the finite element approximation using the tools introduced in Lecture~\ref{ch:fe_theory}. Note in particular the linear elasticity problem~\eqref{eq:le_weak} and the associated finite element problem~\eqref{eq:le_fe} satisfy all the conditions of the Assumptions~\ref{ass:th_fe_form} and \ref{ass:th_fe_soln}; in addition the bilinear form is symmetric.
+
+To begin, we introduce the energy norm $\| \cdot \|_a \equiv \sqrt{a(\cdot,\cdot)}$; the energy norm of a displacement field for the linear elasticity problem is the total strain energy associated with the displacement field. We immediately obtain the optimality result in energy norm: for $u \in \calV \cap H^{s+1}(\calT_h)^d$, 
+\begin{equation*}
+  \| u - u_h \|_a = \inf_{w_h \in \calV_h} \| u - w_h \|_a
+  \leq C h^{r} | u |_{H^{r+1}(\calT_h)}
+\end{equation*}
+for $r \equiv \min \{s, p \}$ and some $C < \infty$ independent of $u$ and $h$. (As discussed in Lecture~\ref{ch:fe_theory}, the result of the first type holds for any $\calV_h \subset \calV$, whereas the result of the second type is specific to $\PP^p$ finite element approximation space.) We also obtain a similar result in $H^1(\Omega)$ using the C\'ea's lemma: for $u \in \calV \cap H^{s+1}(\calT_h)^d$, 
+\begin{equation*}
+  \| u - u_h \|_{H^1(\Omega)} = \sqrt{\frac{\gamma}{\alpha}} \inf_{w_h \in \calV_h} \| u - w_h \|_{H^1(\Omega)}
+  \leq C h^{r} | u |_{H^{r+1}(\calT_h)}
+\end{equation*}
+for $r \equiv \min \{s, p \}$ and some $C < \infty$ independent of $u$ and $h$.  It can also be shown that the elliptic regularity estimate holds for sufficiently regular domain and Lam\'e parameter fields, and hence the $L^2$ error can be analyzed using the Aubin-Nitsche trick: ace.) We also obtain a similar result in $H^1(\Omega)$ using the C\'ea's lemma: for $u \in \calV \cap H^{s+1}(\calT_h)^d$, 
+\begin{equation*}
+  \| u - u_h \|_{H^1(\Omega)} \leq C h^{r+1} | u |_{H^{r+1}(\calT_h)}
+\end{equation*}
+for $r \equiv \min \{s, p \}$ and some $C < \infty$ independent of $u$ and $h$. Finally, for a linear functional output $\ell^o(u)$, we obtain the output superconvergence result: for $u \in \calV \cap H^{s+1}(\calT_h)^d$ and $\psi \in \calV \cap H^{s'+1}(\calT_h)$,
+\begin{equation*}
+  | \ell^o(u) - \ell^o(u_h) |
+  \leq \inf_{w_h \in \calV_h} \| u - w_h \|_a \inf_{v_h \in \calV_h} \| \psi - v_h \|_a \leq C h^{r + r'} | u |_{H^{r+1}(\calT_h)} | \psi |_{H^{r+1}(\calT_h)}
+\end{equation*}
+for $r = \min\{ s,p \}$, $r' = \min\{s',p'\}$, and $C < \infty$ independent of $u$, $\psi$, and $h$.  Here $\psi$ is the adjoint associated with the output functional $\ell^o(\cdot)$.
+
+\section{Finite element approximation: implementation}
+We now discuss the implementation of finite element method. To this end, we introduce the space
+\begin{equation*}
+  H^1_h(\Omega) \equiv \{ v \in H^1(\Omega) \ | \ v|_K \in \PP^p(K) , \quad \forall K \in \calT_h \} 
+\end{equation*}
+without any essential boundary conditions and the associated Lagrange basis $\{ \phi_k \}_{k=1}^m$.  Note that the space (and the basis) are not vector-valued. Then, given a vector-valued function $v \in H^1_h(\Omega)^d$, we express its $i$-th component as
+\begin{equation*}
+  v_i(x) = \hat v_{ik} \phi_k(x) \quad \forall x \in \Omega, \ i = 1,\dots, d,
+\end{equation*}
+for some $v \in \RR^{m \times d}$ and implied sum on the repeated indices $k$. (The sum on repeated indices will be implied throughout this section unless stated otherwise.)  Note that we have $d\cdot m$ coefficients because we must represent $d$ different fields, each of which using $m$ coefficients.
+
+We now wish to identify the local stiffness matrix associated with an element $K \in \calT_h$.  To this end, we first rearrange the bilinear form~\eqref{eq:le_a} into a form more amenable to implementation:
+\begin{align*}
+  a(v,w)
+  &=
+  \int_\Omega (\frac{1}{2} \mu (\nabla v + \nabla v^T) : (\nabla w + \nabla w^T) + \lambda \text{tr}(\nabla v) \text{tr}(\nabla w)) dx
+  \\
+  &=
+  \int_\Omega ( \mu \nabla v :\nabla w + \mu \nabla v : \nabla w^T + \lambda \text{tr}(\nabla v) \text{tr}(\nabla w)) dx,
+\end{align*}
+where we have used the fact that $\nabla v^T : \nabla w = \nabla v : \nabla w^T$, $\nabla v^T: \nabla w^T = \nabla v : \nabla w$, and $\text{tr}(\epsilon(v)) = \text{tr}(\nabla v)$. We now evaluate the form for $v_i|_K = \hat v^K_{i\alpha} \phi^K_\alpha$ and $w_j|_K = \hat w^K_{j\beta} \phi^K_\beta$ to obtain
+\begin{align*}
+  &a(w|_K ,v|_K) \\
+  &=
+  \int_K ( \mu \pp{v_i}{x_j} \pp{w_i}{x_j}
+  + \mu \pp{v_i}{x_j} \pp{w_j}{x_i}
+  + \lambda \pp{v_i}{x_i} \pp{v_j}{x_j} ) dx 
+  \\
+  &=
+  \int_K (
+  \mu \hat v^K_{i\alpha} \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_j} \hat w^K_{i\beta}
+  + \mu \hat v^K_{i\alpha} \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_i} \hat w^K_{j\beta}
+  + \lambda \hat v^K_{i\alpha} \pp{\phi^K_\alpha}{x_i} \pp{\phi^K_\beta}{x_j} \hat w^K_{j\beta} ) dx
+  \\
+  &=
+  \hat v^K_{i\alpha} \left( \int_K \mu \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_j} dx \right) \hat w^K_{i\beta}
+  + \hat v^K_{i\alpha} \left( \int_K \mu \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_i} dx \right) \hat w^K_{j\beta}
+  +\hat v^K_{i\alpha} \left( \int_K \lambda \pp{\phi^K_\alpha}{x_i} \pp{\phi^K_\beta}{x_j} dx  \right) \hat w^K_{j\beta}.
+\end{align*}
+Recognizing that the first term can be rearranged using a dummy index and Kronecker delta, we find that the
+\begin{equation*}
+  a(w|_K,v|_K) = \hat v_{i\alpha} \hat A^K_{i\alpha j\beta} \hat w_{j\beta},
+\end{equation*}
+where the local stiffness matrix $\hat A^K \in \RR^{(d \cdot n_s) \times (d \cdot n_s)}$ is given by
+\begin{equation*}
+  \hat A^K_{i\alpha j\beta} = \left( \sum_{k=1}^d \int_K \mu \pp{\phi_\alpha}{x_k} \pp{\phi_\beta}{x_k} dx \right) \delta_{ij} +  \int_K \mu \pp{\phi_\alpha}{x_j} \pp{\phi_\beta}{x_i} dx + \int_K \lambda \pp{\phi_\alpha}{x_i} \pp{\phi_\beta}{x_j} dx.
+\end{equation*}
+It is convenient to think of the local stiffness matrix as a $d \times d$ block matrix; for instance, for $d = 2$,
+\begin{equation*}
+  \hat A^K = \bmat{c|c}
+  \hat A^{K}_{1,:,1,:} &  \hat A^{K}_{1,:,2,:} \\
+  \hline
+  \hat A^{K}_{2,:,1,:} &  \hat A^{K}_{2,:,2,:}
+  \emat,
+\end{equation*}
+where each of $\hat A^K_{i,:,j,:}$ is a matrix of size $n_s \times n_s$, and we have used the MATLAB colon notation. In this format, the pair of indices for the test function, $(i, \alpha)\in [1,d] \times [1,n_s]$, is mapped to a linear index $i \cdot n_s + \alpha \in [1,d\cdot n_s]$; similarly the pair of indices for the trial function, $(j,\beta)\in [1,d] \times [1,n_s]$, is mapped to a linear index $j \cdot n_s + \beta \in [1,d\cdot n_s]$.
+
+Similarly, we can readily compute the local load vector. For $v_i|_K = \hat v^K_{i\alpha} \phi^K_\alpha$, 
+\begin{align*}
+  \ell(v|_K) = \int_K v_i f_i dx + \int_{\Gamma_N \cap \partial K} v_i g_i ds 
+  =  \hat v_{i\alpha} \int_K \phi^K_\alpha f_{i} dx + \hat v_{i\alpha} \int_{\Gamma_N \cap \partial K} \phi^K_\alpha g_i ds.
+\end{align*}
+We find that
+\begin{equation*}
+  \ell(v|_K) = \hat v_{i\alpha} \hat f^K_{i\alpha}
+\end{equation*}
+where the local load vector $\hat f^K \in \RR^{(d\cdot n_s)}$ is given by
+\begin{equation*}
+  \hat f^K_{k\alpha} =  \int_K \phi^K_\alpha f_{i} dx + \int_{\Gamma_N \cap \partial K} \phi^K_\alpha g_i ds.
+\end{equation*}
+It is again convenient to think of the local stiffness matrix as a $d$ block vector; for instance, for $d = 2$,
+\begin{equation*}
+  \hat f^K = \bmat{c} \hat f^K_{1,:} \\ \hline \hat f^K_{2,:} \emat,
+\end{equation*}
+where each of $\hat f^K_{i,:}$ is a vector of length $n_s$. Again, a pair of indices for the test function, $(i,\alpha) \in [1,d] \times [1,n_s]$, is mapped to a linear index $i \cdot n_s + \alpha \in [1,d\cdot n_s]$. (In practice, the boundary term can be computed using the assembly technique for facet terms discussed in Section~\ref{sec:fe_impl_assembly_facet}.)
+
+Finally, to assemble the 
+%% \begin{align*}
+%%   \text{for } i,j = 1, &\dots, d \\
+%%   \hat A^K_{i\alpha i\beta}
+%%   &\leftarrow \hat A^K_{i\alpha i\beta} + \int_K \mu \pp{\phi_\alpha}{x_j} \pp{\phi_\beta}{x_j} dx \qquad \text{(no implicit sum on repeated $i$ or $j$)}
+%%   \\
+%%   \hat A^K_{i\alpha j\beta}
+%%   &\leftarrow \hat A^K_{i\alpha j\beta} + \int_K \mu \pp{\phi_\alpha}{x_j} \pp{\phi_\beta}{x_i} dx
+%%   \\
+%%   \hat A^K_{i\alpha j\beta}
+%%   &\leftarrow \hat A^K_{i\alpha j\beta} +  \int_K \lambda \pp{\phi_\alpha}{x_i} \pp{\phi_\beta}{x_j} dx
+%% \end{align*}
+
+%% \begin{align*}
+%%   a(v|_K,w|_K)
+%%   &= \frac{1}{2} \int_{K} \mu \sum_{i,j=1}^d \left( \left. \pp{v_{i}}{x_j} \right|_K + \left. \pp{v_{j}}{x_i} \right|_K \right) \left( \left. \pp{w_{i}}{x_j} \right|_K + \left. \pp{w_{j}}{x_i} \right|_K \right) dx \\
+%%   &= \frac{1}{2}  \int_{K} \mu \sum_{i,j=1}^d \sum_{\alpha=1}^{n_s} \left( \hat v^K_{i\alpha} \pp{\phi^K_\alpha}{x_j} + \hat v^K_{j\alpha} \pp{\phi^K_\alpha}{x_i} \right) \sum_{\beta = 1}^{n_s} \left( \hat w^K_{i\beta} \pp{\phi^K_\beta}{x_j} + \hat w^K_{j\beta} \pp{\phi^K_\beta}{x_i} \right) dx \\
+%%   &= \sum_{i,j=1}^d \sum_{\alpha,\beta = 1}^{n_s}
+%%   \hat v^K_{i\alpha} \left( \frac{1}{2} \int_K \mu \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_j} dx \right) \hat w^K_{i\beta}
+%%   + \hat v^K_{i\alpha} \left( \frac{1}{2} \int_K \mu \pp{\phi^K_\alpha}{x_j} \pp{\phi^K_\beta}{x_i} dx \right) \hat w^K_{j\beta} \\
+%%   & \qquad + \hat v^K_{j\alpha} \left( \frac{1}{2} \int_K \mu \pp{\phi^K_\alpha}{x_i} \pp{\phi^K_\beta}{x_j} dx \right) \hat w^K_{i\beta}
+%%   + \hat v^K_{j\alpha} \left( \frac{1}{2} \int_K \mu \pp{\phi^K_\alpha}{x_i} \pp{\phi^K_\beta}{x_i} dx \right) \hat w^K_{j\beta} 
+%% \end{align*}

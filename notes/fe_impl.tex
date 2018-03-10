@@ -1,5 +1,7 @@
 \chapter{Finite element method: implementation}
 
+\disclaimer
+
 \section{Introduction}
 In this lecture, we introduce technical ingredients required to implement the finite element method. This lecture is organized as follows:
 \begin{itemize}
@@ -1115,6 +1117,7 @@ We make one note about the expressions for the local load vector and stiffness m
 where $f^{\rm trans}: \tilde K \to \RR$  and $a^{\rm trans}:\tilde K \to \RR^{d \times d}$ are the transformed coefficients for the reference domain $\tilde K$. Note that the difference lies only in the interpretation; the local load vectors and stiffness matrices for both formulations are mathematically identical.
 
 \subsection{Local stiffness matrix and vectors: facet terms}
+\label{sec:fe_impl_assembly_facet}
 We now consider evaluation of a load vector that requires integration on a boundary and, in turn, on a facet.  Again to provide a concrete example, in this section we consider $\calV \equiv H^1(\Omega)$, a linear form $\ell: \calV \to \RR$ such that
 \begin{equation}
   \ell(v) \equiv \int_{\Gamma_N} v g dx \quad \forall v \in \calV,

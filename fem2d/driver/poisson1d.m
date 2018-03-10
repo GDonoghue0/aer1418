@@ -9,11 +9,13 @@ function poisson1d
 %   homogeneous Dirichlet boundary condition, u = 0, at x = 0 and 
 %   inhomogeneous Neumann condition du/dx = 3/4*pi*cos(3/4*pi*1) at x = 1.
 
+% Copyright 2018 Masayuki Yano, University of Toronto
+
 % discretization parameters
 %h = 0.3;
 h = 1/4;
 p = 2;
-pquad = 60; %2*p;
+pquad = 2*p;
 
 % set the source function
 ffun = @(x) 9/16*pi^2*sin(3/4*pi*x(:,1));

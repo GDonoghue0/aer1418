@@ -23,10 +23,9 @@ if p == 2
     mesh = add_quadratic_nodes(mesh);
 end
 mesh = make_bgrp(mesh);
-for i = 1:1
+for i = 1:4
     mesh = refine_uniform(mesh); 
 end
-size(mesh.tri)
 
 % get useful parameters
 [nelem,nshp] = size(mesh.tri);
@@ -131,17 +130,19 @@ U = zeros(ndof,1);
 U(inodes) = A(inodes,inodes)\F(inodes);
 
 % plot solution
+if (0)
 figure(1), clf,
 plot_field(mesh,ref,U,struct('edgecolor',[0.5,0.5,0.5]));
 axis equal;
 xlim([-4,4]);
 ylim([0,max(mesh.coord(:,2))+0.5]);
+end
 
 % compute output (average temprature at root)
-strue = 1.407815193325423e+00; % using h = 0.05
+strue = 1.3943997334e+00; % using 222305 dof
 s = F'*U;
 serr = strue - s;
-fprintf('output = %.6e\noutput error = %.2e\n',s,serr);
+fprintf('n = %d\noutput = %.10e\noutput error = %.4e\n',ndof, s,serr);
 
 end
 
