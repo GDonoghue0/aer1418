@@ -119,7 +119,7 @@ The energy norm is \emph{equivalent} to $\| \cdot \|_{H^1(\Omega)}$ in the follo
   \end{equation*}
 \end{definition}
 \begin{lemma}[equivalence of energy and $H^1$ norm]
-  Suppose Assumption~\ref{ass:th_fe_form} holds for a symmetric bilinear form.  The energy norm $\| \cdot \|_a$ is equivalent to the $H^1$ norm $\| \cdot \|_{H^1(\Omega)}$.
+  Suppose Assumption~\ref{ass:th_fe_form} holds for a symmetric bilinear form.  The energy norm $\| \cdot \|_a$ is equivalent to the $\calV$ norm $\| \cdot \|_\calV$, which in turn is equivalent to the $H^1$ norm $\| \cdot \|_{H^1(\Omega)}$.
   \begin{proof}
     From coercivity and continuity of $a(\cdot,\cdot)$ in $\calV$, we immediately obtain
     \begin{equation*}
@@ -165,10 +165,11 @@ We may obtain a particular $h$-convergence result for $\PP^p$ finite element app
       \| u - u_h \|_a &= \inf_{w_h \in \calV_h} \| u - w_h \|_a
       & \text{(energy-norm error bound)}  \\
       &\leq \| u - \calI_h u \|_a &\text{($w_h = \calI_h u$)} \\
-      &\leq \gamma \| u - \calI_h u \|_{H^1(\Omega)} &\text{(continuity of $a(\cdot,\cdot)$)} \\
-      &\leq \gamma C_\calI h^r | u |_{H^{r+1}(\calT_h)}. &\text{(interpolation error bound)}
+      &\leq \gamma \| u - \calI_h u \|_{\calV} &\text{(continuity of $a(\cdot,\cdot)$)} \\
+      &\leq \gamma C_{\calV\text{-}H^1(\Omega)} \| u - \calI_h u \|_{H^1(\Omega)} &\text{(equivalence of $\| \cdot \|_\calV$ and $\|\cdot \|_{H^1(\Omega)}$)} \\
+      &\leq \gamma C_{\calV\text{-}H^1(\Omega)} C_\calI h^r | u |_{H^{r+1}(\calT_h)}. &\text{(interpolation error bound)}
     \end{align*}
-    We set $C \equiv \gamma C_\calI$ to obtain the desired relationship.
+    We set $C \equiv \gamma C_{\calV\text{-}H^1(\Omega)} C_\calI$ to obtain the desired relationship.
   \end{proof}
 \end{proposition}
 
@@ -283,19 +284,19 @@ We now analyze the convergence of finite element approximations in $L^2(\Omega)$
     for $e \equiv u - u_h$. We then observe that
     \begin{equation*}
       \| e \|_{L^2(\Omega)}^2 = a(e, \psi)
-      = a(e, \psi - \Pi_{H^1(\Omega)} \psi)
+      = a(e, \psi - \calI_h \psi)
       \leq \gamma \| e \|_\calV \| \psi - \calI_h \psi \|_\calV.
     \end{equation*}
-    We note that, since $u \in H^1(\Omega)$ and $u_h \in H^1(\Omega)$,  $e \equiv u - u_h \in \calV \subset H^1(\Omega) \subset L^2(\Omega)$; by the elliptic regularity estimate, $\| \psi \|_{H^2(\Omega)} \leq C_{\rm reg} \| e \|_{L^2(\Omega)}$. We hence obtain
+    We note that, since $u \in H^1(\Omega)$ and $u_h \in H^1(\Omega)$,  $e \equiv u - u_h \in \calV \subset H^1(\Omega) \subset L^2(\Omega)$; by the elliptic regularity estimate, $| \psi |_{H^2(\Omega)} \leq C_{\rm reg} \| e \|_{L^2(\Omega)}$. We hence obtain
     \begin{align*}
       \| \psi - \calI_h \psi \|_\calV
-      &=\| \psi - \calI_h \psi \|_{H^1(\Omega)} & \text{(definition of $\calV$ norm)} \\
-      &\leq C_\calI h \| \psi \|_{H^2(\Omega)} & \text{(interpolation error bound)}\\
-      &\leq C_\calI C_{\rm reg} h  \| e \|_{L^2(\Omega)}. & \text{(elliptic regularity estimate)}
+      &\leq C_{\calV\text{-}H^1(\Omega)} \| \psi - \calI_h \psi \|_{H^1(\Omega)} & \text{(equivalence of $\| \cdot \|_\calV$ and $\| \cdot \|_{H^1(\Omega)}$)} \\
+      &\leq C_{\calV\text{-}H^1(\Omega)}C_\calI h | \psi |_{H^2(\calT_h)} & \text{(interpolation error bound)}\\
+      &\leq C_{\calV\text{-}H^1(\Omega)}C_\calI C_{\rm reg} h  \| e \|_{L^2(\Omega)}. & \text{(elliptic regularity estimate)}
     \end{align*}
     It follows
     \begin{equation*}
-      \| e \|_{L^2(\Omega)}^2 \leq \gamma C_\calI C_{\rm reg} h \| e \|_{L^2(\Omega)} \| e \|_\calV .
+      \| e \|_{L^2(\Omega)}^2 \leq \gamma C_{\calV\text{-}H^1(\Omega)}C_\calI C_{\rm reg} h \| e \|_{L^2(\Omega)} \| e \|_\calV .
     \end{equation*}
     The division by $\| e \|_{L^2(\Omega)}$ yields the desired bound.
   \end{proof}
