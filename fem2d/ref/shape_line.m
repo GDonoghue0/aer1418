@@ -1,4 +1,4 @@
-function [shp,shpx] = shape_line(p,x)
+function [shp,shpx,shpxx] = shape_line(p,x)
 % SHAPE_LINE computes the Lagrange polynomials on line segment
 % INPUTS:
 %   p: polynomial order; must be 1 or 2.
@@ -17,10 +17,11 @@ function [shp,shpx] = shape_line(p,x)
 
 xnodes = interp_nodes_line(p);
 inv_coeff = monomial_line(p,xnodes);
-[psi,psix] = monomial_line(p,x);
+[psi,psix,psixx] = monomial_line(p,x);
 
 shp = psi/inv_coeff;
 shpx = psix/inv_coeff;
+shpxx = psixx/inv_coeff;
 
 end
 
