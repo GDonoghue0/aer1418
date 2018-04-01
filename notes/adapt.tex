@@ -289,6 +289,7 @@ which is repeated until the desired error tolerance is met. We now provide a bri
 The steps are repeated until the desired error tolerance is met.  The adaptive procedure yields a sequence of triangulations $\{\calT_h \}$ and the associated approximation spaces $\{ \calV_h \}$ that are tailored for the particular solution $u$.
 
 \section{Adaptive mesh refinement and singularity}
+\label{sec:adapt_singularity}
 Adaptive mesh refinement in general can improve the convergence of the error (say) $\| u - u_h \|_{H^1(\Omega)}$ with respect to the number of degrees of freedom $n$.  (Note that, instead of the maximum element diameter $h \equiv \max_{K \in \calT_h} h_K$, we use the number of degrees of freedom $n \equiv \text{dim}(\calV_h)$ as the indicator of complexity, which is more suitable for non-uniform meshes.)  To demonstrate the benefit, in this section, we consider a canonical singular solution in $\RR^1$, 
 \begin{equation*}
   u(x;\alpha) = x^\alpha, \quad x \in \Omega \equiv (0,1),
@@ -318,6 +319,7 @@ The comparison of the convergence results for the uniform mesh~\eqref{eq:adapt_s
 %The precise mesh grading required to achieve this result depends on the polynomial degree.
 
 \section{Adaptive mesh refinement and singular perturbations}
+\label{sec:adapt_singular_perturbation}
 The next example we consider is a canonical singular perturbation solution in $\RR^1$,
 \begin{equation*}
   u(x;\epsilon) = \exp(-x/\epsilon), \quad x \in (0,1),
@@ -357,6 +359,58 @@ We summarize key points of this lecture:
 \item In the presence of a boundary layer (which is formally smooth), the adaptive mesh refinement can reduce the number of degrees of freedom required to enter the asymptotic regime.
 \end{enumerate}
 
+\clearpage
+\section{Addendum: extrapolation error estimate}
+In this section we consider a simple but practical error estimate based on Richardson extrapolation.  %The error estimate is based on the solution obtained on two different refinement levels of meshes.
+To illustrate the idea, we introduce two triangulations $\calT_h$ and $\calT_{h'}$, where $\calT_{h'}$ results from a uniform refinement of $\calT_h$ in which the linear length of each element is reduced by a factor of two; i.e., $h' = h/2$. We next introduce two $\PP^p$ approximation spaces $\calV_h$ and $\calV_{h'}$ associated with $\calT_h$ and $\calT_{h'}$, respectively. We then introduce $\PP^p$ finite element approximations, $u_h \in \calV_h$ and $u_{h'} \in \calV_{h'}$.  We \emph{assume} that the error in each solution varies as
+\begin{align*}
+  \| u - u_h \|_{H^1(\Omega)} &\approx C h^r \\
+  \| u - u_{h'} \|_{H^1*(\Omega)} &\approx C (h')^r = C h^r 2^{-r}
+\end{align*}
+for some constant $C \leq \infty$ and convergence rate $r$; we recall $r = p$ if $u \in H^{p+1}(\calT_h)$, but $r < p$ for less regular solutions. To estimate the error in the \emph{refined} solution $u_{h'} \in \calV_{h'}$, we observe that
+\begin{align*}
+  \| u_{h'} - u_h \|_{H^1(\Omega)}
+  &= \| (u - u_{h}) - (u - u_{h'}) \|_{H^1(\Omega)}
+  \\
+  &\geq \| u - u_h \|_{H^1(\Omega)} - \| u - u_{h'} \|_{H^1(\Omega)} & \text{(reverse triangle inequality)}
+  \\
+  &\approx  C h^r(1-2^{-r}); &\text{($h$ convergence estimate)}  
+\end{align*}
+in the last step, we plausibly assume $\| u  - u_h \|_{H^1(\Omega)} > \| u - u_{h'} \|_{H^1(\Omega)}$. It follows that
+\begin{equation*}
+  \| u - u_{h'} \|_{H^1(\Omega)} \approx C h^r 2^{-r}
+  = \frac{ C h^r 2^{-r} }{C h^r (1-2^{-r})} C h^r (1-2^{-r})
+  \lesssim \frac{1}{2^r - 1} \| u_{h'} - u_h \|_{H^1(\Omega)}.
+\end{equation*}
+Because $\| u_{h'} - u_h \|_{H^1(\Omega)}$ is computable, $\| u_{h'} - u_h \|_{H^1(\Omega)}/(2^r-1)$ serves as a computable estimate of the error $\| u - u_{h'} \|_{H^1(\Omega)}$.
+
+The extrapolation error estimate readily generalizes to other norms, such as the $L^2(\Omega)$ norm or the specific $\calV$ norm, as long as the asymptotic convergence rate is adjusted accordingly. The error estimate can also be applied to assess the output error $| \ell^o(u) - \ell^o(u_{h'}) |$ for some functional $\ell^o$.  In addition, because the estimate builds directly on the two solutions rather than (say) the residual, the formulation is not equation specific and the same formulation can be applied to any equations.
+
+We can also localize the extrapolation error estimate to drive an adaptive finite element method. Our strategy is as follows: we adaptively refine the \emph{coarse} mesh $\calT_h$, but use the solution obtained on the \emph{fine} solution $u_{h'} \in \calV_{h'}$ as our current estimate of the solution (since presumably $u_{h'} \in \calV_{h'}$ is more accurate than $u_h \in \calV_h$).  To this end, we define the local error indicator for an element $K \in \calT_h$ in the coarse mesh as
+\begin{equation*}
+  \eta_K \equiv \| u_{h'} - u_h \|_{H^1(K)}.
+\end{equation*}
+In practical implementation, it is convenient to first re-represent the solution $u_h \in \calV_h$ in the refined space $\calV_{h'}$ --- we can represent the solution exactly because $\calV_h \subset \calV_{h'}$ --- and then evaluate the integral in the refined space according to
+\begin{equation*}
+  \eta_K^2 = \sum_{K' \in \text{children}(K)} \| u_{h'} - u_h \|_{H^1(K')}^2,
+\end{equation*}
+where $\text{children}(K) \subset \calT_{h'}$ is a set of child elements in $\calT_{h'}$ that belongs to the parent element $K \in \calT_h$. The local error indicator can then be used in the \textsc{Mark} stage of the adaptive finite element method to drive adaptivity.
+
+We now summarize the adaptation procedure based on the extrapolation error estimate. Throughout the description, $\calV_h$ and $\calV_{h'}$ are the $\PP^p$ finite element approximation spaces associated with $\calT_h$ and $\calT_{h'}$, respectively. 
+\begin{enumerate}
+  \setcounter{enumi}{-1}
+\item Prepare an initial coarse mesh $\calT_h^{(1)}$.  Set the iteration counter to $i = 1$.
+\item Uniformly refine the mesh $\calT_h^{(i)}$ to obtain $\calT_{h'}^{(i)}$.
+\item \textsc{Solve} for the finite element solutions $u_h^{(i)} \in \calV_h^{(i)}$ and $u_{h'}^{(i)} \in \calV_{h'}^{(i)}$.
+\item Re-represent the solution $u_h \in \calV_h^{(i)}$ in the refined space $\calV_{h'}^{(i)}$ such that error estimate and local error indicators can be computed as algebraic operations in the fine space.
+\item \textsc{Estimate} the error in the refined solution as $\| u - u_{h'}^{(i)} \|_{H^1(\Omega)} \lesssim \| u_{h'}^{(i)} - u_h^{(i)} \|_{H^1(\Omega)}/(2^r - 1)$. If the target error tolerance is met, terminate.
+\item \textsc{Mark} the top $\alpha$\% of elements with the largest error indicator $\eta_K \equiv \| u_{h'} - u_h \|_{H^1(K)}$ for refinement.
+\item \textsc{Refine} marked elements.
+\item Set $i \leftarrow i + 1$, and go to Step 1.
+\end{enumerate}
+The procedure is repeated until the target error tolerance is met.
+
+We make a few comments about our adaptive finite element method based on the extrapolation error estimate.  First, it is a very simple procedure that can be applied to any equations and for any norms. Second, while the procedure requires two solutions --- one coarse and one fine ---, the cost associated with the solution of the coarse problem is at least $2^d$ times smaller than the fine solution, where $d$ is the dimensionality of the space, and in any event we use the fine solution as our approximation.  Third, a reliable and effective error estimate requires an appropriate choice of the convergence rate $r$ for the Richardson extrapolation; the overestimate of the convergence rate results in an underestimation of the error and vice versa.  Fourth, in any event this simple procedure can yield a sequence of adapted meshes that can significantly improve the efficiency of the finite element method in the presence of singularities and singular perturbations as outlined in Sections~\ref{sec:adapt_singularity} and \ref{sec:adapt_singular_perturbation}.
 
 %% \section{Singularity and adaptive meshing}
 %% Consider a function
