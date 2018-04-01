@@ -373,7 +373,7 @@ where $\psi$ is the solution to the dual problem~\ref{eq:th_dual}.
     &\leq \gamma \| u - u_h \|_\calV \| \psi - v_h \|_\calV & \text{(continuity of $a(\cdot,\cdot)$)} \\
     &\leq \frac{\gamma^2}{\alpha} \inf_{w_h \in \calV_h} \| u - w_h \|_\calV \| \psi - v_h \|_\calV. & \text{($\| \cdot \|_\calV$ error bound of $u_h$)}
   \end{align*}
-  We then take $v_h \in \calV_h$ to be the minimizer of $\| \psi - v_h \|_a$ to obtain the desired result.
+  We then take $v_h \in \calV_h$ to be the minimizer of $\| \psi - v_h \|_\calV$ to obtain the desired result.
 \end{proof}
 \end{proposition}
 
@@ -408,5 +408,5 @@ We summarize key points of this lecture:
 \item The error bounds for the $H^1(\Omega)$ norm of the error is the same as that for the $\calV$ norm of the error up to a constant.
 \item If the solution is smooth, then the $L^2(\Omega)$ norm of the error for the $\PP^p$ finite element approximation converges as $h^{p+1}$.  The result follows from the Aubin-Nitsche trick.
 \item The error in a linear functional output is a (scaled) product of the error in the primal and dual approximations. If both the primal and dual solutions are smooth, then the error in a linear functional output superconverges as $h^{2p}$.
-\item For all of the above cases, if the solution is not smooth, then the converge rate is limited by the regularity of the solution.
+\item For all of the above cases, if the solution is not smooth, then the converge rate may be limited by the regularity of the solution.
 \end{enumerate}

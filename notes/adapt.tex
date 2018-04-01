@@ -1,118 +1,533 @@
 \chapter{Adaptive finite element method}
 
-\section{\textit{A posteriori} error estimation}
+\disclaimer
 
-residual: $r \in \calV'$ such that
+\section{Motivation}
+We have so far considered finite element approximations where the triangulation and the associated approximation space are chosen \emph{a priori} by the user.  In this lecture we consider an adaptive finite element method, where a sequence of approximation spaces is constructed intelligently and automatically based on the solution behavior until a user-specified error tolerance is met (or the computational resource is exhausted).  An adaptive finite element method builds on two key technical ingredients: the first is an \emph{a posteriori} error estimation technique which allows the method to estimate, and also localize, the error in a given finite element approximation; the second is an adaptive mesh refinement strategy that refines appropriate elements based on the behavior of the (localized) error estimates. %The development of more reliable and effective \emph{a posteriori} error estimates and more efficient mesh refinement strategies are areas of ongoing research
+
+\section{Problem statement}
+Throughout this lecture, we consider a general advection-reaction-diffusion equation to illustrate \textit{a posteriori} error estimation and mesh adaptation procedures. To this end, we introduce a Lipschitz domain $\Omega \subset \RR^d$ with the boundary $\partial \Omega$ partitioned into a Dirichlet boundary $\Gamma_D$ and a Neumann boundary $\Gamma_N$ such that $\Gamma_D \neq \emptyset$ and $\overline{\Gamma}_D \cup \overline{\Gamma}_N = \overline {\partial \Omega}$. We next introduce a Hilbert space
+\begin{equation*}
+  \calV \equiv \{ v \in H^1(\Omega) \ | \ v|_{\Gamma_D} = 0 \},
+\end{equation*}
+and an affine space
+\begin{equation*}
+  \calV^E = u^E + \calV,
+\end{equation*}
+where $u^E \in H^1(\Omega)$ satisfies $u^E|_{\Gamma_D} = u^B$ on $\Gamma_D$ for some boundary function $u^B$. The space $\calV$ is endowed with an inner product $(\cdot,\cdot)_\calV$ and the associated induced norm $\| \cdot \|_\calV \equiv \sqrt{(\cdot,\cdot)_{\calV}}$ such that
+\begin{equation*}
+  c \| v \|_{H^1(\Omega)} \leq \| v \|_{\calV} \leq C \| v \|_{H^1(\Omega)} \quad \forall v \in \calV
+\end{equation*}
+for some $c > 0$ and $C < \infty$ independent of $v$. We now state the weak form of the problem: find $u \in \calV^E$ such that
+\begin{equation}
+  a(u,v) = \ell(v) \quad \forall v \in \calV,
+  \label{eq:adapt_pde}
+\end{equation}
+where
+\begin{align*}
+  a(w,v) &\equiv \int_\Omega ( \nabla v \cdot \kappa \nabla w + v b \cdot \nabla w + c w v) dx \quad \forall w, v \in \calV,
+  \\
+  \ell(v) &\equiv \int_\Omega vf dx + \int_{\Gamma_N} vg ds \quad \forall v \in \calV,
+\end{align*}
+for a diffusion field $\kappa \in L^{\infty}(\Omega)^{d \times d}$, an advection field $b \in L^\infty(\Omega)^d$, a reaction field $c \in L^\infty(\Omega)$, a source function $f \in L^{2}(\Omega)$, and a Neumann data $g \in L^2(\Gamma_N)$. We assume $\xi^T \kappa(x) \xi > 0$ $\forall \xi \in \RR^d$ a.e. in $\Omega$, such that the problem is elliptic.  We assume that the bilinear form $a(\cdot,\cdot)$ is coercive and continuous in $\calV$ and the linear form $\ell(\cdot)$ is continuous in $\calV$; by the Lax-Milgram theorem, the solution to~\eqref{eq:adapt_pde} exists and is unique.
+
+We now consider a finite element approximation of~\eqref{eq:adapt_pde}.  To this end, we introduce an approximation space
+\begin{equation*}
+  \calV_h \equiv \{ v \in \calV \ | \ v|_K \in \PP^p(K), \ \forall K \in \calT_h \},
+\end{equation*}
+where $\calT_h$ is a triangulation of $\Omega$.  (We may also readily consider isoparametric elements for curved domains.) Our finite element approximation is as follows: find $u_h \in \calV_h$ such that
+\begin{equation*}
+  a(u_h,v) = \ell(v) \quad \forall v \in \calV_h.
+\end{equation*}
+The well-posedness of the problem follows from the coercivity and continuity of the bilinear form in $\calV_h \subset \calV$, the continuity of the linear form in $\calV_h \subset \calV$, and the Lax-Milgram theorem.
+
+Our goal in \textit{a posteriori} error estimation is to provide a computable estimate of the error in the field $ \| u - u_h \|_\calV$ (or output $| \ell^o(u) - \ell^o(u_h) |$ for some functional $\ell^o \in \calV'$). Our goal in mesh adaptation is to identify a sequence of triangulations $\{\calT_h\}_{h>0}$ that controls the error more efficiently than (say) uniform refinement. 
+
+\section{Error estimation: abstract formulation}
+We first consider an abstract form of error bounds and identify the key ingredients of an error bound. (We will discuss how to compute or estimate these integredients in the next sections.) %In this section we assume the bilinear form is coercive: $\exists \alpha > 0$ such that $a(v,v) \geq \alpha \| v\|_\calV^2$ $\forall v \in \calV$.
+We first introduce the \emph{residual} associated with a solution $u_h \in \calV_h$: $r \in \calV'$ such that
 \begin{equation*}
   r(v) \equiv \ell(v) - a(u_h,v) \quad \forall v \in \calV.
 \end{equation*}
-
+Note that the residual is related to the error $e \equiv u - u_h$ by
 \begin{equation*}
-  \alpha \| e \|_{H^1(\Omega)}^2 \leq a(e,e) = r(e) \leq \| r \|_{H^{-1}(\Omega)} \| e \|_{H^1(\Omega)}
+  a(e,v) = a(u,v) - a(u_h,v) = \ell(v) - a(u_h,v) =  r(v) \quad \forall v \in \calV;
 \end{equation*}
-
+it follows that by Galerkin orthogonality
 \begin{equation*}
-  \| e \|_{H^1(\Omega)} \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)}
+  r(v) = 0 \quad  \forall v \in \calV_h,
 \end{equation*}
-
-
+which is the weighted-residual statement.  We now appeal to (i) the coercivity of the bilinear form, (ii) the error-residual relationship, and (iii) the definition of the dual norm to obtain
 \begin{equation*}
-  \rho_K \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(K)}}{\| v \|_{H^1(K)}} \quad (\leq C h)
+  \alpha \| e \|_{\calV}^2 \leq a(e,e) = r(e) \leq \| r \|_{\calV'} \| e \|_{\calV},
 \end{equation*}
+or
+\begin{equation}
+  \| e \|_\calV \leq \frac{1}{\alpha} \| r \|_{\calV'}.
+  \label{eq:adapt_err_bnd}
+\end{equation}
+We hence identify the two ingredients of our error bound:
+\begin{itemize}
+\item the coercivity constant $\alpha = \inf_{v \in \calV} \frac{a(v,v)}{ \| v \|^2_\calV}$;  and
+\item the dual norm of the residual $\| r \|_{\calV'} \equiv \sup_{v \in \calV} \frac{ r(v) }{ \| v \|_\calV}$.
+\end{itemize}
+We will discuss in the next sections computational approximation of these quantities.
 
+\section{Estimation of the coercivity constant}
+\label{sec:adapt_coer_est}
+We now consider the approximation of the first key ingredient of the error bound~\eqref{eq:adapt_err_bnd}: the coercivity constant. We recall that the coercivity constant is given by
+\begin{equation}
+  \alpha = \inf_{v \in \calV} \frac{a(v,v)}{ \| v \|^2_\calV}.
+  \label{eq:adapt_coer}
+\end{equation}
+We recall that the lower bound of the Rayleigh quotient is associated with the lower bound of the eigenvalues of the following eigenproblem: find $(u_k,\lambda_k) \in \calV \times \RR$, $k \in \ZZ_{> 0}$, such that
+\begin{equation}
+  \frac{1}{2} a(u_k, v) + \frac{1}{2} a(v, u_k)
+  = \lambda_k (u_k,v)_\calV \quad \forall v \in \calV;
+  \label{eq:adapt_coer_eig}
+\end{equation}
+without loss of generality, we order the eigenvalues such that $\lambda_1 \leq \lambda_2 \leq \dots$ and identify the coercivity constant $\alpha = \inf_k \{ \lambda_k \}_k = \lambda_1$.  (Here we do not assume $a(\cdot,\cdot)$ to be symmetric; the symmetrized eigenproblem can be readily obtained as stationary points of the Lagrangian $\calL(w,\mu) = a(w,w) - \mu((w,w)_\calV - 1)$ associated with~\eqref{eq:adapt_coer}.)
+
+The solution to the coercivity eigenproblem~\eqref{eq:adapt_coer_eig} cannot be found in a closed form for a general $a(\cdot,\cdot)$.  We can however consider the following finite-dimensional approximation of the coercivity constant in $\calV_h \subset \calV$:
+\begin{equation}
+  \label{eq:adapt_coer_h}
+  \alpha_h \equiv \inf_{v \in \calV_h} \frac{a(v,v)}{ \| v \|^2_\calV}.
+\end{equation}
+The associated finite-dimensional eigenproblem is as follows: find $(u_{h,k},\lambda_{h,k}) \in \calV_h \times \RR$, $k = 1,\dots,n$, such that
 \begin{equation*}
-  \rho_{\partial K} \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(\partial K)}}{ \| v \|_{H^1(K)}} \quad ( \leq C h^{1/2})
+  \frac{1}{2} a(u_{h,k}, v) + \frac{1}{2} a(v, u_{h,k})
+  = \lambda_{h,k} (u_{h,k},v)_\calV \quad \forall v \in \calV_h;
 \end{equation*}
+again, without loss of generality, we order the eigenvalues such that $\lambda_1 \leq \lambda_2 \leq \dots$ and identify the approximate coercivity constant $\alpha_h = \inf_k \{ \lambda_{h,k} \}_k = \lambda_{h,1}$.  The matrix form of the eigenproblem is as follows: find $(\hat u_{h,k}, \lambda_{h,k}) \in \RR^n \times \RR$, $k = 1,\dots,n$, such that
+\begin{equation*}
+  \frac{1}{2} ( \hat A_h  + \hat A_h^T )\hat u_{h,k}  = \lambda_{h,k} \hat V_h \hat u_{h,k} \quad \text{in } \RR^n,
+\end{equation*}
+where $\hat A_h \in \RR^{n \times n}$ such that $\hat A_{h,ij} = a(\phi_j,\phi_i)$ is the stiffness matrix and $\hat V_{h,ij} = (\phi_i,\phi_j)_\calV$ is the matrix associated with the inner product.  The approximate coercivity constant $\alpha_h$ in~\eqref{eq:adapt_coer_h} hence can be readily computed by solving the (finite-dimensional) eigenproblem using a (sparse) eigenproblem solver.
+
+Unfortunately, the approximate coercivity constant $\alpha_h$ associated with $\calV_h$ is an upper (and not lower) bound of the coercivity constant $\alpha$ associated with $\calV$ because
+\begin{equation*}
+  \alpha_{h}
+  \equiv \inf_{v_h \in \calV_h} \frac{a(v_h,v_h)}{\| v_h \|_{\calV}^2}
+  \geq
+  \inf_{v \in \calV} \frac{a(v,v)}{\| v \|_{\calV}^2}
+  \equiv \alpha.
+\end{equation*}
+%because the minimization is performed in the subspace $\calV_h \subset \calV$.
+As a result, if we replace in the error bound~\label{eq:adapt_err_bnd} the coercivity constant $\alpha$ by $\alpha_h$, then the resulting statement is no longer an error bound but merely an error estimate.  However, under mild assumptions, it can also be shown that
+\begin{equation}
+  | \lambda_1 - \lambda_{h,1}  |
+  \leq
+  C \inf_{v_h \in \calV_h} \| u_1 - v_{h} \|^2_\calV
+  \label{eq:adapt_eigen_approx_1}
+\end{equation}
+for some $C < \infty$. Hence, if the eigenproblem is approximated in a $\PP^p$ space and the eigenfunction is in $\calV \cap H^{p+1}(\calT_h)$, then the eigenvalue superconverges as
+\begin{equation}
+  | \lambda_1 - \lambda_{h,1} |
+  \leq
+  \tilde C h^{2p} | u_1 |^2_{H^{p+1}(\Omega)}.
+  \label{eq:adapt_eigen_approx_2}
+\end{equation}
+It follows that, even for a fairly coarse approximation space, we can obtain a reasonable estimate of the minimum eigenvalue $\lambda_1$ and hence the coercivity constant $\alpha$.  In this lecture, we use $\alpha_h$ in place of $\alpha$, accept the loss of the bound property for the simplicity of the implementation, and justify the choice by the convergence results in~\eqref{eq:adapt_eigen_approx_1} and \eqref{eq:adapt_eigen_approx_2}.
+
+% (There exist techniques to provide rigorous error bounds, but the discussion is beyond the scope of this course.)
+
+\section{Estimation of the dual norm of the residual}
+\label{sec:adapt_res_est}
+We now consider the approximation of the second key ingredient of the error bound~\eqref{eq:adapt_err_bnd}: the dual norm of the residual. To this end, we first introduce the residual associated with elements and facets.  The element residual $R_K \in L^2(K)$, $K \in \calT_h$ is given by
+\begin{equation}
+  R_K \equiv f + \nabla \cdot( \kappa \nabla u_h) - b \cdot \nabla u_h - c u_h ;
+  \label{eq:adapt_RK}
+\end{equation}
+note that $R_K$ is the residual associated with the strong form of the equation.  To define the facet residual, we first introduce a skelton of the triangulation $\calT_h$, $\partial \calT_h = \{ F \}$, which comprises all facets of the triangulation. The facet residual $R_F \in L^2(F)$ is then given by
+\begin{equation}
+  R_F \equiv
+  \begin{cases}
+    \frac{1}{2} \llbracket \kappa \nabla u_h \rrbracket, \quad F \in \partial \calT_h \setminus \partial \Omega \\
+    n \cdot \kappa \nabla u_h - g,  \quad F \in \Gamma_N, \\
+    0, \quad F \in \Gamma_D,
+  \end{cases}
+  \label{eq:adapt_RF}
+\end{equation}
+where the jump operator on $F \in \partial \calT_h \setminus \Gamma_N$ is given by
+\begin{equation*}
+  \llbracket \tau \rrbracket (x)
+  = \lim_{\epsilon \to 0} (n^+ \cdot \phi(x - \epsilon n^+)  +  n^- \cdot\phi(x - \epsilon n^-))
+\end{equation*}
+where $n^+$ and $n^-$ are the outward-pointing unit normal vector from the two neighboring elements.  (Note that the jump operator is independent of the particular assignment of the two elements to the ``$+$'' and ``$-$'' sides.) In short, the facet residual $R_F$ is the jump in the diffusive flux along for the internal facets, the misfit in the Neumann boundary condition for the facets on $\Gamma_N$, and is zero for the facets on $\Gamma_D$.
+
+We also introduce two constants that are required to estimate the dual norm of the residual $\|r \|_{\calV'}$.  The first constant is 
+\begin{equation}
+  \rho_K \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(K)}}{\| v \|_{\calV(K)}} ,
+  \label{eq:adapt_rhok}
+\end{equation}
+where $\calI_hv \in \calV_h$ is an interpolant of $v \in \calV$.  The second constant is 
+\begin{equation}
+  \rho_{\partial K} \equiv \sup_{v \in H^1(K)} \frac{\| v - \calI_h v \|_{L^2(\partial K)}}{ \| v \|_{\calV(K)}} .
+  \label{eq:adapt_rhopk}
+\end{equation}
+The analytical solutions to these maximimization problem can be found only in limited cases.  We can however estimate the constants by solving a finite-dimensional eigenproblems associated with the Rayleigh quotients (as done for the coercivity constant in Section~\ref{sec:adapt_coer_est}).
 
 
+We now bound the dual norm of the residual.  To this end, we define $\calI_h^r v \equiv v - \calI_h v$ and note 
 \begin{align*}
-  |r(v)|
-  &= | r (v - \calI_h v) |
-  = \left| \int_\Omega (v - \calI_h v) f dx - \int_\Omega \nabla (v - \calI_h v) \cdot \nabla u_h dx \right|
+  &|r(v)|
+  =
+  |r(\calI_h^r v)|
   \\
-  &= \left| \sum_{K \in \calT_h} \left( \int_K (v - \calI_h v) (f + \Delta u_h) dx
-  + \int_{\partial K} (v - \calI_h v) \frac{1}{2} \llbracket \nabla u_h \rrbracket ds \right)  \right|
+  &=
+  \left| \int_\Omega (\calI_h^r v) f dx + \int_{\Gamma_N} (\calI_h^r v) g ds
+  - \int_\Omega (\nabla (\calI_h^r v) \cdot \kappa \nabla u_h + (\calI_h^r v) b \cdot \nabla u_h + (\calI_h^r v) c u_h) dx \right|
   \\
-  &\leq \sum_{K \in \calT_h} \left( \| v - \calI_h v \|_{L^2(K)} \| f + \Delta u_h \|_{L^2(K)} + \| v - \calI_h v \|_{L^2(\partial K)} \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}\right) 
+  &=
+%  \left| \sum_{K \in \calT_h} \left( \int_K (\calI_h^r v) (f + \nabla \cdot (\kappa \nabla u_h) - b \cdot \nabla u_h - c u_h ) dx
+%  - \int_{\partial K} (\calI_h^r v) \llbracket \kappa \nabla u_h \rrbracket ds \right) \right| \\
+  \left| \sum_{K \in \calT_h} \left( \int_K (\calI_h^r v) (f + \nabla \cdot (\kappa \nabla u_h) - b \cdot \nabla u_h - c u_h ) dx \right.\right.
+  \\ & \qquad \left.\left. - \int_{\partial K \setminus \partial \Omega} (\calI_h^r v) \frac{1}{2} \llbracket \kappa \nabla u_h \rrbracket ds
+  - \int_{\partial K \cap \Gamma_N} (\calI_h^r v) (n\cdot \kappa \nabla u_h - g ) ds
+  - \int_{\partial K \cap \Gamma_D} \cancelto{0}{(\calI_h^r v)} (n\cdot \kappa \nabla u_h) ds
+  \right)\right|
   \\
-  &\leq  \sum_{K \in \calT_h} \underbrace{ \left( \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)} \right) }_{\eta_K}  \| v \|_{H^1(K)} 
+  &= \left| \sum_{K \in \calT_h} \left( \int_K (\calI_h^r v) R_K dx
+  - \int_{\partial K} (\calI_h^r v) R_F ds \right) \right|
   \\
-  &\leq 
-  \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \left( \sum_{K \in \calT_h} \| v \|_{H^1(K)}^2 \right)^{1/2}
-  \leq   \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \| v \|_{H^1(\Omega)}
+  &\leq \sum_{K \in \calT_h} \left(
+  \| \calI_h^r v \|_{L^2(K)}  \| R_K \|_{L^2(K)} +
+  \| \calI_h^r v \|_{L^2(\partial K)} \| R_F \|_{L^2(\partial K)}  \right)
+  \\
+  &\leq \sum_{K \in \calT_h} \underbrace{ \left(
+  \rho_K \| R_K \|_{L^2(K)} + \rho_{\partial K} \| R_F \|_{L^2(\partial K)} 
+  \right) }_{\eta_K} \| v \|_{\calV(K)}
+  %% \\
+  %% &\leq \sum_{K \in \calT_h}\left(
+  %% \| \calI_h^r v \|_{L^2(K)}  \|f + \nabla \cdot (\kappa \nabla u_h) - b \cdot \nabla u_h - c u_h \|_{L^2(K)} +
+  %% \| \calI_h^r v \|_{L^2(\partial K)} \| \llbracket \kappa \nabla u_h \rrbracket \|_{L^2(\partial K)} \right)
+  %% \\
+  %% &\leq \sum_{K \in \calT_h} \underbrace{ \left(
+  %% \rho_K   \|f + \nabla \cdot (\kappa \nabla u_h) - b \cdot \nabla u_h - c u_h \|_{L^2(K)} +
+  %% \rho_{\partial K} \| \llbracket \kappa \nabla u_h \rrbracket \|_{L^2(\partial K)} \right) }_{\eta_K}
+  %% \| v \|_{\calV(K)}
+  \\
+  &\leq \left( \sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \left( \sum_{K \in \calT_h} \| v \|_{\calV(K)}^2 \right)^{1/2}
+  \leq  \left( \sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \| v \|_\calV
 \end{align*}
-So
+It hence follows that
 \begin{equation*}
-  \| r \|_{H^{-1}(\Omega)} \leq  \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2}.
+  \| r \|_{\calV'} \equiv \sup_{v \in \calV} \frac{|r(v)|}{\| v \|_\calV}
+  \leq \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \equiv R_{\calT_h},
 \end{equation*}
-We can use
+where
 \begin{equation*}
-  \| e \|_{H^1(\Omega)} \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)}
+  \eta_K \equiv  \rho_K \| R_K \|_{L^2(K)} + \rho_{\partial K} \| R_F \|_{L^2(\partial K)} \quad \forall K \in \calT_h,
 \end{equation*}
-for error estimate and
-\begin{equation*}
-  \eta_K \equiv \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}
-\end{equation*}
-as an elemental error indicator.
+where $R_K$, $R_F$, $\rho_K$, and $\rho_{\partial K}$ are defined by~\eqref{eq:adapt_RK}, \eqref{eq:adapt_RF}, \eqref{eq:adapt_rhok}, and \eqref{eq:adapt_rhopk}.
 
-We can also do output error estimate:
+We make a few observations. First, if all quantities, and in particular $\rho_K$ and $\rho_{\partial K}$, are computed exactly, then $R_{\calT_h}$ bounds $\| r \|_{\calV'}$ from the above. Second, in practice, because $\rho_K$ and $\rho_{\partial K}$ are estimated, $R_{\calT_h}$ is not a bound but merely an estimate. Third, the element-wise quantities $\{ \eta_K \}_{K \in \calT_h}$ can serve as elemental indicators with which we drive our mesh adaptation.
+
+\section{Output error estimate}
+In many engineering scenarios, our interest is in the prediction of a quantity of interest associated with a functional. We now wish to construct an error estimate and an associated local error indicator for the finite-element approximation of the output.  To this end, we introduce a continuous linear functional $\ell^o \in \calV'$ of the form
 \begin{equation*}
-  | \ell^o(e) | = | a (e, \psi - \psi_h) | = | r(e^\text{adj}) |
-  \leq \| r \|_{H^{-1}(\Omega)} \| e^\text{adj} \|_{H^1(\Omega)}
-  \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)} \| r^\text{adj} \|_{H^{-1}(\Omega)}
+  \ell^o(w) \equiv \int_{\Omega} w f^o dx + \int_{\Gamma_N} w g^o ds \quad \forall w \in \calV;
 \end{equation*}
-for
+the first and second terms constitute volume and surface contributions to the output, respectively. We then introduce the adjoint problem: find $\psi \in \calV$ such that
 \begin{equation*}
-  r^\text{adj}(w) = \ell^o(w) - a(w,\psi_h) \quad \forall w \in \calV.
+  a(w,\psi) = \ell^o(w) \quad \forall w \in \calV.
+\end{equation*}
+The associated finite element approximation is as follows: find $\psi_h \in \calV_h$ such that
+\begin{equation*}
+  a(w,\psi_h) = \ell^o(w) \quad \forall w \in \calV_h.
+\end{equation*}
+We also introduce the adjoint residual: $r^{\rm adj} \in \calV'$ such that
+\begin{equation*}
+  r^{\rm adj}(w) \equiv \ell^o(w) - a(w,\psi_h) \quad \forall w \in \calV.
+\end{equation*}
+We now appeal to (i) the definition of the adjoint, (ii) the Galerkin orthogonality, and (iii) the definition of the primal and adjoint residuals to obtain the following error bound: for $e \equiv u - u_h$ and $e^{\rm adj} \equiv \psi - \psi_h$,
+\begin{equation*}
+  | \ell^o(u) - \ell^o(u_h) | = | a(e,\psi) | = | a (e, \psi - \psi_h) | = | r(e^\text{adj}) |
+  \leq \| r \|_{\calV'} \| e^\text{adj} \|_{\calV}
+  \leq \frac{1}{\alpha} \| r \|_{\calV'} \| r^\text{adj} \|_{\calV'}.
+\end{equation*}
+This is our output error bound.  However, the bound in general is not actionable because $\alpha$, $\| r \|_{\calV'}$ and $\| r^{\rm adj} \|_{\calV'}$ are not computable; we must estimate these quantities.
+
+We have already discussed the estimation of the coercivity constant $\alpha$ by $\alpha_h$ in Section~\ref{sec:adapt_coer_est}, and the estimation of the dual norm of the residual $\| r \|_{\calV'}$ in Section~\ref{sec:adapt_res_est}. Using a technique similar to the one used in Section~\ref{sec:adapt_res_est}, we can also estimate the dual norm of the adjoint residual $\| r^{\rm adj} \|_{\calV'}$. To this end, we introduce the element adjoint residual 
+\begin{equation*}
+  R_K^{\rm adj} = f^o + \nabla \cdot (\kappa^T \nabla \psi_h) + \nabla \cdot (b \psi_h) - c \psi_h
+\end{equation*}
+and the facet adjoint residual 
+\begin{equation*}
+  R_F^{\rm adj} \equiv
+  \begin{cases}
+    \frac{1}{2} \llbracket \kappa^T \nabla \psi_h + b \psi_h \rrbracket, \quad F \in \partial \calT_h \setminus \partial \Omega \\
+    n \cdot (\kappa^T \nabla \psi_h + b \psi_h) - g^o,  \quad F \in \Gamma_N, \\
+    0, \quad F \in \Gamma_D.
+  \end{cases}
+\end{equation*}
+Our estimate for $\| r \|_{\calV'}$ is then given by
+\begin{equation*}
+  \| r^{\rm adj} \|_{\calV'} \leq  \left(\sum_{K \in \calT_h} (\eta^{\rm adj}_K)^2 \right)^{1/2} \equiv R_{\calT_h}^{\rm adj},
+\end{equation*}
+where
+\begin{equation*}
+  \eta_K^{\rm adj} \equiv  \rho_K \| R^{\rm adj}_K \|_{L^2(K)} + \rho_{\partial K} \| R^{\rm adj}_F \|_{L^2(\partial K)} \quad \forall K \in \calT_h.
+\end{equation*}
+Finally, the local error indicator can be constructed by combining the primal and adjoint error indicator
+\begin{equation*}
+  \eta^o_K \equiv \eta_K \eta^{\rm adj}_K \quad \forall K \in \calT_h.
 \end{equation*}
 
-\section{Embedding constants in $\RR^1$}
-
-\begin{proposition}
-Let $K$ be a unit line segment $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear interpolant of $v \in H^1(\tilde I)$ so that $(\calI v)(x=0) = v(x=0)$ and $(\calI v)(x=1) = v(x=1)$.  Then,
+\section{Adaptive mesh refinement}
+Once we have a means to localize the error in the solution, we can drive mesh adaptivity. The standard ``loop'' employed in an adaptive finite element method is
 \begin{equation*}
-  \rho_K \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}} = \frac{1}{\pi}.
+  \textsc{Solve} \ \rightarrow \ \textsc{Estimate} \ \rightarrow \ \textsc{Mark} \ \rightarrow \textsc{Refine},
 \end{equation*}
-\begin{proof}
-  We first expand the denominator to obtain
-  \begin{equation*}
-    | v |_{H^1(\tilde I)}^2
-    = | \calI v + (v - \calI v) |_{H^1(\tilde I)}^2
-    =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 + 2 \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx .
-  \end{equation*}
-  The last term of the expansion vanishes according to
-  \begin{equation*}
-    \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx
-    =
-    - \int_{\tilde I} \underbrace{\dd{^2 \calI v}{x^2}}_{=0\ :\ \text{$\calI v$ is linear}} (v - \calI v) dx
-    + \underbrace{\left[ \dd{\calI v}{x} (v - \calI v) \right]_{x=0}^1}_{=0\ :\ \text{interpolation condition}} = 0,
-  \end{equation*}
-  and hence $ | v |_{H^1(\tilde I)}^2 =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 $.  It follows that
-  \begin{equation*} 
-    \rho_K^2
-    \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2}
-    \leq  \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| v - \calI v |_{H^1(\tilde I)}^2}
-    =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
-  \end{equation*}
-  The inequality is sharp for any $v \in H^1_0(\tilde I)$ so that $\calI v = 0$; hence
-   \begin{equation*} 
-     \rho_K^2 =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
-  \end{equation*}
-  The constant $\rho_K^2$ is an Rayleigh quotient whose bound is given by the following eigenproblem: find eigenpairs $(u_k,\lambda_k) \in H^1_0(\tilde I) \times \RR$, $k = 1,2,\dots$, such that
-  \begin{equation*}
-    \int_{\tilde I} v u_k dx = \lambda_k \int_{\tilde I} \dd{v}{x} \dd{u_k}{x} dx \quad \forall v \in H^1_0(\tilde I).
-  \end{equation*}
-  The eigenpairs are
-  \begin{equation*}
-    u_k(x) = \sin(k\pi x) \quad \text{and} \quad \lambda_k = \frac{1}{k^2\pi^2}, \quad k = 1,2,\dots.
-  \end{equation*}
-  The maximum eigenvalue is $1/\pi^2$, and hence $\rho_K^2 = 1/\pi^2$.
-\end{proof}
-\end{proposition}
-\begin{corollary}
-  Let $K \equiv I \in \RR^1$ be a line segment of length $h$. By the homogeneity argument,
-  \begin{equation*}
-    \rho_K \equiv \sup_{v \in H^1(I)} \frac{\| v - \calI v \|_{L^2(I)}}{| v |_{H^1(I)}} = \frac{h}{\pi}.
-  \end{equation*}
-\end{corollary}
+which is repeated until the desired error tolerance is met. We now provide a brief description of each step:
+\begin{itemize}
+\item \textsc{Solve}. This step solves the finite element problem on a given mesh to compute the finite element solution $u_h$.
+\item \textsc{Estimate}. This step estimates the solution error (say) $ \| u - u_h \|_{\calV}$ using an \textit{a posteriori} error estimation technique.  If the desired error tolerance is met, then the adaptation iteration is terminated.
+\item \textsc{Mark}. This step marks elements to be refined based on the local error estimates $\{ \eta_K \}_{K \in \calT_h}$.  There are many different marking strategies; arguably the simplest strategy is the fixed-fraction marking strategy, which marks a given fixed fraction (say 10\%) of the elements with the largest $\eta_K$ for refinement.  Elements can also be marked for coarsening, if the mesh structure supports coarsening.
+\item \textsc{Refine}.  This step refines the marked elements and modifies the mesh.  There are many different refinement strategies; arguably the simplest strategy is to isotropically subdivide the element.  For instance, a line is split into two lines, and a triangle is split into four triangles. Additional refinements of unmarked neighbor elements may need to be performed in $\RR^{d > 1}$ if we wish to maintain a conforming mesh.  (Some adaptive solvers support \emph{hanging nodes}, where two neighboring elements can have different levels of refinement, and a node can ``hang'' in the middle of the shared facet.)
+\end{itemize}
+The steps are repeated until the desired error tolerance is met.  The adaptive procedure yields a sequence of triangulations $\{\calT_h \}$ and the associated approximation spaces $\{ \calV_h \}$ that are tailored for the particular solution $u$.
+
+\section{Adaptive mesh refinement and singularity}
+Adaptive mesh refinement in general can improve the convergence of the error (say) $\| u - u_h \|_{H^1(\Omega)}$ with respect to the number of degrees of freedom $n$.  (Note that, instead of the maximum element diameter $h \equiv \max_{K \in \calT_h} h_K$, we use the number of degrees of freedom $n \equiv \text{dim}(\calV_h)$ as the indicator of complexity, which is more suitable for non-uniform meshes.)  To demonstrate the benefit, in this section, we consider a canonical singular solution in $\RR^1$, 
+\begin{equation*}
+  u(x;\alpha) = x^\alpha, \quad x \in \Omega \equiv (0,1),
+\end{equation*}
+for some parameter $\alpha > 1/2$. For elliptic equations in $\RR^{d > 1}$, this $x^\alpha$-type singularity is encountered at sharp corners of the domain.  We can readily show that $u(\cdot;\alpha)$ is in $H^s(\Omega)$ for $\alpha > s - 1/2$, but not for $\alpha = s - 1/2$.
+
+We first consider the approximation of the singular solution in $\PP^p$ approximation space associated with uniform meshes for $p \geq \alpha - 1/2$.  (In practice, $\alpha$ is often in $(1/2,1)$, and hence the condition $p \geq \alpha - 1/2$ is satisfied even for $p = 1$.)  We can show that the error converges as
+\begin{equation}
+  \| u - u_h \|_{H^1(\Omega)} \leq C h^{\alpha - 1/2} = C n^{-\alpha + 1/2}.
+  \label{eq:adapt_singular_uni}
+\end{equation}
+ The convergence rate is limited the regularity of the solution. In particular, if $u(x) = x^{1/2 + \epsilon}$ for $\epsilon$ small, then $u \in H^1(\Omega)$ and the convergence rate is $n^{-\epsilon}$; we may observe an arbitrary slow convergence regardless of the choice of the approximation degree $p$.
+
+We now consider a graded mesh whose element diameter varies in $\Omega \equiv (0,1)$ according to
+\begin{equation*}
+  h(x) \approx c x^{\beta}
+\end{equation*}
+for some $c > 0$ and a grading parameter $\beta > 0$.  Note that the elements become smaller towards the singularity at $x = 0$.  If the grading parameter $\beta$ is optimally chosen for a given singularity strength $\alpha$ and polynomial degree $p$, then we can show that
+\begin{equation}
+  \| u - u_h \|_{H^1(\Omega)} \leq C' n^{-p}.
+  \label{eq:adapt_singular_graded}
+\end{equation}
+In words, we recover the optimal convergence rate \emph{with respect to the number of degrees of freedom $n$} observed for smooth solutions.
+
+The comparison of the convergence results for the uniform mesh~\eqref{eq:adapt_singular_uni} and the graded mesh~\eqref{eq:adapt_singular_graded} highlights the importance of mesh adaptation for problems with singularities.  This is particularly the case of for higher-order ($p > 1$) approximations, where the efficiency of higher-order method is realized only on appropriately graded meshes in the presence of singularities.
+
+%The precise mesh grading required to achieve this result depends on the polynomial degree.
+
+\section{Adaptive mesh refinement and singular perturbations}
+The next example we consider is a canonical singular perturbation solution in $\RR^1$,
+\begin{equation*}
+  u(x;\epsilon) = \exp(-x/\epsilon), \quad x \in (0,1),
+\end{equation*}
+for some $\epsilon$ such that $0 < \epsilon \ll 1$. This is the boundary-layer solution encountered in both reaction-diffusion and advection-diffusion equation with a weak diffusion (i.e., high Peclet/Reynolds number flows).  Unlike the $x^\alpha$-type singularity, this solution is formally smooth (i.e., infinitely differentiable).  However, the solution exhibit rapid variation in the thin layer of $\calO(\epsilon)$ in the vicinity of $x = 0$.
+
+We first consider the approximation of the boundary layer solution in $\PP^p$ approximation spaces associated with uniform meshes. Because the solution is formally smooth, the error asymptotically behaves as
+\begin{equation*}
+  \| u - u_h \|_{H^1(\Omega)} \leq C_{\epsilon} h^p \leq C_{\epsilon} n^{-p} \quad \text{as} \quad h \to 0,
+\end{equation*}
+for a constant $C_\epsilon$ that depends on $\epsilon$. However, this asymptotic convergence rate is only observed for $h \lesssim \epsilon$; i.e., only after the boundary layer is resolved.  In the pre-asymptotic regime, the error behaves as
+\begin{equation*}
+  \| u - u_h \|_{H^1(\Omega)} \sim C^{\rm pre}_{\epsilon} h^{1/2} \leq C^{\rm pre}_\epsilon n^{-1/2} \quad \text{ for } h \gtrsim \epsilon .
+\end{equation*}
+Hence, while the approximation is asymptotically quasi-optimal as $h \to 0$, it exhibits slow convergence for $h \gtrsim \epsilon$.
+
+We now consider a graded mesh whose element diameter varies in $\Omega \equiv (0,1)$ according to
+\begin{equation*}
+  h(x) \approx c \exp(\nu x),
+\end{equation*}
+for some $c > 0$ and a grading parameter $\nu > 0$.  If the grading parameter $\nu$ is optimally chosen for a given boundary layer thickness $\epsilon$ and the polynomial degree $p$, then we can essentially eliminate the pre-asymptotic behavior and achieve
+\begin{equation*}
+  \| u - u_h \|_{H^1(\Omega)} \leq C'_{\epsilon} n^{-p}
+\end{equation*}
+for all $n$, where $C'_{\epsilon}$ depends only weakly on $\epsilon$. Hence, in the case of singular perturbations, while the formal convergence rate with respect to the number of degrees of freedom is not improved by the graded meshes (since it is already optimal on uniform meshes), adaptive mesh refinement can in practice decrease the number of degrees of freedom required to achieve a given accuracy.
+
+\section{Summary}
+We summarize key points of this lecture:
+\begin{enumerate}
+\item Adaptive finite element methods build on two technical integredients: (localizable) \emph{a posteriori} error estimates and adaptive mesh refinement.
+\item The solution error $\| u - u_h \|_\calV$ can be bounded as a function of the coercivity constant and the dual norm of the residual.
+\item The coercivity constant is associated with an (infinite-dimensional) eigenproblem; it can be estimated by solving a finite-dimensional eigenproblem using a finite element method.
+\item The dual norm of the residual can be estimated based on the local element and facet residuals.
+\item \emph{A posteriori} error estimation techniques extend to quantities of interest by incorporating the adjoint and the associated adjoint residual.
+\item Adaptive mesh refinement builds on four steps: \textsc{Solve}, \textsc{Estimate}, \textsc{Mark}, and \textsc{Refine}.
+\item In the presence of singularities, adaptive mesh refinement can improve the formal asymptotic convergence rate (with respect to the number of degrees of freedom).
+\item In the presence of a boundary layer (which is formally smooth), the adaptive mesh refinement can reduce the number of degrees of freedom required to enter the asymptotic regime.
+\end{enumerate}
+
+
+%% \section{Singularity and adaptive meshing}
+%% Consider a function
+%% \begin{equation*}
+%%   u(x) = x^{\alpha}, \quad x \in (0,1).
+%% \end{equation*}
+
+%% \begin{equation*}
+%%   | u - \calI_h u |^2_{H^1(K_i)} \leq C_\calI^2 h_i^{2r} | u |^2_{H^{r+1}(K_i)} \equiv B(K_i)
+%% \end{equation*}
+
+%% \begin{equation*}
+%%   | u |_{H^s(K_i)}^2 = \int_{z_i}^{z_i+h_i} \left(\prod_{t = 0}^{s-1} (\alpha - t) x^{\alpha - s} \right)^2 dx
+%%   \geq C_{\alpha,s}^2 {z_{i+1}}^{2(\alpha -s)} h_i
+%% \end{equation*}
+%% where $C_{\alpha,s} \equiv \prod_{t = 0}^{s-1} (\alpha - t)$.
+
+%% For the equispaced grid of $h_i \equiv h$, we observe that, for the first element $K_1 \equiv (z_1 \equiv 0 ,z_2 \equiv h)$, 
+%% \begin{equation*}
+%%  B(K_1) \equiv  C^2_{\calI} h^{2r} | u |^2_{H^{r+1}(K_1)} \geq C^2_{\calI} C^2_{\alpha,r+1} h^{2r} h^{2(\alpha - r - 1)} h
+%%   = C_\calI^2 C^2_{\alpha,r+1} h^{2\alpha - 1} 
+%% \end{equation*}
+%% Because this first element dominates the interpolation error,
+
+%% Suppose now we choose the mesh spacing $\{h_i \}$ such that the interpolation error is equidistributed among the elements.  The choice results in, for some constant $C$, 
+%% \begin{equation*}
+%%   C = h_i^{2r} z_{i+1}^{2(\alpha - r - 1)} h_i
+%%   \quad \Rightarrow \quad
+%%   h_i = C z_{i+1}^{\frac{-2(\alpha -r - 1)}{2r+1}}
+%%   = C z_{i+1}^{1 - \frac{2\alpha - 1}{2r+1}}
+%% \end{equation*}
+%% We now set $C = h_0$, some characteristic element size, to obtain a graded mesh given by
+%% \begin{equation*}
+%%   h_i = h_0 z_{i+1}^{1 - \frac{2\alpha - 1}{2r+1}}.
+%% \end{equation*}
+%% For this graded mesh, we observe that
+%% \begin{equation*}
+%%   B(K_i)  \equiv  C^2_{\calI} h_i^{2r} | u |^2_{H^{r+1}(K_i)}
+%%   \geq C_{\alpha,s}^2 h_0^{2r+1}
+%% \end{equation*}
+
+%% Suppose we instead consider a graded mesh with the mesh spacing
+%% \begin{equation*}
+%%   h_i = h_0 z_{i+1}^{-\frac{2(\alpha - r - 1)}{2r+1}},
+%% \end{equation*}
+%% where $h_0 > 0$ denotes the 
+
+
+
+%% Consider a function
+%% \begin{equation*}
+%%   u(x) = x^{\alpha-1/2}, \quad x \in (0,1).
+%% \end{equation*}
+%% The $H^k$ semi-norm of the solution is
+%% \begin{equation*}
+%%   | u |_{H^k(\Omega)}^2
+%%   =
+%%   \int_{x=0}^1 \left(\frac{\Gamma(\alpha-1/2)}{\Gamma(\alpha-1/2-k)} x^{\alpha-k-1/2}\right)^2 dx
+%%   =
+%%   \left(\frac{\Gamma(\alpha-1/2)}{\Gamma(\alpha-1/2-k)} \right)^2 \int_{x=0}^1 x^{2\alpha-2k-1} dx.
+%% \end{equation*}
+%% We observe that the function is integrable for $k < \alpha$ and is not integrable (i.e., unbounded) for $k \geq \alpha$. We conclude that the function $x^{k-1/2+\epsilon}$ for $\epsilon > 0$ is in $H^k(\Omega)$.
+
+%% \begin{equation*}
+%%   \| u - \calI_h u \|_{H^1(K)} \leq \frac{h^r}{\pi} | u |_{H^{r+1}(K)}
+%% \end{equation*}
+
+%% $\{z_i \}_{i=1}^n$ with the grid spacing $h_{K_i} = z_{i+1} - z_i$
+%% \begin{align*}
+%%   | u |_{H^{k}(K)}^2 
+%%   &=
+%%   \left(\frac{\Gamma(\alpha-1/2)}{\Gamma(\alpha-1/2-k)} \right)^2 \int_{x=0}^1 x^{2\alpha-2k-1} dx
+%%   =
+%%   \left(\frac{\Gamma(\alpha-1/2)}{\Gamma(\alpha-1/2-k)} \right)^2 \frac{1}{2\alpha - 2k}\left[ x^{2\alpha - 2k} \right]_{x = z_i}^{z_i + h_K}
+%%   \\
+%%   &=
+%%   \left(\frac{\Gamma(\alpha-1/2)}{\Gamma(\alpha-1/2-k)} \right)^2 \frac{1}{2\alpha - 2k}\left[ x^{2\alpha - 2
+%%      k} \right]_{x = z_i}^{z_i + h_K}
+%%\end{align*}
+
+
+
+%% \section{Stability constant for non-coercive problems: inf-sup constant}
+
+%% \begin{equation*}
+%%   \beta = \inf_{w \in \calV} \sup_{v \in \calV} \frac{a(w,v)}{\| w \|_\calV \| v \|_\calV}
+%% \end{equation*}
+
+%% find $(u_k,\lambda_k) \in \calV \times \RR$, $k \in \ZZ_{\geq 0}$, such that
+%% \begin{equation*}
+%%   \langle A^* V^{-1} A u_k , v \rangle = \lambda (u_k,v)_\calV \quad \forall v \in \calV;
+%% \end{equation*}
+%% then $\beta = \sqrt{ \inf_{k} \{ \lambda_k \}_k }$.
+
+%% \begin{align*}
+%%   |r(v)|
+%%   &= | r (v - \calI_h v) |
+%%   = \left| \int_\Omega (v - \calI_h v) f dx - \int_\Omeg\kappa \nabla (v - \calI_h v) \cdot \nabla u_h dx \right|
+%%   \\
+%%   &= \left| \sum_{K \in \calT_h} \left( \int_K (v - \calI_h v) (f + \Delta u_h) dx
+%%   + \int_{\partial K} (v - \calI_h v) \frac{1}{2} \llbracket \nabla u_h \rrbracket ds \right)  \right|
+%%   \\
+%%   &\leq \sum_{K \in \calT_h} \left( \| v - \calI_h v \|_{L^2(K)} \| f + \Delta u_h \|_{L^2(K)} + \| v - \calI_h v \|_{L^2(\partial K)} \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}\right) 
+%%   \\
+%%   &\leq  \sum_{K \in \calT_h} \underbrace{ \left( \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)} \right) }_{\eta_K}  \| v \|_{H^1(K)} 
+%%   \\
+%%   &\leq 
+%%   \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \left( \sum_{K \in \calT_h} \| v \|_{H^1(K)}^2 \right)^{1/2}
+%%   \leq   \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2} \| v \|_{H^1(\Omega)}
+%% \end{align*}
+%% So
+%% \begin{equation*}
+%%   \| r \|_{H^{-1}(\Omega)} \leq  \left(\sum_{K \in \calT_h} \eta_K^2 \right)^{1/2}.
+%% \end{equation*}
+%% We can use
+%% \begin{equation*}
+%%   \| e \|_{H^1(\Omega)} \leq \frac{1}{\alpha} \| r \|_{H^{-1}(\Omega)}
+%% \end{equation*}
+%% for error estimate and
+%% \begin{equation*}
+%%   \eta_K \equiv \rho_K \| f + \Delta u_h \|_{L^2(K)} + \rho_{\partial K}  \frac{1}{2} \| \llbracket \nabla u_h \rrbracket \|_{L^2(\partial K)}
+%% \end{equation*}
+%% as an elemental error indicator.
+
+%% \section{Embedding constants in $\RR^1$}
+
+%% \begin{proposition}
+%% Let $K$ be a unit line segment $\tilde I \equiv (0,1)$, and $\calI v \in \PP^1(\tilde I)$ be a linear interpolant of $v \in H^1(\tilde I)$ so that $(\calI v)(x=0) = v(x=0)$ and $(\calI v)(x=1) = v(x=1)$.  Then,
+%% \begin{equation*}
+%%   \rho_K \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}} = \frac{1}{\pi}.
+%% \end{equation*}
+%% \begin{proof}
+%%   We first expand the denominator to obtain
+%%   \begin{equation*}
+%%     | v |_{H^1(\tilde I)}^2
+%%     = | \calI v + (v - \calI v) |_{H^1(\tilde I)}^2
+%%     =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 + 2 \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx .
+%%   \end{equation*}
+%%   The last term of the expansion vanishes according to
+%%   \begin{equation*}
+%%     \int_{\tilde I} \dd{\calI v}{x} \dd{(v - \calI v)}{x} dx
+%%     =
+%%     - \int_{\tilde I} \underbrace{\dd{^2 \calI v}{x^2}}_{=0\ :\ \text{$\calI v$ is linear}} (v - \calI v) dx
+%%     + \underbrace{\left[ \dd{\calI v}{x} (v - \calI v) \right]_{x=0}^1}_{=0\ :\ \text{interpolation condition}} = 0,
+%%   \end{equation*}
+%%   and hence $ | v |_{H^1(\tilde I)}^2 =  | \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2 $.  It follows that
+%%   \begin{equation*} 
+%%     \rho_K^2
+%%     \equiv \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| \calI v |_{H^1(\tilde I)}^2 +  | v - \calI v |_{H^1(\tilde I)}^2}
+%%     \leq  \sup_{v \in H^1(\tilde I)} \frac{\| v - \calI v \|^2_{L^2(\tilde I)}}{| v - \calI v |_{H^1(\tilde I)}^2}
+%%     =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+%%   \end{equation*}
+%%   The inequality is sharp for any $v \in H^1_0(\tilde I)$ so that $\calI v = 0$; hence
+%%    \begin{equation*} 
+%%      \rho_K^2 =\sup_{v \in H^1_0(\tilde I)} \frac{\| v \|^2_{L^2(\tilde I)}}{| v |_{H^1(\tilde I)}^2}.
+%%   \end{equation*}
+%%   The constant $\rho_K^2$ is an Rayleigh quotient whose bound is given by the following eigenproblem: find eigenpairs $(u_k,\lambda_k) \in H^1_0(\tilde I) \times \RR$, $k = 1,2,\dots$, such that
+%%   \begin{equation*}
+%%     \int_{\tilde I} v u_k dx = \lambda_k \int_{\tilde I} \dd{v}{x} \dd{u_k}{x} dx \quad \forall v \in H^1_0(\tilde I).
+%%   \end{equation*}
+%%   The eigenpairs are
+%%   \begin{equation*}
+%%     u_k(x) = \sin(k\pi x) \quad \text{and} \quad \lambda_k = \frac{1}{k^2\pi^2}, \quad k = 1,2,\dots.
+%%   \end{equation*}
+%%   The maximum eigenvalue is $1/\pi^2$, and hence $\rho_K^2 = 1/\pi^2$.
+%% \end{proof}
+%% \end{proposition}
+%% \begin{corollary}
+%%   Let $K \equiv I \in \RR^1$ be a line segment of length $h$. By the homogeneity argument,
+%%   \begin{equation*}
+%%     \rho_K \equiv \sup_{v \in H^1(I)} \frac{\| v - \calI v \|_{L^2(I)}}{| v |_{H^1(I)}} = \frac{h}{\pi}.
+%%   \end{equation*}
+%% \end{corollary}
 

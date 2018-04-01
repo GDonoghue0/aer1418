@@ -525,6 +525,7 @@ Once we find $\tilde u$, we then set $u = u^E + \tilde u$, which is in $\calV^E$
 
 
 \section{General second-order elliptic equation}
+\label{sec:var_form_gen}
 We have so far considered the variational formulation of Poisson equations with various boundary conditions. We can readily extend our approach to treat general second-order elliptic equations. To demonstrate the idea, we consider a convection-reaction-diffusion equation with (inhomogeneous) Dirichlet, Neumann, and Robin boundary conditions. To this end, we partition the Lipschitz domain $\Omega \subset \RR^d$ into the Dirichlet boundary $\Gamma_D$, the Neuamnn boundary $\Gamma_N$, and the Robin boundary $\Gamma_R$ such that $\overline{\partial \Omega} = \overline{\Gamma}_D \cup \overline{\Gamma}_N \cup \overline{\Gamma}_R$; we assume $\Gamma_D \cup \Gamma_R \neq \emptyset$. We then consider a problem of the following form: find $u$ such that
 \begin{align}
   - \nabla \cdot (a \nabla u) + b \cdot \nabla u + c u &= f \quad \text{in } \Omega
