@@ -365,7 +365,7 @@ In this section we consider a simple but practical error estimate based on Richa
 To illustrate the idea, we introduce two triangulations $\calT_h$ and $\calT_{h'}$, where $\calT_{h'}$ results from a uniform refinement of $\calT_h$ in which the linear length of each element is reduced by a factor of two; i.e., $h' = h/2$. We next introduce two $\PP^p$ approximation spaces $\calV_h$ and $\calV_{h'}$ associated with $\calT_h$ and $\calT_{h'}$, respectively. We then introduce $\PP^p$ finite element approximations, $u_h \in \calV_h$ and $u_{h'} \in \calV_{h'}$.  We \emph{assume} that the error in each solution varies as
 \begin{align*}
   \| u - u_h \|_{H^1(\Omega)} &\approx C h^r \\
-  \| u - u_{h'} \|_{H^1*(\Omega)} &\approx C (h')^r = C h^r 2^{-r}
+  \| u - u_{h'} \|_{H^1(\Omega)} &\approx C (h')^r = C h^r 2^{-r}
 \end{align*}
 for some constant $C \leq \infty$ and convergence rate $r$; we recall $r = p$ if $u \in H^{p+1}(\calT_h)$, but $r < p$ for less regular solutions. To estimate the error in the \emph{refined} solution $u_{h'} \in \calV_{h'}$, we observe that
 \begin{align*}
