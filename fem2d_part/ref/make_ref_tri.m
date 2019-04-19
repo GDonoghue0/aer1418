@@ -14,7 +14,7 @@ ref.pquad = pquad;
 % 2d shape functions 
 ref.p = p;
 ref.xint = interp_nodes_tri(p);
-[ref.shp, ref.shpx] = shape_tri(p, ref.xq);
+[ref.shp, ref.shpx, ref.shpxx] = shape_tri(p, ref.xq);
 
 % 1d (facet) quadrature rule
 [ref.xqf, ref.wqf] = quad_line(pquad);

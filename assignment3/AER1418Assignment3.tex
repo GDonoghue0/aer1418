@@ -6,6 +6,7 @@
 \usepackage{cancel}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{matlab-prettifier}
 \usepackage[margin=1.0in]{geometry}
 
 
@@ -68,7 +69,7 @@ where we have a discontinuous heat conductivity given by
 	\begin{equation*}
 		\inf\limits_{w_h \in \calV_h}\|u - w_h\|_\calV = 0.
 	\end{equation*}
-	We therefore say that \(\|u-u_h\|_{H^1(\Omega)} = 0\).
+	Where evaluating the integral to determine the infinimum is very straightforward, and is therefore omitted. As a result of the infinimum of the error being zero in our approximation space, we say that \(\|u-u_h\|_{H^1(\Omega)} = 0\).
 	
 	\item[(c)] We now update our approximation space to consist of quadratic piecewise polynomials, and note that \(\calV'_h \equiv \{v\in \calV | v \in \PP^2(K), K \in \calT_h^\text{even} \} \supset \calV_h \). Since any approximation in \(\calV_h \) exists in \(\calV'_h \) the infinimum is again zero; furthermore, the conditions required to invoke C\'ea's lemma are again satisfied, and we can again state that \(\|u-u_h\|_{H^1(\Omega)} = 0\).
 	
@@ -105,7 +106,7 @@ where we have a discontinuous heat conductivity given by
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{MMS_H1_conv.pdf}
-		\caption{Caption}
+		\caption{\(H^1(\Omega)\) semi norm error convergence for Poisson 1D MMS problem.}
 		\label{fig:mms_h1}
 	\end{figure}
 	The convergence rates were found to be \(1.0000\) and \(1.9998\) for the \(\PP^1 \) and \(\PP^2 \) approximations, respectively; these rates agree very well with the theory.
@@ -113,7 +114,7 @@ where we have a discontinuous heat conductivity given by
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{MMS_L2_conv.pdf}
-		\caption{Caption}
+		\caption{\(L^2(\Omega)\) norm error convergence for Poisson 1D MMS problem.}
 		\label{fig:mms_l2}
 	\end{figure}
 	The convergence rates were found to be \(2.0000\) and \(2.9998\) for the \(\PP^1 \) and \(\PP^2 \) approximations, respectively; these rates agree very well with the theory.
@@ -125,11 +126,11 @@ where we have a discontinuous heat conductivity given by
 	\begin{equation*}
 		a(w,\psi) = \ell^\text{o}(w) \quad \forall w \in \calV.
 	\end{equation*}
-	We will solve this equation by first converting it into its strong form by integrating by parts
+	We will solve this equation by first converting from the weak form to its strong form by integrating by parts, the weak form of the adjoint problem is
 	\begin{equation*}
 		w(x=1)\left.\dd{\psi}{x}\right|_{x=1} - \cancel{w(x=0)}\left.\dd{\psi}{x}\right|_{x=0} = \int_\Omega w (1+\dfrac{d^2\psi}{dx^2})dx.
 	\end{equation*}
-	We note from here that the strong form of this equation is
+	We can deduce form here that the strong form of the problem is 
 	\begin{equation*}
 		-\dfrac{d^2\psi}{dx^2} = 1, \quad \psi(x=0) = 0, \quad \left.\dd{\psi}{x}\right|_{x=1} = 0,
 	\end{equation*}
@@ -143,10 +144,10 @@ where we have a discontinuous heat conductivity given by
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{MMS_output_conv.pdf}
-		\caption{Caption}
+		\caption{Output error convergence for Poisson 1D MMS problem.}
 		\label{fig:mms_out}
 	\end{figure}
-	The convergence rates were found to be \(2.0001\) and \(-1.7175\) for the \(\PP^1 \) and \(\PP^2 \) approximations, respectively. The second convergence rate is meaningless and a consequence of quadrature error (we use \(p_{quad} = 4p\)), which will be proportional to the number of elements. 
+	The convergence rates were found to be \(2.0001\) and \(-1.7175\) for the \(\PP^1 \) and \(\PP^2 \) approximations, respectively. The second convergence rate is expected to be zero in the absence of quadrature error (we use \(p_{quad} = 4p\)), which will be proportional to the number of elements. 
 \end{itemize}
 
 \section*{Part 3. Linear Elasticity}
@@ -160,7 +161,11 @@ We have \(\Omega \equiv (0,2)\times(0,1/2) \), \(\Gamma_N \equiv \Gamma_\text{ri
 \end{equation*}
 By substituting in our expression for stress in terms of strain and noting that because \(\epsilon(u)\) is symmetric, we have \(\nabla v : \epsilon(u) = \epsilon(v):\epsilon(u) \) we can rewrite our weak form as
 \begin{equation*}
-	\int_{\Omega} 2 \mu \epsilon(v):\epsilon(u) + \lambda\text{tr}(\epsilon(v))(\epsilon(u))dx = \int_{\Gamma_\text{right}}v\cdot gds
+	\int_{\Omega} 2 \mu \epsilon(v):\epsilon(u) + \lambda\text{tr}(\epsilon(v))(\epsilon(u))dx = \int_{\Gamma_\text{right}}v\cdot gds.
+\end{equation*}
+Here we will define our bilinear and linear forms to be respectively
+\begin{equation*}
+	a(w,v) \equiv\int_{\Omega} 2 \mu \epsilon(v):\epsilon(w) + \lambda\text{tr}(\epsilon(v))(\epsilon(w))dx , \quad \ell(v) \equiv  \int_{\Gamma_\text{right}}v\cdot gds.
 \end{equation*}
 \begin{itemize}
 	\item[(a)] Twice the strain energy density integrated over the domain is
@@ -200,12 +205,13 @@ By substituting in our expression for stress in terms of strain and noting that 
 	\begin{equation*}
 		\ell^\text{o}(u_h) \leq \ell^\text{o}(u).
 	\end{equation*}
-	\item[(c)] Comment code and use matlab prettifier here.
+	\item[(c)] The code used to solve this problem is shown:
+	\lstinputlisting[style=Matlab-editor, linerange={1-212}]{../fem2d_part/driver/plate.m}
 	\item[(d)] Figure \ref{refsoln} shows the solution for which the reference output is calculated. It uses 28649 elements (\(h = 0.008 \)) and yields a compliance output of \(\ell^\text{o}(u_\text{ref}) = 0.00456145212 \)
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.95\textwidth]{test.pdf}
-		\caption{Caption.}
+		\caption{Strain energy density field on the deformed mesh.}
 		\label{refsoln}
 	\end{figure}
 	\item[(e)] Reference outputs for each family of approximations are summarized in Table \ref{table1}
@@ -217,14 +223,14 @@ By substituting in our expression for stress in terms of strain and noting that 
 			   		\hline
 			   		\(\ell^\text{o}(u_h)\) & 0.0045588902 & 0.0045610541 & 0.0045614521\\
 			   	\end{tabular}
-			   	\caption{Caption.}
+			   	\caption{Reference compliance outputs, for each approximation family}
 			   	\label{table1}
 			   \end{table}
 	\item[(f)] Figure \ref{out_conv} shows a semilog plot of \(\ell^\text{o}(u_h) \) against the number of degrees of freedom for each of our approximation families; the reference output is also shown. From part (b) we expect that \(\ell^\text{o}(u_h) < \ell^\text{o}(u_\text{ref})\) for each solution. 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{Plate_output_conv.pdf}
-		\caption{Caption.}
+		\caption{Compliance output for several approximations, note the monotonicity.}
 		\label{out_conv}
 	\end{figure}
 	We note that as expected, \(\ell^\text{o}(u_h) < \ell^\text{o}(u_\text{ref})\), for each solution. 
@@ -232,7 +238,7 @@ By substituting in our expression for stress in terms of strain and noting that 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{Plate_output_error_conv.pdf}
-		\caption{Caption.}
+		\caption{Compliance output error convergence.}
 		\label{out_err_conv}
 	\end{figure}
 	\item[(h)] The slopes of the above plot are:\\
@@ -243,6 +249,8 @@ By substituting in our expression for stress in terms of strain and noting that 
 				\hline
 				m & -0.8596 & -1.0001 & -1.8673\\
 			\end{tabular}
+			\caption{Compliance output error convergence rates with respect to ndofs}
+			\label{table2}
 		\end{table}
 		We may also compute the convergence rates with respect to \(h\), these are:\\
 		\begin{table}[H]
@@ -252,6 +260,8 @@ By substituting in our expression for stress in terms of strain and noting that 
 				\hline
 				r & 1.9042 & 2.2153 & 4.1364\\
 			\end{tabular}
+			\caption{Compliance output error convergence rates with respect to \(h\)}
+			\label{table3}
 		\end{table}
 		
 		Which are approximately twice the negative convergence rates with respect to the number of degrees of freedom, this is expected as ndofs \(\sim 1/h^2 \).
@@ -264,4 +274,7 @@ By substituting in our expression for stress in terms of strain and noting that 
 		
 \end{itemize}
 
+\section*{Appendix}
+	Here is additional code, used in part 2; code used to generate refinement plots is simple and therefore not included.
+	\lstinputlisting[style=Matlab-editor, linerange={125-202}]{../fem2d_part/driver/poisson1d.m}
 \end{document}

@@ -1,4 +1,4 @@
-function [shp,shpx] = shape_tri(p,x)
+function [shp,shpx,shpxx] = shape_tri(p,x)
 % SHAPE_TRI computes the (complete) Lagrange polynomials on a triangle
 % INPUTS:
 %   p: polynomial order; must be 1 or 2.
@@ -18,10 +18,14 @@ function [shp,shpx] = shape_tri(p,x)
 xnodes = interp_nodes_tri(p);
 % Obtain monomials for Vandermonde matrix
 inv_coeff = monomial_tri(p,xnodes);
-[psi,psix] = monomial_tri(p,x);
+[psi,psix,psixx] = monomial_tri(p,x);
 
 % Compute reference shape functions
 shp = psi/inv_coeff;
 shpx(:,:,1) = psix(:,:,1)/inv_coeff;
 shpx(:,:,2) = psix(:,:,2)/inv_coeff;
+shpxx(:,:,1,1) = psixx(:,:,1,1)/inv_coeff;
+shpxx(:,:,2,1) = psixx(:,:,1,2)/inv_coeff;
+shpxx(:,:,1,2) = psixx(:,:,2,1)/inv_coeff;
+shpxx(:,:,2,2) = psixx(:,:,2,2)/inv_coeff;
 end

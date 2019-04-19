@@ -1,4 +1,4 @@
-function [shp,shpx] = monomial_tri(p,x)
+function [shp,shpx,shpxx] = monomial_tri(p,x)
 % MONOMIAL_TRI computes the (complete) monomials in 2d
 % INPUTS:
 %   p: polynomial order; must be 1 or 2.
@@ -24,10 +24,18 @@ switch p
         shp = [oo, x(:,1), x(:,2)];
         shpx(:,:,1) = [zz, oo, zz];
         shpx(:,:,2) = [zz, zz, oo];
+        shpxx(:,:,1,1) = [zz, zz, zz];
+        shpxx(:,:,1,2) = [zz, zz, zz];
+        shpxx(:,:,2,1) = [zz, zz, zz];
+        shpxx(:,:,2,2) = [zz, zz, zz];
     case 2
         shp = [oo, x(:,1), x(:,2), x(:,1).^2, x(:,1).*x(:,2), x(:,2).^2];
         shpx(:,:,1) = [zz, oo, zz, 2*x(:,1), x(:,2), zz];
         shpx(:,:,2) = [zz, zz, oo, zz, x(:,1), 2*x(:,2)];
+        shpxx(:,:,1,1) = [zz, zz, zz, 2*oo, zz, zz];
+        shpxx(:,:,1,2) = [zz, zz, zz, zz, oo, zz];
+        shpxx(:,:,2,1) = [zz, zz, zz, zz, oo, zz];
+        shpxx(:,:,2,2) = [zz, zz, zz, zz, zz, 2*oo];
     otherwise
         error('unsupported polynomial order');
 end
